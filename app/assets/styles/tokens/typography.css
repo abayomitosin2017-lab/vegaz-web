@@ -1,0 +1,500 @@
+/* =============================================================
+   TYPOGRAPHY TOKENS — family Outfit, web only (Web Mobile + Web Desktop).
+   Values are what the Figma text styles resolve to. Where a style's
+   size/line-height is bound to a variable with an unexpected name, the
+   resolved value is used as-is (project decision). Flagged below.
+   FLAGS (kept as Figma has them, review with design if they look wrong):
+   - Web Mobile Headline 2: 24px size with 48px line-height.
+   - Web Mobile Headline 3: bold is 18px, other weights 16px.
+   - Web Desktop Headline 1: size follows a 56 variable; bold line-height 60.
+   - Display exists only in bold.
+   Mobile values are the default; desktop values apply at >= 1024px
+   (the proposed Large breakpoint).
+   ============================================================= */
+:root {
+  --font-family-base: "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500; /* letter avatars only (Figma Outfit Medium) */
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --text-display-bold-size: 48px;
+  --text-display-bold-line: 48px;
+  --text-display-bold-tracking: -1px;
+  --text-h1-bold-size: 32px;
+  --text-h1-bold-line: 48px;
+  --text-h1-bold-tracking: -1px;
+  --text-h1-semibold-size: 32px;
+  --text-h1-semibold-line: 48px;
+  --text-h1-semibold-tracking: -0.5px;
+  --text-h1-regular-size: 32px;
+  --text-h1-regular-line: 48px;
+  --text-h1-regular-tracking: -1px;
+  --text-h1-light-size: 32px;
+  --text-h1-light-line: 48px;
+  --text-h1-light-tracking: -1px;
+  --text-h2-light-size: 24px;
+  --text-h2-light-line: 48px;
+  --text-h2-light-tracking: -0.5px;
+  --text-h2-regular-size: 24px;
+  --text-h2-regular-line: 48px;
+  --text-h2-regular-tracking: -0.5px;
+  --text-h2-semibold-size: 24px;
+  --text-h2-semibold-line: 48px;
+  --text-h2-semibold-tracking: -0.5px;
+  --text-h2-bold-size: 24px;
+  --text-h2-bold-line: 48px;
+  --text-h2-bold-tracking: -0.5px;
+  --text-h3-bold-size: 18px;
+  --text-h3-bold-line: 28px;
+  --text-h3-bold-tracking: -0.2px;
+  --text-h3-semibold-size: 16px;
+  --text-h3-semibold-line: 26px;
+  --text-h3-semibold-tracking: 0px;
+  --text-h3-regular-size: 16px;
+  --text-h3-regular-line: 28px;
+  --text-h3-regular-tracking: -0.2px;
+  --text-h3-light-size: 16px;
+  --text-h3-light-line: 28px;
+  --text-h3-light-tracking: -0.2px;
+  --text-body-bold-size: 16px;
+  --text-body-bold-line: 24px;
+  --text-body-bold-tracking: 0px;
+  --text-body-semibold-size: 16px;
+  --text-body-semibold-line: 24px;
+  --text-body-semibold-tracking: 0px;
+  --text-body-regular-size: 16px;
+  --text-body-regular-line: 24px;
+  --text-body-regular-tracking: -0.2px;
+  --text-body-light-size: 16px;
+  --text-body-light-line: 24px;
+  --text-body-light-tracking: 0px;
+  --text-small-light-size: 14px;
+  --text-small-light-line: 20px;
+  --text-small-light-tracking: 0px;
+  --text-small-regular-size: 14px;
+  --text-small-regular-line: 20px;
+  --text-small-regular-tracking: 0px;
+  --text-small-semibold-size: 14px;
+  --text-small-semibold-line: 20px;
+  --text-small-semibold-tracking: 0px;
+  --text-small-bold-size: 14px;
+  --text-small-bold-line: 20px;
+  --text-small-bold-tracking: 0px;
+  --text-xsmall-light-size: 12px;
+  --text-xsmall-light-line: 18px;
+  --text-xsmall-light-tracking: 0px;
+  --text-xsmall-regular-size: 12px;
+  --text-xsmall-regular-line: 18px;
+  --text-xsmall-regular-tracking: 0px;
+  --text-xsmall-semibold-size: 12px;
+  --text-xsmall-semibold-line: 18px;
+  --text-xsmall-semibold-tracking: 0px;
+  --text-xsmall-bold-size: 12px;
+  --text-xsmall-bold-line: 18px;
+  --text-xsmall-bold-tracking: 0px;
+  --text-sub-light-size: 10px;
+  --text-sub-light-line: 14px;
+  --text-sub-light-tracking: 0px;
+  --text-sub-regular-size: 10px;
+  --text-sub-regular-line: 14px;
+  --text-sub-regular-tracking: 0px;
+  --text-sub-semibold-size: 10px;
+  --text-sub-semibold-line: 14px;
+  --text-sub-semibold-tracking: 0px;
+  --text-sub-bold-size: 10px;
+  --text-sub-bold-line: 14px;
+  --text-sub-bold-tracking: 0px;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --text-display-bold-size: 64px;
+    --text-display-bold-line: 61px;
+    --text-display-bold-tracking: -1px;
+    --text-h1-bold-size: 56px;
+    --text-h1-bold-line: 60px;
+    --text-h1-bold-tracking: -1px;
+    --text-h1-semibold-size: 56px;
+    --text-h1-semibold-line: 56px;
+    --text-h1-semibold-tracking: -0.5px;
+    --text-h1-regular-size: 56px;
+    --text-h1-regular-line: 56px;
+    --text-h1-regular-tracking: -1px;
+    --text-h1-light-size: 56px;
+    --text-h1-light-line: 64px;
+    --text-h1-light-tracking: -1px;
+    --text-h2-light-size: 40px;
+    --text-h2-light-line: 48px;
+    --text-h2-light-tracking: -0.5px;
+    --text-h2-regular-size: 40px;
+    --text-h2-regular-line: 48px;
+    --text-h2-regular-tracking: -0.5px;
+    --text-h2-semibold-size: 40px;
+    --text-h2-semibold-line: 48px;
+    --text-h2-semibold-tracking: -0.5px;
+    --text-h2-bold-size: 40px;
+    --text-h2-bold-line: 48px;
+    --text-h2-bold-tracking: -0.5px;
+    --text-h3-bold-size: 24px;
+    --text-h3-bold-line: 32px;
+    --text-h3-bold-tracking: -0.2px;
+    --text-h3-semibold-size: 24px;
+    --text-h3-semibold-line: 32px;
+    --text-h3-semibold-tracking: -0.5px;
+    --text-h3-regular-size: 24px;
+    --text-h3-regular-line: 32px;
+    --text-h3-regular-tracking: -0.2px;
+    --text-h3-light-size: 24px;
+    --text-h3-light-line: 32px;
+    --text-h3-light-tracking: -0.2px;
+    --text-body-light-size: 18px;
+    --text-body-light-line: 28px;
+    --text-body-light-tracking: 0px;
+    --text-body-regular-size: 18px;
+    --text-body-regular-line: 28px;
+    --text-body-regular-tracking: 0px;
+    --text-body-semibold-size: 18px;
+    --text-body-semibold-line: 28px;
+    --text-body-semibold-tracking: 0px;
+    --text-body-bold-size: 18px;
+    --text-body-bold-line: 28px;
+    --text-body-bold-tracking: 0px;
+    --text-small-light-size: 16px;
+    --text-small-light-line: 24px;
+    --text-small-light-tracking: 0px;
+    --text-small-regular-size: 16px;
+    --text-small-regular-line: 24px;
+    --text-small-regular-tracking: 0px;
+    --text-small-semibold-size: 16px;
+    --text-small-semibold-line: 24px;
+    --text-small-semibold-tracking: 0px;
+    --text-small-bold-size: 16px;
+    --text-small-bold-line: 24px;
+    --text-small-bold-tracking: 0px;
+    --text-xsmall-light-size: 14px;
+    --text-xsmall-light-line: 18px;
+    --text-xsmall-light-tracking: 0px;
+    --text-xsmall-regular-size: 14px;
+    --text-xsmall-regular-line: 18px;
+    --text-xsmall-regular-tracking: 0px;
+    --text-xsmall-semibold-size: 14px;
+    --text-xsmall-semibold-line: 18px;
+    --text-xsmall-semibold-tracking: 0px;
+    --text-xsmall-bold-size: 14px;
+    --text-xsmall-bold-line: 18px;
+    --text-xsmall-bold-tracking: 0px;
+    --text-sub-light-size: 10px;
+    --text-sub-light-line: 14px;
+    --text-sub-light-tracking: 0px;
+    --text-sub-regular-size: 10px;
+    --text-sub-regular-line: 14px;
+    --text-sub-regular-tracking: 0px;
+    --text-sub-semibold-size: 10px;
+    --text-sub-semibold-line: 14px;
+    --text-sub-semibold-tracking: 0px;
+    --text-sub-bold-size: 10px;
+    --text-sub-bold-line: 14px;
+    --text-sub-bold-tracking: 0px;
+  }
+}
+
+/* Text style classes: .text-<style>-<weight> */
+.text-display-bold {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-display-bold-size);
+  line-height: var(--text-display-bold-line);
+  letter-spacing: var(--text-display-bold-tracking);
+}
+.text-h1-bold {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-h1-bold-size);
+  line-height: var(--text-h1-bold-line);
+  letter-spacing: var(--text-h1-bold-tracking);
+}
+.text-h1-semibold {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-h1-semibold-size);
+  line-height: var(--text-h1-semibold-line);
+  letter-spacing: var(--text-h1-semibold-tracking);
+}
+.text-h1-regular {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--text-h1-regular-size);
+  line-height: var(--text-h1-regular-line);
+  letter-spacing: var(--text-h1-regular-tracking);
+}
+.text-h1-light {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-light);
+  font-size: var(--text-h1-light-size);
+  line-height: var(--text-h1-light-line);
+  letter-spacing: var(--text-h1-light-tracking);
+}
+.text-h2-light {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-light);
+  font-size: var(--text-h2-light-size);
+  line-height: var(--text-h2-light-line);
+  letter-spacing: var(--text-h2-light-tracking);
+}
+.text-h2-regular {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--text-h2-regular-size);
+  line-height: var(--text-h2-regular-line);
+  letter-spacing: var(--text-h2-regular-tracking);
+}
+.text-h2-semibold {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-h2-semibold-size);
+  line-height: var(--text-h2-semibold-line);
+  letter-spacing: var(--text-h2-semibold-tracking);
+}
+.text-h2-bold {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-h2-bold-size);
+  line-height: var(--text-h2-bold-line);
+  letter-spacing: var(--text-h2-bold-tracking);
+}
+.text-h3-bold {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-h3-bold-size);
+  line-height: var(--text-h3-bold-line);
+  letter-spacing: var(--text-h3-bold-tracking);
+}
+.text-h3-semibold {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-h3-semibold-size);
+  line-height: var(--text-h3-semibold-line);
+  letter-spacing: var(--text-h3-semibold-tracking);
+}
+.text-h3-regular {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--text-h3-regular-size);
+  line-height: var(--text-h3-regular-line);
+  letter-spacing: var(--text-h3-regular-tracking);
+}
+.text-h3-light {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-light);
+  font-size: var(--text-h3-light-size);
+  line-height: var(--text-h3-light-line);
+  letter-spacing: var(--text-h3-light-tracking);
+}
+.text-body-light {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-light);
+  font-size: var(--text-body-light-size);
+  line-height: var(--text-body-light-line);
+  letter-spacing: var(--text-body-light-tracking);
+}
+.text-body-regular {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--text-body-regular-size);
+  line-height: var(--text-body-regular-line);
+  letter-spacing: var(--text-body-regular-tracking);
+}
+.text-body-semibold {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-body-semibold-size);
+  line-height: var(--text-body-semibold-line);
+  letter-spacing: var(--text-body-semibold-tracking);
+}
+.text-body-bold {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-body-bold-size);
+  line-height: var(--text-body-bold-line);
+  letter-spacing: var(--text-body-bold-tracking);
+}
+.text-small-light {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-light);
+  font-size: var(--text-small-light-size);
+  line-height: var(--text-small-light-line);
+  letter-spacing: var(--text-small-light-tracking);
+}
+.text-small-regular {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--text-small-regular-size);
+  line-height: var(--text-small-regular-line);
+  letter-spacing: var(--text-small-regular-tracking);
+}
+.text-small-semibold {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-small-semibold-size);
+  line-height: var(--text-small-semibold-line);
+  letter-spacing: var(--text-small-semibold-tracking);
+}
+.text-small-bold {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-small-bold-size);
+  line-height: var(--text-small-bold-line);
+  letter-spacing: var(--text-small-bold-tracking);
+}
+.text-xsmall-light {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-light);
+  font-size: var(--text-xsmall-light-size);
+  line-height: var(--text-xsmall-light-line);
+  letter-spacing: var(--text-xsmall-light-tracking);
+}
+.text-xsmall-regular {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--text-xsmall-regular-size);
+  line-height: var(--text-xsmall-regular-line);
+  letter-spacing: var(--text-xsmall-regular-tracking);
+}
+.text-xsmall-semibold {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-xsmall-semibold-size);
+  line-height: var(--text-xsmall-semibold-line);
+  letter-spacing: var(--text-xsmall-semibold-tracking);
+}
+.text-xsmall-bold {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-xsmall-bold-size);
+  line-height: var(--text-xsmall-bold-line);
+  letter-spacing: var(--text-xsmall-bold-tracking);
+}
+.text-sub-light {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-light);
+  font-size: var(--text-sub-light-size);
+  line-height: var(--text-sub-light-line);
+  letter-spacing: var(--text-sub-light-tracking);
+}
+.text-sub-regular {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--text-sub-regular-size);
+  line-height: var(--text-sub-regular-line);
+  letter-spacing: var(--text-sub-regular-tracking);
+}
+.text-sub-semibold {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-sub-semibold-size);
+  line-height: var(--text-sub-semibold-line);
+  letter-spacing: var(--text-sub-semibold-tracking);
+}
+.text-sub-bold {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-sub-bold-size);
+  line-height: var(--text-sub-bold-line);
+  letter-spacing: var(--text-sub-bold-tracking);
+}
+
+/* Control text. Figma buttons use the "Mobile App" Body and Small semibold
+   styles (16/24 and 14/20), which do NOT grow on desktop. Kept fixed here so
+   buttons match Figma at every width. */
+:root {
+  --text-app-body-semibold-size: 16px;
+  --text-app-body-semibold-line: 24px;
+  --text-app-body-semibold-tracking: 0px;
+  --text-app-small-semibold-size: 14px;
+  --text-app-small-semibold-line: 20px;
+  --text-app-small-semibold-tracking: 0px;
+  /* Mobile App Small regular (14/20): input text (UiInput default) */
+  --text-app-small-regular-size: 14px;
+  --text-app-small-regular-line: 20px;
+  --text-app-small-regular-tracking: 0px;
+  /* Mobile App styles used by the ticket option card (Figma 9832:32993).
+     Fixed sizes: they do not grow on desktop. */
+  --text-app-h2-bold-size: 24px;          /* Headline 2 bold */
+  --text-app-h2-bold-line: 32px;
+  --text-app-h2-bold-tracking: -0.5px;
+  --text-app-h3-semibold-size: 20px;      /* Headline 3 semibold (compatibility line height) */
+  --text-app-h3-semibold-line: 26px;
+  --text-app-h3-semibold-tracking: 0px;
+  --text-app-xsmall-regular-size: 12px;   /* x-Small regular */
+  --text-app-xsmall-regular-line: 18px;
+  --text-app-xsmall-regular-tracking: 0px;
+  --text-app-xsmall-semibold-size: 12px;  /* x-Small semibold */
+  --text-app-xsmall-semibold-line: 18px;
+  --text-app-xsmall-semibold-tracking: 0px;
+}
+
+/* ---- Text roles: size combinations Figma uses outside the standard ramp.
+   Components reference these instead of writing sizes themselves. ---- */
+:root {
+  /* Home section titles: 24/32, -0.5 at every width (Figma mobile and desktop).
+     FLAG: the Headline 3 token is 16/26 on mobile. */
+  --text-section-title-size: 24px;
+  --text-section-title-line: 32px;
+  --text-section-title-tracking: -0.5px;
+  /* Page title (event details "Games Night & Good Vibes"): 24/32 bold on
+     phones, Headline 2 web desktop 40/48 from 1024px. -0.5 tracking. */
+  --text-page-title-size: 24px;
+  --text-page-title-line: 32px;
+  --text-page-title-tracking: -0.5px;
+  /* Modal titles: 24/32; -0.5 below 1024px, -0.2 from 1024px */
+  --text-modal-title-size: 24px;
+  --text-modal-title-line: 32px;
+  --text-modal-title-tracking: -0.5px;
+  /* Menu items (profile dropdown): Figma uses Web Body desktop, 18/28, at
+     every width */
+  --text-menu-item-size: 18px;
+  --text-menu-item-line: 28px;
+  --text-menu-item-tracking: 0px;
+  /* Text typed into input fields on phones (< 768px), decision 21 Oct:
+     16px, the Body regular size. Also stops iPhones zooming into a field
+     when it is tapped (they zoom on anything under 16px). Each field keeps
+     its own weight. Line height stays 20px (the old 14/20 line) so every
+     field keeps its Figma height. */
+  --text-input-mobile-size: 16px;
+  --text-input-mobile-line: 20px;
+  --text-input-mobile-tracking: 0px;
+  /* Hero heading line height. FLAG: Figma mobile is 32/40; the token is 32/48 */
+  --text-hero-title-line: 40px;
+  /* Internal component preview page labels (not a product screen) */
+  --text-label-tracking: 0.5px;
+}
+@media (min-width: 1024px) {
+  :root {
+    --text-modal-title-tracking: -0.2px;
+    --text-hero-title-line: var(--text-h1-bold-line);
+    --text-page-title-size: var(--text-h2-bold-size);
+    --text-page-title-line: var(--text-h2-bold-line);
+  }
+}
+
+/* Section headings: "About Event", "What to expect", "Community" (event
+   details) and the home section titles. Semibold 24/32, -0.5, every width. */
+.text-section-title {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-section-title-size);
+  line-height: var(--text-section-title-line);
+  letter-spacing: var(--text-section-title-tracking);
+}
+
+/* Page title (event details): bold 24/32 on phones, 40/48 from 1024px */
+.text-page-title {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-page-title-size);
+  line-height: var(--text-page-title-line);
+  letter-spacing: var(--text-page-title-tracking);
+}
+

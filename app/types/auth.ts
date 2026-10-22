@@ -1,0 +1,22 @@
+/** Onboarding / auth types. Field names are a proposal for the API contract. */
+export type AuthFlow = 'signup' | 'login'
+export type Gender = 'female' | 'male'
+
+export interface SignupProfile {
+  email: string
+  firstName: string
+  lastName: string
+  username: string
+  /** Optional in Figma (Continue is active with it empty) */
+  phone?: string
+  gender: Gender
+}
+
+/** The signed-in user, as shown in the header. Field names are a proposal. */
+export interface SessionUser {
+  firstName: string
+  lastName: string
+  username: string
+  /** Profile photo URL. Missing -> letter avatar (onboarding has no photo step) */
+  avatarUrl?: string
+}

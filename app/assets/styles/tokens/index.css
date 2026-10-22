@@ -1,0 +1,4 @@
+/* Design tokens entry point. Order matters: primitives -> semantic -> typography. */
+@import './primitives.css';
+@import './semantic.css';
+@import './typography.css';

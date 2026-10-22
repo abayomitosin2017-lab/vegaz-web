@@ -1,0 +1,20 @@
+/* Shared text styles for the onboarding modals (imported by each step). */
+
+/* Title: 24/32 bold; -0.5 tracking below 1024px (Headline 2 web mobile),
+   -0.2 from 1024px (Headline 3 web desktop), colour #0E0F11 (raw in Figma) */
+.auth-title {
+  margin: 0;
+  color: var(--color-text-heading-strong);
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-modal-title-size);
+  line-height: var(--text-modal-title-line);
+  letter-spacing: var(--text-modal-title-tracking);
+}
+
+.auth-copy { color: var(--color-text-secondary); }
+.auth-strong { color: var(--color-text-field); font-weight: var(--font-weight-semibold); }
+
+.auth-stack { display: flex; flex-direction: column; width: 100%; }
+.auth-actions { display: flex; gap: var(--spacing-md); width: 100%; }
+.auth-actions > * { flex: 1 0 0; min-width: 0; }

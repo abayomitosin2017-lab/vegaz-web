@@ -1,0 +1,133 @@
+/* =============================================================
+   SEMANTIC TOKENS — roles. Components should only use these.
+   Section A mirrors Figma exactly. Section B is PROPOSED by us
+   (Figma defines no hover / pressed / disabled / focus values).
+   ============================================================= */
+:root {
+  /* ---- A. Defined in Figma ---- */
+  --color-background-primary: var(--base-white);
+  --color-background-secondary: var(--grey-6);
+  --color-text-primary: var(--base-black);
+  --color-text-secondary: var(--grey-2);
+  --color-border-default: var(--grey-5);
+  --color-action-primary: var(--base-primary);
+  --color-action-secondary: var(--grey-6); /* Figma update 21 Oct: was Grey_5 */
+  --color-status-success: var(--base-positive);
+  --color-status-warning: var(--base-warning);
+  --color-status-error: var(--base-negative);
+  /* Input borders, from the Figma input component (node 49:2771).
+     Focus was Primary light_1 (blue) in Figma; changed to Primary purple
+     by design decision (no blue in the web UI). */
+  --color-border-focus: var(--base-primary);
+  --color-border-error: var(--negative-light-1);
+
+
+  /* ---- A2. Roles as used in the Figma screens (mapped to Figma colours).
+     Components reference these, never the raw palette. ---- */
+  --color-text-strong: var(--grey-1);              /* headings, input text, secondary buttons */
+  --color-text-muted: var(--grey-3);               /* hero text, success body, resend (idle), ticket meta */
+  --color-text-inverse: var(--base-white);         /* text on coloured fills (badge) */
+  --color-text-placeholder-subtle: var(--grey-4);  /* labelled text field placeholder */
+  --color-background-neutral: var(--grey-5);       /* neutral badge ("Sold out") */
+  --color-border-strong: var(--grey-4);            /* secondary outline button */
+  --color-border-stronger: var(--grey-3);          /* hero outline button */
+
+  /* Footer: uses Figma's separate "Gray" collection (see primitives FLAG) */
+  --color-footer-text-muted: var(--gray-500);      /* column headings, copyright */
+  --color-footer-link: var(--gray-600);
+  --color-footer-text-strong: var(--gray-900);     /* "Get the app" heading */
+  --color-footer-divider: var(--gray-200);
+
+  /* ---- B. PROPOSED (needs design approval; built only from Figma tokens) ---- */
+  --color-text-on-action-primary: var(--base-white);
+  --color-text-on-action-secondary: var(--base-black);
+  --color-text-placeholder: var(--grey-3);          /* Grey_3 on white: review contrast */
+  --color-text-disabled: var(--grey-4);
+  --color-background-disabled: var(--grey-6);
+  --color-border-disabled: var(--grey-5);
+
+  /* Hover / pressed: darken the Figma base color (there is no purple ramp). */
+  --color-action-primary-hover: color-mix(in srgb, var(--color-action-primary) 88%, black);
+  --color-action-primary-pressed: color-mix(in srgb, var(--color-action-primary) 76%, black);
+  --color-action-secondary-hover: color-mix(in srgb, var(--color-action-secondary) 92%, black);
+  --color-action-secondary-pressed: color-mix(in srgb, var(--color-action-secondary) 84%, black);
+
+  /* Grey fill Figma uses where an image will go (cards, banners).
+     Not a Figma variable; shown until real imagery is supplied. */
+  --color-placeholder-media: #c4c4c4;
+
+  /* Card chip shadow (Figma drop shadow 0 4 12, black 25%; raw in Figma) */
+  --shadow-chip: 0 4px 12px rgba(0, 0, 0, 0.25);
+
+  /* Ticket option card (Figma 9832:32993). Raw values in Figma, not variables.
+     FLAG: #F3F3F3 is close to but not Grey_6 (#F8F8F8); the dashed border is
+     Base black at 20%. */
+  --color-ticket-header: #f3f3f3;
+  --color-ticket-border: color-mix(in srgb, var(--base-black) 20%, transparent);
+  --color-ticket-border-subtle: color-mix(in srgb, var(--base-black) 10%, transparent); /* phone */
+
+  /* Onboarding modals (Figma section "onboarding", 10656:49108).
+     FLAG: these text colours are raw values in Figma, not variables. */
+  --color-text-heading-strong: #0e0f11;  /* modal titles, gender copy */
+  --color-text-field: #141316;           /* input text, labels, email highlight */
+  --color-text-note: #525964;            /* terms note, resend countdown */
+  --color-overlay: rgba(255, 255, 255, 0.7); /* page behind a modal */
+  --shadow-icon-bubble: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --color-text-option: #000000;          /* gender labels: raw black in Figma */
+  --color-border-success: var(--base-positive);
+  --color-background-error: var(--negative-light-3);
+
+  /* Letter avatars (Figma 10679:52368). Five colour sets, raw in Figma.
+     Blue kept for avatars only by design decision (exception to no-blue). */
+  --color-avatar-orange-bg: #fff4e6;  --color-avatar-orange-fg: #ffa228;
+  --color-avatar-purple-bg: #f5edff;  --color-avatar-purple-fg: #8a38f5;
+  --color-avatar-lime-bg: #f9ffe6;    --color-avatar-lime-fg: #86d019;
+  --color-avatar-red-bg: #ffe9e8;     --color-avatar-red-fg: #ff5b50;
+  --color-avatar-blue-bg: #dfe9ff;    --color-avatar-blue-fg: #5087ff;
+
+  /* Chat (Figma section "chat", 10681:52423). FLAG: raw values in Figma:
+     the chat frames' "Grey_6" resolves to #F4F5F8 (ours is #F8F8F8), and the
+     list divider is "Black/100". */
+  --color-chat-subtle: #f4f5f8;          /* bubble hairline, joined-notice lines, close button, panel divider */
+  --color-chat-divider: #e7eaed;         /* line between chat list rows */
+  --color-chat-title: #000000;           /* conversation header title */
+  --color-chat-time-unread: var(--color-action-primary);
+  --color-chat-time-read: var(--grey-4);
+  --color-chat-preview-unread: var(--grey-2);
+  --color-chat-preview-read: var(--grey-3);
+  --color-chat-bubble-mine: var(--color-action-primary);
+  --color-chat-bubble-theirs: var(--color-background-primary);
+  --color-chat-text: var(--color-text-heading-strong);   /* #0E0F11 */
+  --color-chat-text-mine: #fffdf6;       /* text on your purple bubble */
+  --color-chat-time: #6d7786;            /* time on others' bubbles ("Black/600") */
+  --color-chat-time-mine: var(--grey-5);
+  --color-chat-sender: var(--color-action-primary);
+  /* Day pills ("TODAY") and join notices. Softened by design decision (21 Oct):
+     Figma had 0 24 24 at 16% (day) and 0 4 12 at 8% (notice). */
+  --shadow-chat-pill: 0 1px 4px rgba(20, 19, 22, 0.06);
+  --color-back-button: rgba(241, 241, 241, 0.5); /* mobile chat back arrow circle (raw in Figma) */
+  /* Photo viewer backdrop and the "+N" cover on a photo grid (proposed,
+     not in Figma): Figma's dark text colour #141316 at 92% / 50% */
+  --color-viewer-overlay: rgba(20, 19, 22, 0.92);
+  --color-photo-scrim: rgba(20, 19, 22, 0.5);
+  --gradient-photo-fade: linear-gradient(179deg, rgba(20, 19, 22, 0) 55%, rgb(20, 19, 22) 116%);
+
+  /* Event details (Figma section "event details", 10715:65072) */
+  --color-surface-inverse: #141316;       /* "Download the Vegaz app" banner */
+  --color-text-on-inverse: #fffdf6;       /* banner heading */
+  --color-host-badge: var(--base-positive); /* green "Host" pill under an avatar */
+  --color-gender-female: #ff68c3;         /* "F" dot on a community avatar */
+  /* FLAG: Figma's "M" dot is blue #6891FF; the blue -> Primary rule (decision)
+     makes it purple. Confirm with design. */
+  --color-gender-male: var(--base-primary);
+  --color-avatar-more: var(--gray-100);   /* "+5 Others" circle */
+  --color-avatar-more-text: var(--gray-600);
+  --shadow-host-tag: 0 4px 24px rgba(0, 0, 0, 0.05);
+  /* Gallery photos darken toward the bottom (Figma, phone gallery tiles) */
+  --gradient-gallery-fade: linear-gradient(180deg, rgba(0, 0, 0, 0) 76.42%, rgba(0, 0, 0, 0.6) 92.9%);
+
+  /* Focus ring: Border/Width/Emphasis (2px) in action primary, 2px offset */
+  --focus-ring-color: var(--color-action-primary);
+  --focus-ring-width: var(--border-width-emphasis);
+  --focus-ring-offset: 2px;
+}

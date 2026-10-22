@@ -1,0 +1,131 @@
+/* =============================================================
+   PRIMITIVE TOKENS  — raw values from the Vegaz Revamp Figma file
+   (01 — Foundations / System Guide). Names mirror Figma variables.
+   Do not use these directly in components; use semantic.css.
+   ============================================================= */
+:root {
+  /* Color: base */
+  --base-black: #2c2c2c;
+  --base-white: #ffffff;
+  --base-primary: #4b099f;
+  --base-positive: #20af0b;
+  --base-warning: #ffc22e;
+  --base-negative: #ff3b2d;
+
+  /* Color: greys */
+  --grey-1: #303237;
+  --grey-2: #565c69;
+  --grey-3: #7e8494;
+  --grey-4: #bdc0ce;
+  --grey-5: #e5e7ef;
+  --grey-6: #f8f8f8;
+
+  /* Color: variant ramps. The Figma "Primary" light/dark ramp was blue
+     (#ECEFFE, #9DB8FD, #6891FF, #1E387E, #132451) and has been removed by
+     design decision: blue is replaced by Primary purple everywhere. */
+
+  --positive-light-3: #e6f7e4;
+  --positive-light-2: #b6e9af;
+  --positive-light-1: #88da7c;
+  --positive-dark-1: #125309;
+  --positive-dark-2: #0e3f07;
+
+  --warning-light-3: #fff8e7;
+  --warning-light-2: #ffefc6;
+  --warning-light-1: #ffdf91;
+  --warning-dark-1: #be9122;
+  --warning-dark-2: #684f13;
+
+  --negative-light-3: #ffe6e4;
+  --negative-light-2: #ffc7c3;
+  --negative-light-1: #ff958d;
+  --negative-dark-1: #841f17;
+  --negative-dark-2: #47110d;
+
+  /* Color: "Gray" collection. Used only by the Figma Footer component
+     (node 9864:56123). Separate from the Grey_1..6 ramp above. FLAG: review
+     with design whether the footer should move to the Grey tokens. */
+  --gray-100: #f0f0f0;
+  --gray-200: #dbdbdb;
+  --gray-500: #626262;
+  --gray-600: #4e4e4e;
+  --gray-900: #202020;
+
+  /* Color: accents (not safe as small text on white) */
+  --accent-cyan: #00e5ff;
+  --accent-pink: #ff4081;
+  --accent-lime: #c6ff00;
+  --accent-orange: #ff6d00;
+
+  /* Spacing */
+  --spacing-none: 0;
+  --spacing-micro: 2px;
+  --spacing-xxs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 40px;
+  --spacing-3xl: 48px;
+  --spacing-4xl: 64px;
+  /* Named one-offs defined in Figma */
+  --spacing-compact: 6px;
+  --spacing-inline: 10px;
+  --spacing-field: 14px;
+  --spacing-section: 20px;
+
+  /* Sizing */
+  --sizing-control-compact: 40px;
+  --sizing-control-touch: 44px;
+  --sizing-control-standard: 48px;
+  --sizing-control-field: 52px;
+  --sizing-icon-standard: 24px;
+
+  /* Radius */
+  --radius-zero: 0;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-pill: 40px;
+  --radius-full: 100px;
+
+  /* Border width */
+  --border-width-none: 0;
+  --border-width-default: 1px;
+  --border-width-emphasis: 2px;
+  --border-width-strong: 4px;
+
+  /* Shadows (Figma Dp1..Dp3) */
+  --shadow-dp1: 0 0 8px 0 rgba(20, 19, 22, 0.08);
+  --shadow-dp2: 0 8px 24px 0 rgba(0, 0, 0, 0.16);
+  --shadow-dp3: 0 24px 48px 0 rgba(20, 19, 22, 0.16);
+
+  /* Opacity (Figma stores 100 = fully opaque) */
+  --opacity-opaque: 1;
+
+  /* Breakpoints. Reference only: CSS variables cannot be used inside
+     @media queries, so write the literal values (768 / 1024 / 1440). */
+  --breakpoint-medium: 768px;
+  --breakpoint-large: 1024px;
+  --breakpoint-wide: 1440px;
+
+  /* Containers */
+  --container-web-tablet-max: 960px;
+  --container-web-desktop-max: 1312px;
+  --container-web-wide-max: 1600px;
+  --container-inset-mobile: 20px;
+  --container-inset-tablet: 32px;
+  --container-inset-desktop: 64px;
+  --container-inset-wide: 64px;
+
+  /* Grid recipes (explicit per platform, not chosen by width in Figma) */
+  --grid-web-mobile-columns: 4;
+  --grid-web-mobile-margin: 20px;
+  --grid-web-mobile-gutter: 16px;
+  --grid-web-desktop-columns: 12;
+  --grid-web-desktop-margin: 64px;
+  --grid-web-desktop-gutter: 20px;
+}
