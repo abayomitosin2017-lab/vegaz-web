@@ -1,0 +1,65 @@
+/*
+ * Page and pop-up motion (decisions 22 Oct). Inspired by Airbnb: quiet,
+ * quick, never in the way. Rules followed (Emil Kowalski's guidelines):
+ *   - only opacity and transform are animated (smooth on any device)
+ *   - ease-out curves; nothing over 250ms; exits faster than entrances
+ *   - "reduce motion" users: no movement (pages change instantly; pop-ups
+ *     only fade)
+ *
+ * 1. Page to page: the browser's View Transitions (Chrome, Edge, Safari 18+).
+ *    Turned on in nuxt.config (experimental.viewTransition). The old page
+ *    fades out, the new one fades in rising 4px. The header is kept still.
+ *    Browsers without View Transitions (Firefox) change page instantly.
+ * 2. Card photo -> event page: see composables/useEventMorph.ts.
+ * 3. Pop-ups (UiModal, photo viewer, profile panel): see each component;
+ *    the shared keyframes are here.
+ */
+
+/* ---- 1. Page to page ---- */
+::view-transition-old(root) {
+  animation: vt-page-out var(--duration-page-out) var(--ease-out-strong) both;
+}
+::view-transition-new(root) {
+  animation: vt-page-in var(--duration-page-in) var(--ease-out-strong) both;
+}
+@keyframes vt-page-out { to { opacity: 0; } }
+@keyframes vt-page-in {
+  from { opacity: 0; transform: translateY(var(--distance-page-in)); }
+}
+
+/* The header stays put while the page under it changes */
+.site-header { view-transition-name: site-header; }
+::view-transition-group(site-header) { animation: none; }
+::view-transition-old(site-header) { display: none; }
+::view-transition-new(site-header) { animation: none; }
+
+/* ---- 2. Card photo grows into the event page ---- */
+::view-transition-group(event-photo) {
+  animation-duration: var(--duration-morph);
+  animation-timing-function: var(--ease-out-strong);
+}
+/* Card and gallery photos can have different shapes (desktop medium cards
+   are wider than tall): crop instead of stretching while it grows */
+::view-transition-old(event-photo),
+::view-transition-new(event-photo) {
+  height: 100%;
+  object-fit: cover;
+  animation-duration: var(--duration-morph);
+  animation-timing-function: var(--ease-out-strong);
+}
+
+/* ---- 3. Shared pop-up keyframes ---- */
+@keyframes motion-fade-in { from { opacity: 0; } }
+@keyframes motion-panel-in {
+  from { opacity: 0; transform: translateX(var(--distance-panel-in)); }
+}
+/* The next step inside a dialog (buy ticket, sign up) fades in, so the
+   change of step reads as one dialog moving on, not a new one */
+.ui-modal__card > * { animation: motion-fade-in var(--duration-step-in) var(--ease-out-strong); }
+
+/* A panel that appears inside the page layout (chat profile column) */
+.motion-panel-in { animation: motion-panel-in var(--duration-popup-in) var(--ease-out-strong); }
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-panel-in { animation-name: motion-fade-in; }
+}

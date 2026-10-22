@@ -139,6 +139,27 @@
   --color-success-outline: var(--grey-1);          /* phone "Cancel" outline */
   --shadow-success-photo: 0 2.76px 16.56px rgba(0, 0, 0, 0.25);
 
+  /* Motion (PROPOSED, decision 22 Oct; curve from Emil Kowalski's
+     animation guidelines). Clickable images grow slightly on hover. */
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+  --duration-image-zoom: 600ms;   /* slow, as requested; transform only */
+  --scale-image-zoom: 1.04;
+  /* Page and pop-up motion (decision 22 Oct: "very subtle", Airbnb-like).
+     Exits are quicker than entrances so the app never feels slow. */
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);  /* bottom sheets */
+  --duration-page-out: 120ms;     /* old page fades out */
+  --duration-page-in: 220ms;      /* new page fades in, rising 4px */
+  --distance-page-in: 4px;
+  --duration-morph: 250ms;        /* card photo grows into the event page */
+  --duration-popup-in: 200ms;     /* dialogs, photo viewer, profile panel */
+  --duration-popup-out: 150ms;
+  --duration-sheet-in: 250ms;     /* phone bottom sheets slide up */
+  --duration-sheet-out: 200ms;
+  --scale-popup-from: 0.96;       /* dialogs grow from 96% (never from 0) */
+  --distance-panel-in: 16px;      /* profile panel slides in from the right */
+  --duration-step-in: 150ms;      /* next step inside a dialog fades in */
+  --scale-viewer-from: 0.97;      /* full-size photo grows from 97% */
+
   /* Focus ring: Border/Width/Emphasis (2px) in action primary, 2px offset */
   --focus-ring-color: var(--color-action-primary);
   --focus-ring-width: var(--border-width-emphasis);

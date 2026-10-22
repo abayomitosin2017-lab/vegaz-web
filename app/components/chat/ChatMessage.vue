@@ -110,7 +110,7 @@ const { menuOpen, menuAbove, offset, dragging, swipeIconOpacity, reply, handlers
           v-for="(src, i) in tiles"
           :key="i"
           type="button"
-          class="chat-msg__photo"
+          class="chat-msg__photo img-zoom"
           :aria-label="extra && i === 3 ? `Open photo ${i + 1} of ${photos.length}, ${extra} more` : `Open photo ${i + 1} of ${photos.length}`"
           @click="emit('open-photo', message, i)"
         >
@@ -217,7 +217,6 @@ const { menuOpen, menuAbove, offset, dragging, swipeIconOpacity, reply, handlers
   text-align: left;
   cursor: pointer;
 }
-.chat-msg__sender:hover { text-decoration: underline; } /* proposed */
 
 .chat-msg__body { display: flex; flex-direction: column; min-width: 0; }
 .chat-msg__text { margin: 0; overflow-wrap: anywhere; white-space: pre-wrap; }

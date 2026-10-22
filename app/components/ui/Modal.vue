@@ -18,6 +18,11 @@
  * into the dialog on open, stays inside while open, and returns to where it
  * was on close; the page behind does not scroll. Clicking the dimmed page
  * does not close it (forms would lose input).
+ *
+ * Motion (decision 22 Oct, "very subtle"): the dimmed page fades; the card
+ * grows from 96% (200ms in, 150ms out). Phone sheets slide up from the
+ * bottom instead (250ms in, 200ms out); full-screen cards only fade.
+ * "Reduce motion": fade only.
  */
 const props = withDefaults(
   defineProps<{
@@ -97,6 +102,7 @@ defineExpose({ focusFirst })
 
 <template>
   <Teleport to="body">
+    <Transition name="ui-modal" appear>
     <div v-if="open" :class="['ui-modal', `ui-modal--${phone}`]">
       <div
         ref="card"
@@ -109,6 +115,7 @@ defineExpose({ focusFirst })
         <slot />
       </div>
     </div>
+    </Transition>
   </Teleport>
 </template>
 
@@ -141,6 +148,21 @@ defineExpose({ focusFirst })
   .ui-modal__card { padding: var(--spacing-lg); }
 }
 
+/* ---- Motion ---- */
+.ui-modal { --ui-modal-in: var(--duration-popup-in); --ui-modal-out: var(--duration-popup-out); }
+.ui-modal-enter-active,
+.ui-modal-enter-active .ui-modal__card {
+  transition: opacity var(--ui-modal-in) var(--ease-out-strong), transform var(--ui-modal-in) var(--ease-out-strong);
+}
+.ui-modal-leave-active,
+.ui-modal-leave-active .ui-modal__card {
+  transition: opacity var(--ui-modal-out) var(--ease-out-strong), transform var(--ui-modal-out) var(--ease-out-strong);
+}
+.ui-modal-enter-from,
+.ui-modal-leave-to { opacity: 0; }
+.ui-modal-enter-from .ui-modal__card,
+.ui-modal-leave-to .ui-modal__card { transform: scale(var(--scale-popup-from)); }
+
 /* Phones: bottom sheet / full screen */
 @media (max-width: 767px) {
   .ui-modal--sheet,
@@ -162,5 +184,18 @@ defineExpose({ focusFirst })
     border-radius: 0;
     box-shadow: none;
   }
+  /* Sheets slide up (drawer curve); full-screen cards just fade */
+  .ui-modal--sheet { --ui-modal-in: var(--duration-sheet-in); --ui-modal-out: var(--duration-sheet-out); }
+  .ui-modal--sheet.ui-modal-enter-active .ui-modal__card { transition-timing-function: var(--ease-drawer); }
+  .ui-modal--sheet.ui-modal-enter-from .ui-modal__card,
+  .ui-modal--sheet.ui-modal-leave-to .ui-modal__card { transform: translateY(100%); }
+  .ui-modal--fullscreen.ui-modal-enter-from .ui-modal__card,
+  .ui-modal--fullscreen.ui-modal-leave-to .ui-modal__card { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui-modal-enter-from .ui-modal__card,
+  .ui-modal-leave-to .ui-modal__card,
+  .ui-modal--sheet.ui-modal-enter-from .ui-modal__card,
+  .ui-modal--sheet.ui-modal-leave-to .ui-modal__card { transform: none; }
 }
 </style>

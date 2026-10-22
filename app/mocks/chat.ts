@@ -1,7 +1,7 @@
 import type { ChatMessage, ChatPerson, ChatProfile, ChatSummary } from '~/types/chat'
 import { mockExistingAccount } from './auth'
 import { placeholderPhoto, toSquare } from './placeholders'
-import { eventById } from './eventCatalog'
+import { catalog, eventById } from './eventCatalog'
 import { genderOf, people } from './people'
 
 /**
@@ -20,9 +20,10 @@ import { genderOf, people } from './people'
  * - The first three chats show the Figma conversations as drawn; their list
  *   previews (also from Figma) don't match their last message. Chats Figma
  *   doesn't show have one message matching their list preview.
- * - Every person's profile panel uses the Figma event list.
- * - Two event titles are cut off in Figma ("Native breakfast cl...",
- *   "Jonny Drille Music Video.."); the endings are guesses.
+ * - Profile panel "All Events" (decision 22 Oct): real demo events with
+ *   their fliers, replacing Figma's sample list (which had no images). The
+ *   person's own events first (host or community member in eventCatalog.ts),
+ *   then others, 5 in all, so every profile shows a full list.
  */
 
 const at = (daysAgo: number, h: number, m: number) => {
@@ -100,16 +101,28 @@ export const mockMessages: Record<string, ChatMessage[]> = {
   ],
 }
 
-/** Figma "Desktop - 57" event list, used for every profile */
-const profileEvents: ChatProfile['events'] = [
-  { id: 'pe1', title: 'Cook, East , Gist', dateLabel: '22 Apr, 14:30 Lagos' },
-  { id: 'pe2', title: 'Beach camping', dateLabel: '22 Apr, 14:30 Lagos' },
-  { id: 'pe3', title: 'Night at the beach', dateLabel: '22 Apr, 14:30 Lagos' },
-  { id: 'pe4', title: 'Native breakfast club', dateLabel: '22 Apr, 14:30 Lagos' },
-  { id: 'pe5', title: 'Jonny Drille Music Video shoot', dateLabel: '22 Apr, 14:30 Lagos' },
-]
-
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+/** Figma format "22 Apr, 14:30 Lagos": day, time and the place's last part */
+const profileDate = (startsAt: string, location: string) => {
+  const [date, time] = startsAt.split('T') as [string, string]
+  const [, month, day] = date.split('-').map(Number) as [number, number, number]
+  const place = location.split(',').pop()!.trim()
+  return `${day} ${MONTHS[month - 1]}, ${time.slice(0, 5)} ${place}`
+}
+/** Events on a person's profile: theirs first (hosting or in the community), then others */
+function profileEventsOf(personId: string): ChatProfile['events'] {
+  const isTheirs = (c: (typeof catalog)[number]) => c.event.host.id === personId || c.event.members.some(m => m.person.id === personId)
+  const seed = [...personId].reduce((n, ch) => n + ch.charCodeAt(0), 0)
+  const others = catalog.filter(c => !isTheirs(c))
+  const rotated = [...others.slice(seed % others.length), ...others.slice(0, seed % others.length)]
+  return [...catalog.filter(isTheirs), ...rotated].slice(0, 5).map(({ event: e }) => ({
+    id: e.id,
+    title: e.title,
+    imageUrl: e.imageUrl,
+    dateLabel: profileDate(e.startsAt, e.location),
+  }))
+}
 
 export function mockProfile(person: ChatPerson): ChatProfile {
-  return { ...person, photoUrl: toSquare(person.avatarUrl), gender: genderOf(person.id), events: profileEvents }
+  return { ...person, photoUrl: toSquare(person.avatarUrl), gender: genderOf(person.id), events: profileEventsOf(person.id) }
 }

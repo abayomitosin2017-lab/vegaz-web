@@ -160,7 +160,7 @@ function closeProfile() {
       :variant="chats.length ? 'select' : 'none'"
     />
 
-    <ChatProfilePanel v-if="profile" ref="profilePanel" :profile="profile" @close="closeProfile" />
+    <ChatProfilePanel v-if="profile" ref="profilePanel" class="motion-panel-in" :profile="profile" @close="closeProfile" />
 
     <CheckoutFlow
       v-if="checkout.event"

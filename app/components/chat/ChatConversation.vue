@@ -209,7 +209,6 @@ function onSend(draft: NewMessage) {
   color: inherit;
   text-decoration: none;
 }
-a.chat-conv__event:hover .chat-conv__title { text-decoration: underline; } /* proposed */
 .chat-conv__event:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 .chat-conv__titles { display: flex; flex: 1; flex-direction: column; gap: var(--spacing-micro); min-width: 0; }
 .chat-conv__ticket { flex: none; }

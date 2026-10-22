@@ -418,3 +418,20 @@ Typography: the flow uses the fixed "Mobile App" styles (`.text-app-*` classes i
 - Memory only: a reload resets logins and purchases (decision).
 
 Test cases: `tests/buy-ticket-test-cases.md` (A–K, run at 1440 / 800 / 393).
+
+**Profiles and the community row (decision 22 Oct).**
+- Community row on the event page: people are no longer clickable (no profile from there). The "Hosted by" tag still opens the host's profile.
+- Profile panel "All Events": real demo events with their fliers instead of Figma's sample list (which had no images). The person's own events come first (host or community member), then others, 5 in all; date in Figma's format ("31 May, 12:00 Lekki").
+
+**Hover polish (decision 22 Oct).**
+- Links never show an underline (base.css `a { text-decoration: none }`; the three proposed hover underlines on event card titles, the chat header title and chat sender names are removed).
+- Clickable images grow slightly on hover: `.img-zoom` (base.css) on event cards, gallery photos and photos in chat. Scale 1.04 over 600ms with a strong ease-out (`cubic-bezier(0.23, 1, 0.32, 1)`), transform only, inside the existing clipped frame so nothing around it moves. Mouse/trackpad only (no stuck zoom after a tap on phones); off with "reduce motion". Tokens: `--ease-out-strong`, `--duration-image-zoom`, `--scale-image-zoom` (semantic.css, proposed). Approach follows Emil Kowalski's animation guidelines (installed with `npx skills add emilkowalski/skill`); 600ms is slower than its usual hover advice, at design's request ("slow grow").
+
+**Moving between pages and pop-ups (decisions 22 Oct, Airbnb-inspired, "very subtle").** All motion lives in `assets/styles/motion.css`, tokens in semantic.css (proposed). Only opacity and transform move; ease-out curves; nothing over 250ms; closing is quicker than opening.
+- **Page to page:** the browser's View Transitions (`experimental.viewTransition` in nuxt.config). The old page fades out (120ms), the new one fades in rising 4px (220ms). The header stays still. Chrome, Edge and Safari 18+; Firefox changes page instantly (no animation, nothing breaks). Switching chats (same page, `?chat=`) does not animate.
+- **Card photo grows into the event page:** the clicked card's photo moves and grows into the gallery's flier tile (250ms) and shrinks back on Back. Only the clicked card takes part (`composables/useEventMorph.ts`), since the same event can sit in several Home rows. Desktop medium cards are wider than tall, so the photo is cropped, not stretched, while it grows.
+- **Pop-ups:** dialogs (sign up, buy ticket) fade the page and grow the card from 96% (200ms in / 150ms out). Phone bottom sheets slide up from the bottom (250ms in / 200ms out, drawer curve); the full-screen purchase success just fades. A new step inside a dialog fades in (150ms). Photo viewer: fade, photo grows from 97%. Profile panel: fades and slides in 16px from the right (event page and chat).
+- **No scroll reveal** (decision).
+- **"Reduce motion"** (device setting): pages change instantly; pop-ups only fade, nothing moves.
+
+Test: `motion.mjs` in the QA scripts (90 checks at 1440 / 800 / 393 and with reduce motion).

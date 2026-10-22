@@ -15,3 +15,16 @@ body {
 
 h1, h2, h3, h4, h5, h6, p { margin: 0; }
 img, svg { display: block; }
+
+/* Links never show an underline, on hover or otherwise (decision 22 Oct) */
+a { text-decoration: none; }
+
+/* Clickable images grow slightly on hover (decision 22 Oct). Put .img-zoom
+   on the clickable element; its <img> must sit in a box that clips (overflow
+   hidden / clip), so only the picture grows, never the layout.
+   Mouse/trackpad only (taps on phones would leave it stuck), and off for
+   people who ask for reduced motion. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .img-zoom img { transition: transform var(--duration-image-zoom) var(--ease-out-strong); }
+  .img-zoom:hover img { transform: scale(var(--scale-image-zoom)); }
+}

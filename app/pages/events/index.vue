@@ -30,7 +30,7 @@ useHead({ title: 'All events · Vegaz' })
 
     <ul class="all-events__grid">
       <li v-for="e in events" :key="e.id">
-        <EventCard :event="e" size="small" />
+        <EventCard :event="e" size="small" morph-source="all" />
       </li>
     </ul>
   </div>

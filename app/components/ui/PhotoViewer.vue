@@ -68,6 +68,7 @@ onBeforeUnmount(() => {
 
 <template>
   <Teleport to="body">
+    <Transition name="ui-viewer">
     <div
       v-if="open"
       ref="root"
@@ -99,10 +100,30 @@ onBeforeUnmount(() => {
         </button>
       </template>
     </div>
+    </Transition>
   </Teleport>
 </template>
 
 <style scoped>
+/* Motion (decision 22 Oct): the dark page fades, the photo grows from 97%.
+   "Reduce motion": fade only. */
+.ui-viewer-enter-active,
+.ui-viewer-enter-active .ui-viewer__figure {
+  transition: opacity var(--duration-popup-in) var(--ease-out-strong), transform var(--duration-popup-in) var(--ease-out-strong);
+}
+.ui-viewer-leave-active,
+.ui-viewer-leave-active .ui-viewer__figure {
+  transition: opacity var(--duration-popup-out) var(--ease-out-strong), transform var(--duration-popup-out) var(--ease-out-strong);
+}
+.ui-viewer-enter-from,
+.ui-viewer-leave-to { opacity: 0; }
+.ui-viewer-enter-from .ui-viewer__figure,
+.ui-viewer-leave-to .ui-viewer__figure { transform: scale(var(--scale-viewer-from)); }
+@media (prefers-reduced-motion: reduce) {
+  .ui-viewer-enter-from .ui-viewer__figure,
+  .ui-viewer-leave-to .ui-viewer__figure { transform: none; }
+}
+
 .ui-viewer {
   position: fixed;
   inset: 0;

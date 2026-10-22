@@ -23,12 +23,22 @@
  */
 import type { EventSummary } from '~/types/event'
 
-withDefaults(defineProps<{ event: EventSummary; size?: 'small' | 'medium' }>(), { size: 'small' })
+const props = withDefaults(
+  defineProps<{
+    event: EventSummary
+    size?: 'small' | 'medium'
+    /** Which list the card sits in (a Home row title, "all"...). Lets the
+        photo grow into the event page from the exact card clicked. */
+    morphSource?: string
+  }>(),
+  { size: 'small', morphSource: 'card' },
+)
+const morph = useEventMorph()
 </script>
 
 <template>
-  <article :class="['event-card', `event-card--${size}`]">
-    <div class="event-card__media">
+  <article :class="['event-card', 'img-zoom', `event-card--${size}`]">
+    <div class="event-card__media" :style="morph.cardStyle(props.morphSource, event.id)">
       <img v-if="event.imageUrl" class="event-card__image" :src="event.imageUrl" alt="" />
       <span class="event-card__chip text-xsmall-semibold">
         <span class="event-card__chip-text">{{ event.category }}</span>
@@ -36,7 +46,7 @@ withDefaults(defineProps<{ event: EventSummary; size?: 'small' | 'medium' }>(), 
     </div>
     <div class="event-card__body">
       <h3 class="event-card__title text-small-semibold">
-        <NuxtLink :to="`/events/${event.id}`" class="event-card__link">{{ event.title }}</NuxtLink>
+        <NuxtLink :to="`/events/${event.id}`" class="event-card__link" @click="morph.start(props.morphSource, event.id)">{{ event.title }}</NuxtLink>
       </h3>
       <p class="event-card__meta text-small-regular">{{ event.location }}</p>
       <p class="event-card__meta text-small-regular event-card__date">{{ event.dateLabel }}</p>
@@ -129,5 +139,4 @@ withDefaults(defineProps<{ event: EventSummary; size?: 'small' | 'medium' }>(), 
 .event-card__link::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius-lg); }
 .event-card__link:focus-visible { outline: none; }
 .event-card__link:focus-visible::after { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
-.event-card:hover .event-card__title { text-decoration: underline; } /* proposed */
 </style>

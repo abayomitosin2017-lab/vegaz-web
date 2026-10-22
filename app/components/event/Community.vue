@@ -13,15 +13,14 @@
  * (Figma 10713:56670, 22 Oct; was 12/18, phones 10/14).
  * Last: "+N Others" (48px #F0F0F0 circle, 18/28 semibold #4E4E4E).
  * Gender letter: 6px Regular (was Light).
- * Tapping a person opens their profile (decision 22 Oct). "+N Others" has no
- * action (no list designed). Row spreads across the column; on phones it
+ * People are not clickable (decision 22 Oct, replaces opening their
+ * profile). "+N Others" has no action (no list designed). Row spreads across the column; on phones it
  * scrolls sideways when it doesn't fit.
  */
-import type { ChatPerson } from '~/types/chat'
 import type { EventMember } from '~/types/event'
 
 const props = defineProps<{ members: EventMember[]; count: number }>()
-const emit = defineEmits<{ profile: [person: ChatPerson]; invite: [] }>()
+const emit = defineEmits<{ invite: [] }>()
 
 const others = computed(() => Math.max(0, props.count - props.members.length))
 </script>
@@ -37,7 +36,7 @@ const others = computed(() => Math.max(0, props.count - props.members.length))
 
     <ul class="event-community__row">
       <li v-for="m in members" :key="m.person.id" class="event-community__person">
-        <button type="button" class="event-community__who" :aria-label="`${m.person.name}${m.isHost ? ', host' : ''}. View profile`" @click="emit('profile', m.person)">
+        <span class="event-community__who" :aria-label="`${m.person.name}${m.isHost ? ', host' : ''}`" role="group">
           <span class="event-community__avatar">
             <UiAvatar :name="m.person.name" :seed="m.person.username" :src="m.person.avatarUrl" :size="48" />
             <span v-if="m.gender" :class="['event-community__gender', `event-community__gender--${m.gender}`]" aria-hidden="true">{{ m.gender === 'female' ? 'F' : 'M' }}</span>
@@ -46,7 +45,7 @@ const others = computed(() => Math.max(0, props.count - props.members.length))
             <span v-if="m.isHost" class="event-community__host text-sub-regular">Host</span>
           </span>
           <span class="event-community__name">{{ m.person.name }}</span>
-        </button>
+        </span>
       </li>
       <li v-if="others" class="event-community__person">
         <span class="event-community__who event-community__who--static">
@@ -97,10 +96,7 @@ const others = computed(() => Math.max(0, props.count - props.members.length))
   border: 0;
   background: transparent;
   font: inherit;
-  cursor: pointer;
 }
-.event-community__who--static { cursor: default; }
-.event-community__who:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); border-radius: var(--radius-sm); }
 .event-community__avatar { position: relative; display: inline-flex; margin-bottom: -16px; }
 /* Host pill slot: 18px tall, overlaps the photo by 16px (Figma) */
 .event-community__badge-slot { position: relative; display: flex; justify-content: center; height: 18px; }

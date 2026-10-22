@@ -21,9 +21,10 @@
  * - Holding a ticket (decision 22 Oct): "Share Event" under the tickets;
  *   more tickets can still be bought for others.
  * - Join Community: signed out -> Login or signup first; then the event's
- *   chat opens (the button text doesn't change).
+ *   chat opens.
  * - Buy Ticket: opens the buy ticket flow (CheckoutFlow; decisions 22 Oct).
- * - Photo -> full-size viewer. Host / community person -> profile panel
+ * - Photo -> full-size viewer. "Hosted by" tag -> profile panel (community
+ *   people are not clickable, decision 22 Oct)
  *   (desktop: side panel; phones: full screen). Invite Friend -> share.
  * - Copy icon -> copies the address, "Address copied".
  * Copy: "About Hangout" -> "About Event" (Hangouts -> Events rule).
@@ -130,7 +131,7 @@ onBeforeUnmount(() => { hideHeaderOnPhone.value = false })
       </UiButton>
     </div>
 
-    <EventGallery class="event-page__gallery" :photos="event.photos" :title="event.title" @open="viewerIndex = $event" />
+    <EventGallery class="event-page__gallery" :photos="event.photos" :title="event.title" :event-id="event.id" @open="viewerIndex = $event" />
 
     <div class="event-page__body">
       <div class="event-page__intro">
@@ -151,7 +152,7 @@ onBeforeUnmount(() => { hideHeaderOnPhone.value = false })
 
       <EventJoinCard v-if="!inChat" class="event-page__join-card" :busy="joining" @join="join" />
 
-      <EventCommunity class="event-page__community" :members="event.members" :count="event.communityCount" @profile="openProfile" @invite="invite" />
+      <EventCommunity class="event-page__community" :members="event.members" :count="event.communityCount" @invite="invite" />
 
       <hr class="event-page__line" />
 
@@ -170,9 +171,11 @@ onBeforeUnmount(() => { hideHeaderOnPhone.value = false })
     />
 
     <!-- Profile: side panel on desktop, full screen on phones -->
-    <div v-if="profile" class="event-page__profile-backdrop" @click.self="closeProfile">
-      <ChatProfilePanel ref="profilePanel" class="event-page__profile" :profile="profile" back-label="Back to event" @close="closeProfile" />
-    </div>
+    <Transition name="event-page-profile">
+      <div v-if="profile" class="event-page__profile-backdrop" @click.self="closeProfile">
+        <ChatProfilePanel ref="profilePanel" class="event-page__profile" :profile="profile" back-label="Back to event" @close="closeProfile" />
+      </div>
+    </Transition>
 
     <CheckoutFlow
       v-model:quantities="quantities"
@@ -248,6 +251,24 @@ onBeforeUnmount(() => { hideHeaderOnPhone.value = false })
   background: var(--color-photo-scrim);
 }
 .event-page__profile { width: 100%; height: 100%; }
+/* Motion (decision 22 Oct): the scrim fades, the panel slides in 16px from
+   the right. "Reduce motion": fade only. */
+.event-page-profile-enter-active,
+.event-page-profile-enter-active .event-page__profile {
+  transition: opacity var(--duration-popup-in) var(--ease-out-strong), transform var(--duration-popup-in) var(--ease-out-strong);
+}
+.event-page-profile-leave-active,
+.event-page-profile-leave-active .event-page__profile {
+  transition: opacity var(--duration-popup-out) var(--ease-out-strong), transform var(--duration-popup-out) var(--ease-out-strong);
+}
+.event-page-profile-enter-from,
+.event-page-profile-leave-to { opacity: 0; }
+.event-page-profile-enter-from .event-page__profile,
+.event-page-profile-leave-to .event-page__profile { transform: translateX(var(--distance-panel-in)); }
+@media (prefers-reduced-motion: reduce) {
+  .event-page-profile-enter-from .event-page__profile,
+  .event-page-profile-leave-to .event-page__profile { transform: none; }
+}
 
 .event-page--missing { align-items: flex-start; gap: var(--spacing-md); min-height: 50vh; }
 .event-page--missing h1,

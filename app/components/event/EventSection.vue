@@ -25,7 +25,7 @@ const headingId = useId()
       <slot name="action" />
     </div>
     <div class="event-section__row">
-      <EventCard v-for="event in events" :key="event.id" :event="event" :size="cardSize" class="event-section__card" />
+      <EventCard v-for="event in events" :key="event.id" :event="event" :size="cardSize" :morph-source="title" class="event-section__card" />
     </div>
   </section>
 </template>

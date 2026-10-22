@@ -11,7 +11,9 @@
  * title Web Body bold, date Web Small Grey_3; rows have 16px above and below.
  * The ">" arrow Figma shows on each row is removed (decision 21 Oct). The panel scrolls on its own.
  * Copy change (decision 21 Oct): "Hangouts" -> "Events".
- * OPEN ITEM: event rows have no destination yet (not links).
+ * Events: real demo events with their fliers (decision 22 Oct; Figma's
+ * sample list had no images). OPEN ITEM: event rows have no destination yet
+ * (not links).
  *
  * Phones (< 768px, Figma "iPhone 13 mini - 118"): full screen; the photo runs
  * edge to edge (375 x 334 ratio, no corners) with a back arrow (36px soft grey
@@ -161,7 +163,7 @@ function onKeydown(e: KeyboardEvent) {
   border-radius: var(--radius-md);
   background: var(--color-placeholder-media);
 }
-.chat-profile__event-photo img { width: 100%; height: 100%; object-fit: cover; }
+.chat-profile__event-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .chat-profile__event-text { display: flex; flex: 1; flex-direction: column; gap: var(--spacing-xs); min-width: 0; }
 .chat-profile__event-title {
   overflow: hidden;

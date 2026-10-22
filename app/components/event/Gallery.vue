@@ -38,7 +38,15 @@
  * photo is a button).
  * FLAG: Figma has hidden "Party" and "1/3" chips on some photos; not shown.
  */
-const props = defineProps<{ photos: string[]; title: string }>()
+const props = defineProps<{
+  photos: string[]
+  title: string
+  /** The flier tile carries the shared name so the clicked card's photo
+      grows into it (useEventMorph, decision 22 Oct) */
+  eventId?: string
+}>()
+const morph = useEventMorph()
+const morphStyle = computed(() => (props.eventId ? morph.pageStyle(props.eventId) : undefined))
 const emit = defineEmits<{ open: [index: number] }>()
 
 const phone = usePhoneLayout()
@@ -161,7 +169,7 @@ onBeforeUnmount(() => resize?.disconnect())
   <section class="event-gallery" :aria-label="`Photos of ${title}`">
     <!-- Phones, 1 photo: centred portrait -->
     <div v-if="layout === 'phone-one'" class="event-gallery__single">
-      <button type="button" class="event-gallery__tile event-gallery__tile--faded" :aria-label="label(0)" @click="emit('open', 0)">
+      <button type="button" class="event-gallery__tile event-gallery__tile--faded img-zoom" :style="morphStyle" :aria-label="label(0)" @click="emit('open', 0)">
         <img v-if="photos[0]" :src="photos[0]" alt="" draggable="false" />
       </button>
     </div>
@@ -172,18 +180,19 @@ onBeforeUnmount(() => resize?.disconnect())
       <button
         v-if="photos[0]"
         type="button"
-        class="event-gallery__tile event-gallery__lead"
+        class="event-gallery__tile event-gallery__lead img-zoom"
+        :style="morphStyle"
         :aria-label="label(0)"
         @click="emit('open', 0)"
       >
         <img :src="photos[0]" alt="" draggable="false" />
       </button>
       <span v-else class="event-gallery__tile event-gallery__lead" aria-hidden="true" />
-      <button v-if="layout === 'two'" type="button" class="event-gallery__tile event-gallery__lead" :aria-label="label(1)" @click="emit('open', 1)">
+      <button v-if="layout === 'two'" type="button" class="event-gallery__tile event-gallery__lead img-zoom" :aria-label="label(1)" @click="emit('open', 1)">
         <img :src="photos[1]" alt="" draggable="false" />
       </button>
       <span v-if="layout === 'three'" class="event-gallery__pair">
-        <button v-for="i in [1, 2]" :key="i" type="button" class="event-gallery__tile" :aria-label="label(i)" @click="emit('open', i)">
+        <button v-for="i in [1, 2]" :key="i" type="button" class="event-gallery__tile img-zoom" :aria-label="label(i)" @click="emit('open', i)">
           <img :src="photos[i]" alt="" draggable="false" />
         </button>
       </span>
@@ -201,7 +210,8 @@ onBeforeUnmount(() => resize?.disconnect())
             <button
               v-if="t.kind === 'photo'"
               type="button"
-              class="event-gallery__tile"
+              class="event-gallery__tile img-zoom"
+              :style="t.index === 0 ? morphStyle : undefined"
               :aria-label="label(t.index)"
               @click="emit('open', t.index)"
             >
