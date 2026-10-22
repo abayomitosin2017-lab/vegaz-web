@@ -10,6 +10,7 @@
  *   the right, which stays in view while scrolling (decision 22 Oct).
  * Phones and tablets (< 1024px, Figma phone frames; tablet decision 22 Oct):
  *   one column, sections 40px apart, in this order: title, gallery, facts +
+ *   (phones: gallery first, then the title 24px below; decision 22 Oct),
  *   host, tickets, About, What to expect, "Not ready to buy a ticket?" card,
  *   Community, line, app banner. Once a ticket is picked a bar with the total
  *   and Buy Ticket stays at the bottom of the screen.
@@ -114,7 +115,7 @@ onBeforeUnmount(() => { hideHeaderOnPhone.value = false })
       </UiButton>
     </div>
 
-    <EventGallery :photos="event.photos" :title="event.title" @open="viewerIndex = $event" />
+    <EventGallery class="event-page__gallery" :photos="event.photos" :title="event.title" @open="viewerIndex = $event" />
 
     <div class="event-page__body">
       <div class="event-page__intro">
@@ -200,6 +201,17 @@ onBeforeUnmount(() => { hideHeaderOnPhone.value = false })
 .event-page__section-title { margin: 0; color: var(--color-text-primary); }
 .event-page__about-text { margin: 0; color: var(--color-text-secondary); white-space: pre-line; }
 .event-page__line { width: 100%; margin: 0; border: 0; border-top: var(--border-width-default) solid var(--color-border-default); }
+
+/* Phones: the title sits under the photos, 24px below, with the details
+   (address, date, price) 24px under it (decisions 22 Oct; Figma has the
+   title above the photos). */
+@media (max-width: 767px) {
+  .event-page__gallery { order: -1; }
+  .event-page__top {
+    margin-top: calc(var(--spacing-lg) - var(--spacing-2xl));
+    margin-bottom: calc(var(--spacing-lg) - var(--spacing-2xl));
+  }
+}
 
 /* Profile: full screen on phones */
 .event-page__profile-backdrop {

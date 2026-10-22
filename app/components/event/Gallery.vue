@@ -4,27 +4,33 @@
  * design 22 Oct, node 10724:67468). The flier is always the first photo.
  * Tapping a photo emits `open` with its index (the page opens the viewer).
  *
- * Desktop/tablet (decision 22 Oct):
+ * Every photo tile is square (decision 22 Oct, replaces Figma's 300 x 408,
+ * 300 x 354 and 144 x 171). Small tiles are half a big one minus the gap.
+ *
+ * Desktop/tablet:
  *   1-3 photos: centred on a band filled with the flier, heavily blurred
  *   (25px) under a 50% black layer, radius 24, 24px padding.
- *     1: the flier, 300 x 408
- *     2: two 300 x 408, 16px apart
- *     3: the flier 300 x 354, then two 144 x 171 stacked (12px apart), 16px gap
- *   4+ photos: a strip 354px tall that scrolls sideways:
- *     flier 300 x 354 | 2 x 2 group (144 x 171 each) | 354 square | 2 x 2 ...
+ *     1: the flier, 354 square
+ *     2: two 354 squares, 16px apart
+ *     3: the flier 354, then two 171 squares stacked (12px apart), 16px gap
+ *   4+ photos: a strip that scrolls sideways:
+ *     flier 354 | 2 x 2 group (171 each) | 354 square | 2 x 2 ...
  *     Gaps 12, radius 24. Leftovers never leave a 2 x 2 half empty
- *     (1 -> big square, 2 -> two stacked, 3 -> stacked + big square), and
- *     when the photos don't fill the width the blocks widen to the edge
+ *     (1 -> big square, 2 -> two stacked, 3 -> stacked + big square).
+ *     When Figma's order doesn't reach the right edge, the blocks are
+ *     rearranged to fill it with the least growth (up to 30% taller,
+ *     squares stay square), otherwise to scroll as little as possible
  *     (decision 22 Oct).
- * Phones (decision 22 Oct): never the blurred band; all tiles square.
+ * Phones (decision 22 Oct): never the blurred band.
  *   1-3 photos (arrangement from Figma 7335:7422), radius 24, no
  *   "Open Gallery" tile:
  *     1: one 300px square, centred
  *     2: two 300px squares, 12px apart, scrolling sideways
  *     3: a 300px square + two 144px squares stacked, scrolling sideways
- *   4+ photos (Figma phone frame): 196px strip, 196 big and 94 small
- *     squares, gaps 8, radius 12, ending with the "Open Gallery" tile
- *     (three tilted thumbnails + label), which opens the viewer.
+ *   4+ photos: 240px strip (Figma 196, enlarged by decision 22 Oct), 240
+ *     big and 116 small squares, gaps 8, radius 12, ending with the
+ *     "Open Gallery" tile (three tilted thumbnails + label), which opens
+ *     the viewer.
  *   Photos darken slightly toward the bottom (Figma phone frames).
  *
  * Not in Figma (proposed): round previous/next buttons on desktop when the
@@ -40,29 +46,62 @@ const phone = usePhoneLayout()
 type Tile = { kind: 'photo'; src: string; index: number } | { kind: 'more' }
 type Group = { kind: 'lead' | 'big' | 'quad' | 'stack'; tiles: Tile[] }
 
+type Kind = 'quad' | 'big' | 'stack'
+const SIZE: Record<Kind, number> = { quad: 4, big: 1, stack: 2 }
+
+/** Figma order after the flier: 2 x 2, big, 2 x 2, big ... Leftovers never
+ *  leave a 2 x 2 half empty: 1 -> big, 2 -> stacked, 3 -> stacked + big. */
+function figmaOrder(k: number): Kind[] {
+  const out: Kind[] = []
+  for (let p = 0; k > 0; p++) {
+    if (p % 2) { out.push('big'); k -= 1; continue }
+    if (k >= 4) { out.push('quad'); k -= 4 } else if (k === 1) { out.push('big'); k = 0 } else { out.push('stack'); k -= 2; if (k) { out.push('big'); k = 0 } }
+  }
+  return out
+}
+
+// Desktop/tablet: the strip is as wide as the page column (measured below)
+const stripWidth = ref(0)
+const BASE = 354
+const MAX_GROW = 1.3 // the strip may grow up to 30% taller to reach the edge
+/** Height the strip needs so `kinds` (after the flier) end at the right edge */
+function fillHeightFor(kinds: Kind[], width: number, gap: number) {
+  const n = kinds.length + 1
+  const stacks = kinds.filter(k => k === 'stack').length
+  return (width - (n - 1) * gap + (stacks * gap) / 2) / (n - stacks / 2)
+}
+/** Every way to split k photos into blocks (k is small when this matters) */
+function arrangements(k: number, prefix: Kind[] = [], out: Kind[][] = []): Kind[][] {
+  if (k === 0) { out.push(prefix); return out }
+  if (out.length > 400) return out
+  for (const kind of ['quad', 'big', 'stack'] as Kind[]) if (SIZE[kind] <= k) arrangements(k - SIZE[kind], [...prefix, kind], out)
+  return out
+}
+/** Desktop/tablet (decision 22 Oct): keep Figma's order when it already
+ *  reaches the edge; otherwise pick the arrangement that fills the width with
+ *  the least growth (at most 30%); failing that, the one that scrolls least. */
+function desktopOrder(k: number, width: number, gap: number): Kind[] {
+  const figma = figmaOrder(k)
+  if (!width || fillHeightFor(figma, width, gap) <= BASE) return figma
+  const repeats = (a: Kind[]) => a.filter((x, i) => i > 0 && x === a[i - 1]).length
+  const scored = arrangements(k).map(a => ({ a, h: fillHeightFor(a, width, gap), r: repeats(a) }))
+  const fits = scored.filter(c => c.h >= BASE && c.h <= BASE * MAX_GROW).sort((x, y) => x.r - y.r || x.h - y.h)
+  if (fits.length) return fits[0]!.a
+  const scrolls = scored.filter(c => c.h < BASE).sort((x, y) => x.r - y.r || y.h - x.h)
+  return scrolls[0]?.a ?? figma
+}
+
 const groups = computed<Group[]>(() => {
   const tiles: Tile[] = props.photos.map((src, index) => ({ kind: 'photo', src, index }))
   // Phones with 2-3 photos: big square(s), or a big square + two stacked
   if (phone.value && tiles.length === 2) return tiles.map(t => ({ kind: 'big', tiles: [t] }))
   if (phone.value && tiles.length === 3) return [{ kind: 'big', tiles: [tiles[0]!] }, { kind: 'stack', tiles: tiles.slice(1) }]
   if (phone.value) tiles.push({ kind: 'more' })
-  // flier, then 2 x 2 groups and big squares in turn
+  const rest = tiles.length - 1
+  const kinds = phone.value ? figmaOrder(rest) : desktopOrder(rest, stripWidth.value, 12)
   const out: Group[] = [{ kind: 'lead', tiles: tiles.slice(0, 1) }]
   let i = 1
-  for (let p = 0; i < tiles.length; p++) {
-    const kind = p % 2 === 0 ? 'quad' : 'big'
-    const take = tiles.slice(i, i + (kind === 'quad' ? 4 : 1))
-    i += take.length
-    // Never leave a 2 x 2 block half empty (decision 22 Oct):
-    // 1 left -> big square, 2 -> two stacked, 3 -> two stacked + big square
-    if (kind === 'quad' && take.length < 4) {
-      if (take.length === 1) out.push({ kind: 'big', tiles: take })
-      else out.push({ kind: 'stack', tiles: take.slice(0, 2) })
-      if (take.length === 3) out.push({ kind: 'big', tiles: take.slice(2) })
-      continue
-    }
-    out.push({ kind, tiles: take })
-  }
+  for (const kind of kinds) { out.push({ kind, tiles: tiles.slice(i, i + SIZE[kind]) }); i += SIZE[kind] }
   return out
 })
 
@@ -93,15 +132,28 @@ function scrollBy(dir: 1 | -1) {
   const el = strip.value
   if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: 'smooth' })
 }
+// Desktop/tablet: grow the strip (squares stay square) until it reaches the
+// right edge. A group is 1 big square wide; a stack is half of one.
+const fillHeight = ref<number | null>(null)
+function updateFill() {
+  const el = strip.value
+  if (!el || phone.value) { fillHeight.value = null; return }
+  const gap = parseFloat(getComputedStyle(el).columnGap) || 0
+  stripWidth.value = el.clientWidth // may change the arrangement (groups)
+  const kinds = groups.value.slice(1).map(g => g.kind as Kind)
+  const h = fillHeightFor(kinds, el.clientWidth, gap)
+  fillHeight.value = h > BASE + 0.5 ? Math.floor(h * 100) / 100 : null
+}
 let resize: ResizeObserver | undefined
 onMounted(() => {
+  updateFill()
   updateArrows()
   if (strip.value) {
-    resize = new ResizeObserver(updateArrows)
+    resize = new ResizeObserver(() => { updateFill(); updateArrows() })
     resize.observe(strip.value)
   }
 })
-watch(() => [props.photos.length, phone.value], () => nextTick(updateArrows))
+watch(() => [props.photos.length, phone.value], () => nextTick(() => { updateFill(); nextTick(updateArrows) }))
 onBeforeUnmount(() => resize?.disconnect())
 </script>
 
@@ -138,7 +190,11 @@ onBeforeUnmount(() => resize?.disconnect())
     </div>
 
     <!-- 4+ photos: sideways strip -->
-    <div v-else :class="['event-gallery__viewport', { 'event-gallery__viewport--tall': tall }]">
+    <div
+      v-else
+      :class="['event-gallery__viewport', { 'event-gallery__viewport--tall': tall }]"
+      :style="fillHeight ? { '--gallery-height': `${fillHeight}px` } : undefined"
+    >
       <div ref="strip" class="event-gallery__strip" @scroll.passive="updateArrows">
         <div v-for="(g, gi) in groups" :key="gi" :class="['event-gallery__group', `event-gallery__group--${g.kind}`]">
           <template v-for="(t, ti) in g.tiles" :key="ti">
@@ -172,14 +228,20 @@ onBeforeUnmount(() => resize?.disconnect())
 
 <style scoped>
 .event-gallery {
-  /* Desktop sizes (Figma 10724:67468) */
-  --gallery-height: 354px;
-  --gallery-lead: 300px;      /* flier width in the strip */
-  --gallery-col: 144px;       /* 2 x 2 group column */
+  /* Desktop sizes (Figma 10724:67468, made square by decision 22 Oct) */
+  --gallery-base: 354px;      /* big square; the strip never gets shorter */
+  --gallery-height: var(--gallery-base);
   --gallery-gap: var(--spacing-sm);
   --gallery-radius: var(--radius-lg);
   width: 100%;
   min-width: 0;
+}
+
+/* Derived sizes: flier = big square; small = half a big one minus the gap */
+.event-gallery,
+.event-gallery__viewport {
+  --gallery-lead: var(--gallery-height);
+  --gallery-col: calc((var(--gallery-height) - var(--gallery-gap)) / 2);
 }
 
 .event-gallery__tile {
@@ -227,14 +289,14 @@ onBeforeUnmount(() => resize?.disconnect())
   object-fit: cover;
   filter: blur(25px) brightness(0.5); /* Figma: 25px blur under 50% black */
 }
-.event-gallery__lead { flex: 0 1 var(--gallery-lead); aspect-ratio: 300 / 408; }
-.event-gallery__band--three .event-gallery__lead { aspect-ratio: 300 / 354; }
+.event-gallery__lead { flex: 0 1 var(--gallery-lead); aspect-ratio: 1; }
 .event-gallery__pair {
   flex: 0 1 var(--gallery-col);
   display: grid;
   grid-template-rows: 1fr 1fr;
-  gap: var(--spacing-sm);
+  gap: var(--gallery-gap);
 }
+.event-gallery__pair .event-gallery__tile { aspect-ratio: 1; }
 
 /* ---- 4+ photos: sideways strip ---- */
 .event-gallery__viewport { position: relative; }
@@ -251,24 +313,14 @@ onBeforeUnmount(() => resize?.disconnect())
 .event-gallery__group { flex: none; display: grid; gap: var(--gallery-gap); scroll-snap-align: start; }
 .event-gallery__group--lead { width: var(--gallery-lead); }
 .event-gallery__group--big { width: var(--gallery-height); }
+/* the photo button fills its group */
+.event-gallery__group--lead > .event-gallery__tile,
+.event-gallery__group--big > .event-gallery__tile { height: 100%; }
 .event-gallery__group--stack { width: var(--gallery-col); grid-template-rows: 1fr 1fr; }
 .event-gallery__group--quad {
   grid-template-columns: repeat(2, var(--gallery-col));
   grid-template-rows: 1fr 1fr;
   grid-auto-flow: column; /* fills column by column, like Figma */
-}
-
-/* Desktop/tablet: when the photos don't fill the width, every block widens in
-   proportion so the strip always reaches the right edge (decision 22 Oct).
-   With enough photos to scroll, nothing grows and Figma sizes are kept. */
-@media (min-width: 768px) {
-  .event-gallery__group--lead { flex: 300 0 var(--gallery-lead); width: auto; }
-  .event-gallery__group--big { flex: 354 0 var(--gallery-height); width: auto; }
-  .event-gallery__group--stack { flex: 144 0 var(--gallery-col); width: auto; }
-  .event-gallery__group--quad {
-    flex: 300 0 calc(2 * var(--gallery-col) + var(--gallery-gap));
-    grid-template-columns: 1fr 1fr;
-  }
 }
 
 /* "Open Gallery" tile (phones, Figma) */
@@ -320,16 +372,13 @@ onBeforeUnmount(() => resize?.disconnect())
 /* ---- Phones (< 768px) ---- */
 @media (max-width: 767px) {
   .event-gallery {
-    --gallery-height: 196px;  /* Figma phone frame: all tiles square */
-    --gallery-lead: var(--gallery-height);
-    --gallery-col: 94px;
+    --gallery-base: 240px;    /* Figma 196, enlarged (decision 22 Oct); small = 116 */
     --gallery-gap: var(--spacing-xs);
     --gallery-radius: var(--radius-md);
   }
-  /* 2-3 photos: taller strip (Figma 7335:7422) */
+  /* 2-3 photos: taller strip (Figma 7335:7422): 300 + two 144 */
   .event-gallery__viewport--tall {
     --gallery-height: 300px;
-    --gallery-col: 144px;
     --gallery-gap: var(--spacing-sm);
     --gallery-radius: var(--radius-lg);
   }

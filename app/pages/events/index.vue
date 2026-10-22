@@ -5,7 +5,8 @@
  *   - "Back to Home" link (chat arrow icon + Web Small semibold, Primary)
  *   - Title: page title style + count in Grey_2, like "Community (24)"
  *   - Every event as a small EventCard in a grid, 16px gaps:
- *     phones 2 per row, tablet (768-1023) 4, desktop 5 (as on Home)
+ *     phones 1 per row, full width (decision 22 Oct: bigger images),
+ *     tablet (768-1023) 4, desktop 5 (as on Home)
  *   - Page padding matches Home
  * OPEN ITEMS: order, paging/infinite scroll, filters (by category or date).
  */
@@ -67,7 +68,7 @@ useHead({ title: 'All events · Vegaz' })
 .all-events__count { font-weight: var(--font-weight-regular); color: var(--color-text-secondary); }
 .all-events__grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr); /* phones: one card per row */
   gap: var(--spacing-xl) var(--spacing-md);
   margin: 0;
   padding: 0;

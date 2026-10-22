@@ -41,6 +41,7 @@ then opens the app in your browser. Keep the Terminal window open while previewi
 | Event page             | Click any home card, a chat's title, or search (e.g. "party") in the header          |
 | Join an event's chat   | Event page → **Join Community - Free** (asks you to log in first)                    |
 | Component preview      | `/dev/components` (ticket option card; not linked from the app)                      |
+| Gallery stress test    | `/dev/gallery?n=7` (event gallery with 1–20 photos; not linked from the app)         |
 
 Sign-in is kept in memory only: **reloading the page signs you out**.
 
@@ -58,6 +59,7 @@ app/
     events/index.vue      All events (Home "Explore all"; not in Figma)
     events/[id].vue       Event details (Figma section "event details")
     dev/components.vue    internal component preview (remove or protect before release)
+    dev/gallery.vue       gallery with any number of photos, for testing (dev only)
 
   components/             auto-imported; the folder becomes the name prefix
     ui/                   design-system building blocks: UiButton, UiInput, UiModal,
@@ -97,6 +99,7 @@ public/images/            icons and images
   events/                 event fliers (placeholder event images)
   event/                  event page icons (exported from Figma)
   expect/                 "What to expect" photos
+  event-photos/           event gallery photos (free stock photos, Pexels)
   placeholders/           placeholder photos of people (avatars, chat photos)
 
 DECISIONS.md              log of every design/engineering decision, flag and open item

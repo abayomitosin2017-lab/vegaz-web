@@ -368,10 +368,22 @@ Route: `/events/<event id>` (`app/pages/events/[id].vue`). Opened from home even
 
 ## 22 Oct (later): gallery fill, All events page, phone header arrow
 
-**Gallery (desktop/tablet strip, decision).** The strip always reaches the right edge: when the photos don't fill the width, every block widens in proportion (with enough photos to scroll, Figma sizes are kept). A 2 × 2 block is never left half empty: 1 leftover photo → a big square, 2 → two stacked, 3 → two stacked + a big square.
+**Gallery (desktop/tablet strip, decision).** The strip always reaches the right edge (how: see "Filling the width" below, which replaced stretching the blocks). A 2 × 2 block is never left half empty: 1 leftover photo → a big square, 2 → two stacked, 3 → two stacked + a big square.
 
-**Gallery photos (decision, in progress).** Extra photos after the flier will be free stock photos (Pexels) matching each flier's theme, chosen and supplied by design; the number varies per event (0–6 extra) so every layout appears. Until they arrive, the placeholder portraits stay.
+**Gallery photos.** Done: see "Gallery photos (decision)" below.
 
-**All events page** (`/events`, decision). Home "Explore all" opens a page with every event card; "Back to Home" returns. NOT IN FIGMA (proposed): "Back to Home" link, title "All events (19)", grid of small event cards (phones 2 per row, tablet 4, desktop 5), Home's page padding. Also pointed here (proposed): the hero "Explore Events" button, the footer "Explore Events" link, and the "Explore events" buttons on the empty chat and event-not-found screens. Open items: order, paging, filters.
+**All events page** (`/events`, decision). Home "Explore all" opens a page with every event card; "Back to Home" returns. NOT IN FIGMA (proposed): "Back to Home" link, title "All events (19)", grid of small event cards (phones 1 per row since the later update, tablet 4, desktop 5), Home's page padding. Also pointed here (proposed): the hero "Explore Events" button, the footer "Explore Events" link, and the "Explore events" buttons on the empty chat and event-not-found screens. Open items: order, paging, filters.
 
 **Phone header (decision).** The desktop down arrow (16px) now sits beside the profile photo on phones, 4px gap (proposed spacing). The button is now 60 × 40, which also fixes the earlier tap-size flag.
+
+## 22 Oct (later): real gallery photos, square tiles, phone tweaks
+
+**Gallery photos (decision).** 30 free stock photos supplied by design (Pexels), cropped to 800px squares in `public/images/event-photos/`, follow each event's flier (0–5 per event, matched to the flier's theme). The placeholder portraits are no longer used in galleries.
+
+**Square everywhere (decision; replaces Figma's 300 × 408, 300 × 354 and 144 × 171).** Desktop/tablet: flier and big tiles 354, small tiles 171 (half a big tile minus the 12px gap); 1–3 photos sit on the blurred flier band as 354 squares (3 = 354 + two 171 stacked). Phones: 4+ photo strip enlarged from Figma's 196 to 240 (small 116) to show more of each photo; 1–3 photo layouts unchanged (300 / 144).
+
+**Filling the width (decision, refines the earlier rule).** Desktop/tablet strip: when Figma's order (2 × 2, big, 2 × 2 …) doesn't reach the right edge, the blocks are rearranged to fill it with the least growth (strip up to 30% taller, squares stay square); if no arrangement fits, the one that scrolls least is used. Never a half-empty 2 × 2.
+
+**Phones (decision).** Event page: the title sits under the photos (24px gap; Figma has it above), and the details (address, date, price) start 24px under the title (was 40). All events page: one card per row, full width.
+
+**Testing.** `/dev/gallery?n=1…20` (dev only) shows the gallery with any number of photos. Checked automatically at 15 widths (320–1920) × 1–20 photos: every tile square, all photos present and loaded, no half-empty 2 × 2, strip reaches the edge or scrolls, no sideways page scroll (2,212 checks, all passing). Every event page checked at 320 / 375 / 800 / 1440: photo count, square tiles, title position, images load (384 checks).

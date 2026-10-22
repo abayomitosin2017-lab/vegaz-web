@@ -2,8 +2,8 @@
  * Placeholder photos of people, from Figma frame 10687:56254 ("Profiles",
  * 42 round 80px portraits; 24 are used, one was left out as unsuitable).
  * Used for: avatars (decision 21 Oct), the profile-panel photo, and the demo
- * photos sent in chat (decision 22 Oct), and the extra event gallery photos
- * after each flier (decision 22 Oct, eventCatalog.ts).
+ * photos sent in chat (decision 22 Oct). Event gallery photos are stock
+ * photos in public/images/event-photos/ instead (decision 22 Oct).
  *
  * FLAG: the Figma download returned 403, so these are 80 x 80 screenshots of
  * each node. Sharp at avatar sizes (32-48px); soft on the large profile
@@ -52,9 +52,4 @@ export function placeholderPhoto(n: number): string {
 /** The square version of a round placeholder (profile panel, chat photos) */
 export function toSquare(avatarUrl?: string): string | undefined {
   return PORTRAITS.find(([round]) => round === avatarUrl)?.[1] ?? avatarUrl
-}
-
-/** Square portrait n (1-24, wraps): demo event photos and chat photos */
-export function placeholderSquare(n: number): string {
-  return toSquare(placeholderPhoto(n))!
 }
