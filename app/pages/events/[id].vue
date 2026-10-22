@@ -165,7 +165,7 @@ onBeforeUnmount(() => { hideHeaderOnPhone.value = false })
   <div v-else class="event-page event-page--missing">
     <h1 class="text-section-title">This event couldn’t be found</h1>
     <p class="text-body-regular">It may have ended or been removed.</p>
-    <UiButton text-style="web" @click="navigateTo('/')">Explore events</UiButton>
+    <UiButton text-style="web" @click="navigateTo('/events')">Explore events</UiButton>
   </div>
 </template>
 

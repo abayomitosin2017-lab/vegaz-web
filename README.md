@@ -37,6 +37,7 @@ then opens the app in your browser. Keep the Terminal window open while previewi
 | Sign up (new user)     | Any other email → code → names → gender → success                                    |
 | Wrong code             | `000000` shows the error state                                                       |
 | Chat                   | Profile menu → **Chat** (only Esther has chats; new sign-ups see the empty state)     |
+| All events             | Home → **Explore all** (or the footer's "Explore Events")                           |
 | Event page             | Click any home card, a chat's title, or search (e.g. "party") in the header          |
 | Join an event's chat   | Event page → **Join Community - Free** (asks you to log in first)                    |
 | Component preview      | `/dev/components` (ticket option card; not linked from the app)                      |
@@ -54,6 +55,7 @@ app/
   pages/
     index.vue             Home (Figma "Desktop - 29")
     chat.vue              Chats (Figma section "chat"); signed-in only
+    events/index.vue      All events (Home "Explore all"; not in Figma)
     events/[id].vue       Event details (Figma section "event details")
     dev/components.vue    internal component preview (remove or protect before release)
 

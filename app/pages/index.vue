@@ -13,7 +13,7 @@ const { data: events } = await useAsyncData('home-events', getHomeEvents)
 
 <template>
   <div class="home">
-    <HomeHero />
+    <HomeHero @explore="navigateTo('/events')" />
 
     <div v-if="events" class="home__content">
       <EventSection title="Happening this week" :events="events.happeningThisWeek" card-size="small" />
@@ -22,7 +22,7 @@ const { data: events } = await useAsyncData('home-events', getHomeEvents)
       <HomePromoBanners />
       <EventSection title="Explore all events" :events="events.exploreAll" card-size="small">
         <template #action>
-          <UiButton color="secondary" text-style="web">Explore all</UiButton>
+          <UiButton color="secondary" text-style="web" @click="navigateTo('/events')">Explore all</UiButton>
         </template>
       </EventSection>
     </div>

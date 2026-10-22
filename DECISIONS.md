@@ -363,3 +363,15 @@ Route: `/events/<event id>` (`app/pages/events/[id].vue`). Opened from home even
 **Not designed (proposed):** "event not found" message; side-panel profile on desktop; search suggestions list; gallery arrows; disabled Buy Ticket state.
 
 **Open items:** checkout/payment; real event links/URLs; app store links; the attendee list behind "+N Others"; Figma's "Party"/"1/3" chips.
+
+---
+
+## 22 Oct (later): gallery fill, All events page, phone header arrow
+
+**Gallery (desktop/tablet strip, decision).** The strip always reaches the right edge: when the photos don't fill the width, every block widens in proportion (with enough photos to scroll, Figma sizes are kept). A 2 × 2 block is never left half empty: 1 leftover photo → a big square, 2 → two stacked, 3 → two stacked + a big square.
+
+**Gallery photos (decision, in progress).** Extra photos after the flier will be free stock photos (Pexels) matching each flier's theme, chosen and supplied by design; the number varies per event (0–6 extra) so every layout appears. Until they arrive, the placeholder portraits stay.
+
+**All events page** (`/events`, decision). Home "Explore all" opens a page with every event card; "Back to Home" returns. NOT IN FIGMA (proposed): "Back to Home" link, title "All events (19)", grid of small event cards (phones 2 per row, tablet 4, desktop 5), Home's page padding. Also pointed here (proposed): the hero "Explore Events" button, the footer "Explore Events" link, and the "Explore events" buttons on the empty chat and event-not-found screens. Open items: order, paging, filters.
+
+**Phone header (decision).** The desktop down arrow (16px) now sits beside the profile photo on phones, 4px gap (proposed spacing). The button is now 60 × 40, which also fixes the earlier tap-size flag.

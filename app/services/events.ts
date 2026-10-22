@@ -17,6 +17,15 @@ export async function getHomeEvents(): Promise<HomeEvents> {
   return structuredClone(homeEventsMock)
 }
 
+/**
+ * Every event, for the "All events" page (Home -> Explore all).
+ * OPEN ITEM: order, paging and filters (this mock keeps the catalog order).
+ */
+export async function getAllEvents(): Promise<EventSummary[]> {
+  await wait()
+  return catalog.map(({ event: { id, title, location, dateLabel, category, imageUrl } }) => ({ id, title, location, dateLabel, category, imageUrl }))
+}
+
 /** One event for the details page; null when it doesn't exist */
 export async function getEvent(id: string): Promise<EventDetails | null> {
   await wait()

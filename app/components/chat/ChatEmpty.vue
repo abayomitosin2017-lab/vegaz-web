@@ -26,7 +26,7 @@ const copy = computed(() =>
       <h2 class="chat-empty__title">{{ copy.title }}</h2>
       <p class="chat-empty__body text-small-regular">{{ copy.body }}</p>
     </div>
-    <UiButton v-if="variant === 'none'" text-style="web" @click="navigateTo('/')">Explore events</UiButton>
+    <UiButton v-if="variant === 'none'" text-style="web" @click="navigateTo('/events')">Explore events</UiButton>
   </section>
 </template>
 

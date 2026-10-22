@@ -12,7 +12,10 @@
  *     3: the flier 300 x 354, then two 144 x 171 stacked (12px apart), 16px gap
  *   4+ photos: a strip 354px tall that scrolls sideways:
  *     flier 300 x 354 | 2 x 2 group (144 x 171 each) | 354 square | 2 x 2 ...
- *     Gaps 12, radius 24.
+ *     Gaps 12, radius 24. Leftovers never leave a 2 x 2 half empty
+ *     (1 -> big square, 2 -> two stacked, 3 -> stacked + big square), and
+ *     when the photos don't fill the width the blocks widen to the edge
+ *     (decision 22 Oct).
  * Phones (decision 22 Oct): never the blurred band; all tiles square.
  *   1-3 photos (arrangement from Figma 7335:7422), radius 24, no
  *   "Open Gallery" tile:
@@ -50,6 +53,14 @@ const groups = computed<Group[]>(() => {
     const kind = p % 2 === 0 ? 'quad' : 'big'
     const take = tiles.slice(i, i + (kind === 'quad' ? 4 : 1))
     i += take.length
+    // Never leave a 2 x 2 block half empty (decision 22 Oct):
+    // 1 left -> big square, 2 -> two stacked, 3 -> two stacked + big square
+    if (kind === 'quad' && take.length < 4) {
+      if (take.length === 1) out.push({ kind: 'big', tiles: take })
+      else out.push({ kind: 'stack', tiles: take.slice(0, 2) })
+      if (take.length === 3) out.push({ kind: 'big', tiles: take.slice(2) })
+      continue
+    }
     out.push({ kind, tiles: take })
   }
   return out
@@ -245,6 +256,19 @@ onBeforeUnmount(() => resize?.disconnect())
   grid-template-columns: repeat(2, var(--gallery-col));
   grid-template-rows: 1fr 1fr;
   grid-auto-flow: column; /* fills column by column, like Figma */
+}
+
+/* Desktop/tablet: when the photos don't fill the width, every block widens in
+   proportion so the strip always reaches the right edge (decision 22 Oct).
+   With enough photos to scroll, nothing grows and Figma sizes are kept. */
+@media (min-width: 768px) {
+  .event-gallery__group--lead { flex: 300 0 var(--gallery-lead); width: auto; }
+  .event-gallery__group--big { flex: 354 0 var(--gallery-height); width: auto; }
+  .event-gallery__group--stack { flex: 144 0 var(--gallery-col); width: auto; }
+  .event-gallery__group--quad {
+    flex: 300 0 calc(2 * var(--gallery-col) + var(--gallery-gap));
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 /* "Open Gallery" tile (phones, Figma) */

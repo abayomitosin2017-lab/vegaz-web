@@ -1,6 +1,7 @@
 /**
  * Footer content, copied exactly from Figma Footer (node 9864:56123).
- * OPEN ITEM: every `href` is a placeholder ('#'). Real routes and social
+ * "Explore Events" opens the All events page (decision 22 Oct).
+ * OPEN ITEM: every other `href` is a placeholder ('#'). Real routes and social
  * URLs are not in Figma and must be supplied.
  * FLAG: "X Formerly Twitter)" is missing its opening bracket in Figma.
  * Kept as designed until design confirms.
@@ -12,7 +13,7 @@ export const footerColumns: FooterColumn[] = [
   {
     heading: 'Discover',
     links: [
-      { label: 'Explore Events', href: '#' },
+      { label: 'Explore Events', href: '/events' },
       { label: 'Create an Event', href: '#' },
       { label: 'Hot events right now', href: '#' },
       { label: 'Upcoming events', href: '#' },

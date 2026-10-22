@@ -15,7 +15,8 @@
  * HOME/LOGGED IN/MOBILE 10653:39803):
  *   - desktop: "Host an Event" + profile button (avatar, name, @username,
  *     down arrow); the logo frame is 374px wide so the search stays centred
- *   - mobile: search icon button + 40px avatar button
+ *   - mobile: search icon button + 40px avatar button with the desktop
+ *     down arrow beside it (decision 22 Oct)
  *   Both open the profile menu (UiDropdownMenu, Figma 10653:40453).
  *
  * Search (LayoutSearchBox): typing shows matching events in a list under
@@ -108,6 +109,7 @@ watch(() => route.fullPath, () => { mobileSearchOpen.value = false })
           <template #trigger="{ props: trigger }">
             <button type="button" class="site-header__avatar-button" :aria-label="accountLabel" data-account-trigger v-bind="trigger">
               <UiAvatar :name="user.firstName" :seed="user.username" :src="user.avatarUrl" />
+              <img class="site-header__arrow" src="/images/icon-arrow-down-16.svg" alt="" width="16" height="16" />
             </button>
           </template>
         </UiDropdownMenu>
@@ -244,10 +246,13 @@ watch(() => route.fullPath, () => { mobileSearchOpen.value = false })
 }
 
 /* ---- Signed in ---- */
-/* Mobile: 40px avatar is the menu button (Figma: avatar at 4px inside a 48px row).
-   FLAG: 40px is below the 44px recommended tap size. */
+/* Mobile: 40px avatar + the desktop down arrow is the menu button (Figma:
+   avatar at 4px inside a 48px row; arrow added by decision 22 Oct, 4px gap,
+   proposed). The arrow also widens the tap area past 44px. */
 .site-header__avatar-button {
   display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxs);
   padding: 0;
   border: 0;
   border-radius: var(--radius-full);
