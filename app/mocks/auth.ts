@@ -18,6 +18,8 @@ export const mockExistingAccount: SessionUser = {
   lastName: 'Marie',
   username: 'estiloo',
   avatarUrl: placeholderPhoto(3), // placeholder portrait; new sign-ups keep the letter avatar
+  email: 'johnbade@gmail.com',
+  phone: '08123456789', // demo number (Figma checkout frames)
 }
 export const mockWrongCode = '000000'
 /** Usernames treated as taken (no "taken" state is designed yet) */

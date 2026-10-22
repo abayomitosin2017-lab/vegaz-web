@@ -9,8 +9,10 @@
  * Person (80px wide): 48px photo or letter avatar; the host gets a green
  * "Host" pill (Sub, white, 2px white edge) overlapping the photo by 16px;
  * a 12px gender dot (F pink / M, 2px white edge) at the photo's top right;
- * name x-Small regular #141316 (phones 10/14), one line with "...".
- * Last: "+N Others" (48px #F0F0F0 circle, Body semibold #4E4E4E).
+ * name 14/18 regular #141316 at every width, one line with "..."
+ * (Figma 10713:56670, 22 Oct; was 12/18, phones 10/14).
+ * Last: "+N Others" (48px #F0F0F0 circle, 18/28 semibold #4E4E4E).
+ * Gender letter: 6px Regular (was Light).
  * Tapping a person opens their profile (decision 22 Oct). "+N Others" has no
  * action (no list designed). Row spreads across the column; on phones it
  * scrolls sideways when it doesn't fit.
@@ -48,7 +50,7 @@ const others = computed(() => Math.max(0, props.count - props.members.length))
       </li>
       <li v-if="others" class="event-community__person">
         <span class="event-community__who event-community__who--static">
-          <span class="event-community__more text-body-semibold">+{{ others > 99 ? '99' : others }}</span>
+          <span class="event-community__more">+{{ others > 99 ? '99' : others }}</span>
           <span class="event-community__badge-slot" />
           <span class="event-community__name">Others<span class="visually-hidden"> ({{ others }} more people)</span></span>
         </span>
@@ -125,7 +127,7 @@ const others = computed(() => Math.max(0, props.count - props.members.length))
   box-sizing: border-box;
   color: var(--color-text-inverse);
   font-size: 6px;
-  font-weight: var(--font-weight-light);
+  font-weight: var(--font-weight-regular);
   line-height: 1;
   overflow: hidden;
 }
@@ -135,8 +137,8 @@ const others = computed(() => Math.max(0, props.count - props.members.length))
   width: 100%;
   overflow: hidden;
   color: var(--color-text-field);
-  font-size: 12px;
-  line-height: 18px;
+  font-size: var(--text-member-name-size);
+  line-height: var(--text-member-name-line);
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -153,6 +155,9 @@ const others = computed(() => Math.max(0, props.count - props.members.length))
   box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.08);
   background: var(--color-avatar-more);
   color: var(--color-avatar-more-text);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-member-more-size);
+  line-height: var(--text-member-more-line);
   box-sizing: border-box;
 }
 .visually-hidden {
@@ -173,7 +178,6 @@ const others = computed(() => Math.max(0, props.count - props.members.length))
     scrollbar-width: none;
   }
   .event-community__row::-webkit-scrollbar { display: none; }
-  .event-community__name { font-size: 10px; line-height: 14px; }
 }
 .event-title { margin: 0; color: var(--color-text-primary); }
 </style>

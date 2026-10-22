@@ -39,6 +39,7 @@ then opens the app in your browser. Keep the Terminal window open while previewi
 | Chat                   | Profile menu → **Chat** (only Esther has chats; new sign-ups see the empty state)     |
 | All events             | Home → **Explore all** (or the footer's "Explore Events")                           |
 | Event page             | Click any home card, a chat's title, or search (e.g. "party") in the header          |
+| Buy tickets            | Event page → pick tickets → **Buy Ticket**. Signed out: any email except johnbade@gmail.com asks for your details. Payment is a demo step |
 | Join an event's chat   | Event page → **Join Community - Free** (asks you to log in first)                    |
 | Component preview      | `/dev/components` (ticket option card; not linked from the app)                      |
 | Gallery stress test    | `/dev/gallery?n=7` (event gallery with 1–20 photos; not linked from the app)         |
@@ -71,6 +72,8 @@ app/
                           EventTicketBar, EventExpectList, EventCommunity,
                           EventJoinCard, EventAppBanner
     auth/                 the onboarding steps (AuthOnboardingModal + one file per step)
+    checkout/             the buy ticket flow: CheckoutFlow (steps), CheckoutHeader, CheckoutSelect,
+                          one file per step, CheckoutSuccessView
     chat/                 ChatList, ChatConversation, ChatMessage, ChatComposer,
                           ChatProfilePanel, ChatEmpty
     ticket/               TicketOption (built ahead of the ticket page)
@@ -201,7 +204,8 @@ git push -u origin main
 Collected from the `OPEN ITEM` comments in the code (search for `OPEN ITEM` to find each one).
 
 **Engineering**
-- API endpoints and data shapes for auth, events, chat and tickets (`services/*.ts`, `types/*.ts`).
+- API endpoints and data shapes for auth, events, chat, tickets and checkout (`services/*.ts`, `types/*.ts`).
+- Real Paystack checkout, order creation and ticket emails (`services/checkout.ts`; the demo payment always succeeds).
 - Real session (cookie/token) and restoring it on reload (`composables/useSession.ts`).
 - Chat: real-time delivery, paging older messages, photo upload and limits, read receipts.
 - How each home section ("this week", "hot", "upcoming", "explore all") is chosen.
@@ -211,7 +215,7 @@ Collected from the `OPEN ITEM` comments in the code (search for `OPEN ITEM` to f
 
 **Design**
 - Event search results page (the header search shows a suggestions list for now).
-- Checkout / payment (Buy Ticket has no action yet).
+- RSVP flow for free events (design coming); payment failure and sold-out-mid-checkout states.
 - Destinations for: profile event rows, "+N Others" (attendee list), promo banners, footer links, Edit Profile, Settings,
   My Activities, app store links.
 - Share Event: the public event link, the phone button design, the "Link copied" toast.

@@ -5,8 +5,10 @@
  * Header (photo + title open the event page): 40px event photo (radius 8), 12px gap, title Web Body semibold
  * (black) over "N participants" (Web Small, Grey_3), 16px padding, Grey_5 line
  * under it. Right: "Buy Ticket" (small primary button, Figma update 21 Oct,
- * replaces the "..." button). It does nothing yet (no ticket page): OPEN ITEM.
- * Already have a ticket (chat.hasTicket, decision 21 Oct): "Share Event"
+ * replaces the "..." button). It opens the buy flow at Add Ticket (the chat
+ * page handles it; decision 22 Oct).
+ * Already have a ticket (chat.hasTicket: bought or assigned, worked out from
+ * the tickets held; decisions 21-22 Oct): "Share Event"
  * instead (Figma 10682:52458: secondary Grey_6, 16 / 8 padding, 40px tall,
  * share icon 24, 8px gap, Web Body semibold Grey_1). It opens the device's
  * share sheet; where there is none, it copies the link and shows "Link

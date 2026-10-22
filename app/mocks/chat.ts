@@ -49,17 +49,18 @@ const fromEvent = (eventId: string) => {
 }
 
 export const mockChats: ChatSummary[] = [
-  { id: 'house-party', ...fromEvent('ultimate-party-experience'), lastMessage: { senderFirstName: 'Oreban', text: 'Invite goes out tomorrow.' }, lastAt: at(0, 22, 34), unreadCount: 3, hasTicket: true },
+  { id: 'house-party', ...fromEvent('ultimate-party-experience'), lastMessage: { senderFirstName: 'Oreban', text: 'Invite goes out tomorrow.' }, lastAt: at(0, 22, 34), unreadCount: 3 },
   { id: 'picnic-legacy', ...fromEvent('kindred-anniversary-picnic'), lastMessage: { senderFirstName: 'John', text: 'I’ll bring a picnic blanket.' }, lastAt: at(0, 5, 22), unreadCount: 90 },
-  { id: 'ikorodu-block', ...fromEvent('faaji-at-the-pent'), lastMessage: { senderFirstName: 'Tobi', text: 'Who’s coming on Saturday?' }, lastAt: at(0, 5, 22), unreadCount: 128, hasTicket: true },
+  { id: 'ikorodu-block', ...fromEvent('faaji-at-the-pent'), lastMessage: { senderFirstName: 'Tobi', text: 'Who’s coming on Saturday?' }, lastAt: at(0, 5, 22), unreadCount: 128 },
   { id: 'slides-shots', ...fromEvent('lalale-friday-24-apr'), lastMessage: { senderFirstName: 'Vivian', text: 'I’ll bring the drinks!' }, lastAt: at(1, 18, 0), unreadCount: 2600 },
   { id: 'phelinas', ...fromEvent('all-white-at-the-balkony'), lastMessage: { senderFirstName: 'Ada', text: 'Can I bring a friend?' }, lastAt: '2025-02-02T15:00:00', unreadCount: 0 },
   { id: 'swimming', ...fromEvent('overnight-beach-camping'), lastMessage: { senderFirstName: 'Sandra', text: 'See you at the beach!' }, lastAt: '2025-02-02T09:00:00', unreadCount: 0 },
   { id: 'house-party-2', ...fromEvent('reboot'), lastMessage: { senderFirstName: 'Sam', text: 'Thanks for a great night!' }, lastAt: '2025-01-05T23:00:00', unreadCount: 0 },
 ]
 
-/* hasTicket (above) is demo data: Ultimate Party Experience and Faaji at the
-   Pent show "Share Event". */
+/* Who holds tickets lives in mocks/orders.ts: the demo account holds tickets
+   for Ultimate Party Experience and Faaji at the Pent, so those chats show
+   "Share Event" (services/chat.ts works out hasTicket). */
 
 /** Photos sent in chat (decision 22 Oct): people photos, using the square
  * cut of the Figma portraits. FLAG: 80px sources, so they look soft at chat

@@ -7,6 +7,13 @@
  * (Figma: 375-441px); it is never wider than the screen minus 20px each side
  * (353px on a 393px phone).
  *
+ * Phones (< 768px), `phone` prop:
+ *   center      the card stays centred (onboarding)
+ *   sheet       bottom sheet: full width, top corners 24, padding 24 / 24 /
+ *               40, page dimmed with black at 50% (Figma buy ticket frames)
+ *   fullscreen  the card fills the screen (Figma purchase success)
+ * The card's look can be changed by the parent through `card-class`.
+ *
  * Behaviour (standard dialog, not drawn in Figma): Escape closes; focus moves
  * into the dialog on open, stays inside while open, and returns to where it
  * was on close; the page behind does not scroll. Clicking the dimmed page
@@ -22,8 +29,12 @@ const props = withDefaults(
     /** Where focus goes on close if the element that opened the modal is gone
         (e.g. "Login or signup" replaced by the profile button after sign-in) */
     fallbackFocus?: string
+    /** Layout below 768px (see above) */
+    phone?: 'center' | 'sheet' | 'fullscreen'
+    /** Extra class on the card, to restyle it (e.g. purple success card) */
+    cardClass?: string
   }>(),
-  { width: 375, labelledby: undefined, fallbackFocus: undefined },
+  { width: 375, labelledby: undefined, fallbackFocus: undefined, phone: 'center', cardClass: undefined },
 )
 const emit = defineEmits<{ close: [] }>()
 
@@ -55,8 +66,9 @@ function onKeydown(e: KeyboardEvent) {
 
 watch(
   () => props.open,
-  async (isOpen) => {
+  async (isOpen, wasOpen) => {
     if (!import.meta.client) return
+    if (!isOpen && !wasOpen) return // created closed: nothing to undo
     if (isOpen) {
       returnFocusTo = document.activeElement as HTMLElement | null
       document.documentElement.style.overflow = 'hidden'
@@ -71,6 +83,7 @@ watch(
       ;(returnFocusTo?.isConnected ? returnFocusTo : fallback)?.focus?.()
     }
   },
+  { immediate: true }, // also when the dialog is created already open
 )
 
 onMounted(() => document.addEventListener('keydown', onKeydown))
@@ -84,10 +97,10 @@ defineExpose({ focusFirst })
 
 <template>
   <Teleport to="body">
-    <div v-if="open" class="ui-modal">
+    <div v-if="open" :class="['ui-modal', `ui-modal--${phone}`]">
       <div
         ref="card"
-        class="ui-modal__card"
+        :class="['ui-modal__card', cardClass]"
         role="dialog"
         aria-modal="true"
         :aria-labelledby="labelledby"
@@ -126,5 +139,28 @@ defineExpose({ focusFirst })
    393px screen, as in the Figma mobile frames). */
 @media (min-width: 768px) {
   .ui-modal__card { padding: var(--spacing-lg); }
+}
+
+/* Phones: bottom sheet / full screen */
+@media (max-width: 767px) {
+  .ui-modal--sheet,
+  .ui-modal--fullscreen { padding: 0; background: var(--color-overlay-sheet); }
+  .ui-modal--sheet { align-items: flex-end; }
+  .ui-modal--sheet .ui-modal__card {
+    width: 100%;
+    max-height: calc(100dvh - var(--spacing-3xl));
+    margin: auto 0 0;
+    padding: var(--spacing-lg) var(--spacing-lg) calc(var(--spacing-2xl) + env(safe-area-inset-bottom, 0px));
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    box-shadow: none;
+    overflow-y: auto;
+  }
+  .ui-modal--fullscreen .ui-modal__card {
+    width: 100%;
+    min-height: 100dvh;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
 }
 </style>

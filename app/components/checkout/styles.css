@@ -1,0 +1,58 @@
+/* Shared layout for the buy ticket steps (imported by CheckoutFlow).
+   Figma 10713:56670: 345px of content in a 393px card (24px padding);
+   40px from the header to the content and from the content to the buttons
+   (32px on the newer Assign / Add user frames and above Buy Ticket's Proceed). */
+
+.checkout-step { display: flex; flex-direction: column; gap: var(--spacing-2xl); width: 100%; }
+.checkout-step--32 { gap: var(--spacing-xl); }
+.checkout-step > .checkout-step__gap-32 { margin-top: calc(var(--spacing-xl) - var(--spacing-2xl)); }
+.checkout-step__wide { width: 100%; }
+
+.checkout-fields { display: flex; flex-direction: column; gap: var(--spacing-md); }
+
+/* Back / primary pair: equal widths, 16px apart */
+.checkout-actions { display: flex; gap: var(--spacing-md); width: 100%; }
+.checkout-actions > * { flex: 1 0 0; min-width: 0; }
+
+/* "+ Add New Ticket" / "+ Assign Ticket": x-Small semibold Primary, 16px icon, 4px gap, 8px padding */
+.checkout-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xxs);
+  align-self: stretch;
+  padding: var(--spacing-xs);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-action-primary);
+  cursor: pointer;
+}
+.checkout-link:hover { background: var(--color-background-secondary); } /* proposed */
+.checkout-link:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
+
+/* Total Amount row: Grey_6, radius 9 (raw in Figma), 16px padding */
+.checkout-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  border-radius: 9px;
+  background: var(--color-background-secondary);
+  color: var(--color-text-primary);
+}
+
+/* Cards: 393px wide on desktop (Figma), bottom sheet on phones (UiModal
+   phone="sheet" gives 24 / 24 / 40 padding). Selectors are doubled up so they
+   win over UiModal's own card rules whatever order the CSS loads in. */
+.ui-modal .ui-modal__card.checkout-card.checkout-card { padding: var(--spacing-lg); }
+.ui-modal .ui-modal__card.checkout-success-card.checkout-success-card {
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-pill);
+  background: var(--color-success-surface);
+}
+@media (max-width: 767px) {
+  .ui-modal .ui-modal__card.checkout-card.checkout-card { padding: var(--spacing-lg) var(--spacing-lg) calc(var(--spacing-2xl) + env(safe-area-inset-bottom, 0px)); }
+  .ui-modal .ui-modal__card.checkout-success-card.checkout-success-card { padding: 0; border-radius: 0; }
+}

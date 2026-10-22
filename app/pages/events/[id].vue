@@ -16,9 +16,13 @@
  *   and Buy Ticket stays at the bottom of the screen.
  *
  * Behaviour (decisions 22 Oct):
+ * - Already in the event's chat (decision 22 Oct): the button reads "Open
+ *   Chat" (no + icon) and the phone "Not ready to buy a ticket?" card hides.
+ * - Holding a ticket (decision 22 Oct): "Share Event" under the tickets;
+ *   more tickets can still be bought for others.
  * - Join Community: signed out -> Login or signup first; then the event's
  *   chat opens (the button text doesn't change).
- * - Buy Ticket: no action yet (checkout not designed).
+ * - Buy Ticket: opens the buy ticket flow (CheckoutFlow; decisions 22 Oct).
  * - Photo -> full-size viewer. Host / community person -> profile panel
  *   (desktop: side panel; phones: full screen). Invite Friend -> share.
  * - Copy icon -> copies the address, "Address copied".
@@ -27,7 +31,8 @@
 import type { ChatPerson, ChatProfile } from '~/types/chat'
 import { getEvent } from '~/services/events'
 import { getTicketTypes } from '~/services/tickets'
-import { getProfile, joinEventChat } from '~/services/chat'
+import { getProfile, isInEventChat, joinEventChat } from '~/services/chat'
+import { ticketsHeld } from '~/services/tickets'
 import { priceRange } from '~/utils/money'
 
 const route = useRoute()
@@ -45,8 +50,17 @@ const picked = computed(() => (tickets.value ?? []).filter(t => (quantities.valu
 const count = computed(() => picked.value.reduce((n, t) => n + (quantities.value[t.id] ?? 0), 0))
 const total = computed(() => picked.value.reduce((sum, t) => sum + t.price * (quantities.value[t.id] ?? 0), 0))
 const price = computed(() => priceRange((tickets.value ?? []).map(t => t.price)))
+// Buy Ticket opens the checkout (Figma 10713:56670, decisions 22 Oct)
+const checkoutOpen = ref(false)
+// Tickets the signed-in user holds for this event, and whether they're in its chat
+const holding = ref(0)
+const inChat = ref(false)
+async function refreshStatus() {
+  holding.value = ticketsHeld(user.value?.email, id.value)
+  inChat.value = user.value ? await isInEventChat(user.value.username, id.value) : false
+}
 function buy() {
-  // Decision 22 Oct: no action yet. OPEN ITEM: checkout / payment flow.
+  if (count.value > 0) checkoutOpen.value = true
 }
 
 // ---- Join the community -> open its chat ----
@@ -71,6 +85,7 @@ async function join() {
 }
 // Finish joining once they've logged in or signed up
 watch(user, (u) => { if (u && joinAfterLogin) { joinAfterLogin = false; join() } })
+watch([user, id], refreshStatus, { immediate: true })
 watch(authOpen, (open) => { if (!open && !user.value) joinAfterLogin = false })
 
 // ---- Share / copy ----
@@ -110,8 +125,8 @@ onBeforeUnmount(() => { hideHeaderOnPhone.value = false })
     <div class="event-page__top">
       <h1 class="event-page__title text-page-title">{{ event.title }}</h1>
       <UiButton color="secondary" text-style="web" class="event-page__join" :disabled="joining" @click="join">
-        <template #icon><img src="/images/event/icon-plus-24.svg" alt="" width="24" height="24" /></template>
-        Join Community - Free
+        <template v-if="!inChat" #icon><img src="/images/event/icon-plus-24.svg" alt="" width="24" height="24" /></template>
+        {{ inChat ? 'Open Chat' : 'Join Community - Free' }}
       </UiButton>
     </div>
 
@@ -124,7 +139,7 @@ onBeforeUnmount(() => { hideHeaderOnPhone.value = false })
       </div>
 
       <div class="event-page__tickets">
-        <EventTicketPanel v-model:quantities="quantities" :tickets="tickets ?? []" :total="total" :count="count" @buy="buy" />
+        <EventTicketPanel v-model:quantities="quantities" :tickets="tickets ?? []" :total="total" :count="count" :holding="holding > 0" @buy="buy" @share="invite" />
       </div>
 
       <section class="event-page__about" aria-labelledby="event-about-title">
@@ -134,7 +149,7 @@ onBeforeUnmount(() => { hideHeaderOnPhone.value = false })
 
       <EventExpectList class="event-page__expect" :items="event.expectations" />
 
-      <EventJoinCard class="event-page__join-card" :busy="joining" @join="join" />
+      <EventJoinCard v-if="!inChat" class="event-page__join-card" :busy="joining" @join="join" />
 
       <EventCommunity class="event-page__community" :members="event.members" :count="event.communityCount" @profile="openProfile" @invite="invite" />
 
@@ -158,6 +173,16 @@ onBeforeUnmount(() => { hideHeaderOnPhone.value = false })
     <div v-if="profile" class="event-page__profile-backdrop" @click.self="closeProfile">
       <ChatProfilePanel ref="profilePanel" class="event-page__profile" :profile="profile" back-label="Back to event" @close="closeProfile" />
     </div>
+
+    <CheckoutFlow
+      v-model:quantities="quantities"
+      :open="checkoutOpen"
+      :event="event"
+      :tickets="tickets ?? []"
+      @close="checkoutOpen = false"
+      @purchased="refreshStatus"
+      @join-chat="join"
+    />
 
     <UiToast :message="toast" @done="toast = ''" />
   </div>

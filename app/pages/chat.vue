@@ -22,7 +22,11 @@
  * The open chat is kept in the address (?chat=house-party).
  */
 import type { ChatMessage, ChatPerson, ChatProfile, ChatSummary, NewMessage } from '~/types/chat'
+import type { EventDetails } from '~/types/event'
+import type { TicketType } from '~/types/ticket'
 import { getMessages, getProfile, listChats, markRead, sendMessage } from '~/services/chat'
+import { getEvent } from '~/services/events'
+import { getTicketTypes } from '~/services/tickets'
 
 definePageMeta({ footer: false, requiresAuth: true })
 useHead({ title: 'Chats · Vegaz' })
@@ -54,7 +58,7 @@ const selected = computed(() => chats.value.find(c => c.id === selectedId.value)
 async function loadChats() {
   if (!user.value) return
   loadingChats.value = true
-  chats.value = await listChats(user.value.username)
+  chats.value = await listChats(user.value.username, user.value.email)
   loadingChats.value = false
 }
 
@@ -106,7 +110,7 @@ async function onSend(draft: NewMessage) {
   try {
     const message = await sendMessage(selected.value.id, me.value, toRaw(draft))
     messages.value.push(message)
-    chats.value = await listChats(user.value!.username)
+    chats.value = await listChats(user.value!.username, user.value!.email)
   } finally {
     sending.value = false // OPEN ITEM: failed-send state is not designed
   }
@@ -118,6 +122,18 @@ async function openProfile(person: ChatPerson) {
   await nextTick()
   profilePanel.value?.focus()
 }
+// "Buy Ticket" in a chat header (no ticket yet): the buy flow opens on top
+// of the chat at Add Ticket with an empty cart (decision 22 Oct). Once bought,
+// the chat list reloads, so the header shows "Share Event".
+const checkout = reactive({ open: false, event: null as EventDetails | null, tickets: [] as TicketType[], quantities: {} as Record<string, number> })
+async function buyTicket() {
+  const eventId = selected.value?.eventId
+  if (!eventId) return
+  const [event, tickets] = await Promise.all([getEvent(eventId), getTicketTypes(eventId)])
+  if (!event) return
+  Object.assign(checkout, { event, tickets, quantities: Object.fromEntries(tickets.map(t => [t.id, 0])), open: true })
+}
+
 function closeProfile() {
   profile.value = null
   nextTick(() => profileOpener?.isConnected && profileOpener.focus())
@@ -136,6 +152,7 @@ function closeProfile() {
       @send="onSend"
       @profile="openProfile"
       @back="backToList"
+      @buy-ticket="buyTicket"
     />
     <ChatEmpty
       v-else-if="!loadingChats"
@@ -144,6 +161,17 @@ function closeProfile() {
     />
 
     <ChatProfilePanel v-if="profile" ref="profilePanel" :profile="profile" @close="closeProfile" />
+
+    <CheckoutFlow
+      v-if="checkout.event"
+      v-model:quantities="checkout.quantities"
+      :open="checkout.open"
+      :event="checkout.event"
+      :tickets="checkout.tickets"
+      start="add"
+      @close="checkout.open = false"
+      @purchased="loadChats"
+    />
   </div>
 </template>
 

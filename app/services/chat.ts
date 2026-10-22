@@ -2,6 +2,7 @@ import type { ChatMessage, ChatPerson, ChatPostMessage, ChatProfile, ChatSummary
 import { mockChatOwnerUsername, mockChats, mockMessages, mockProfile } from '~/mocks/chat'
 import { eventById } from '~/mocks/eventCatalog'
 import { mockLatencyMs } from '~/mocks/auth'
+import { ticketsHeld } from './tickets'
 
 /**
  * Chat service (MOCK). Components call only these functions; replace the
@@ -24,10 +25,24 @@ function chatsOf(username: string): ChatSummary[] {
   return [...base, ...(joined[username] ?? [])]
 }
 
-/** Event chats of the signed-in user, newest first */
-export async function listChats(username: string): Promise<ChatSummary[]> {
+/**
+ * Event chats of the signed-in user, newest first. `hasTicket` (Share Event
+ * instead of Buy Ticket in the chat header) comes from the tickets the
+ * user's email holds (decision 22 Oct).
+ */
+export async function listChats(username: string, email?: string): Promise<ChatSummary[]> {
   await wait(150)
-  return structuredClone(chatsOf(username)).sort((a, b) => b.lastAt.localeCompare(a.lastAt))
+  return structuredClone(chatsOf(username))
+    .map(c => ({ ...c, hasTicket: ticketsHeld(email, c.eventId) > 0 }))
+    .sort((a, b) => b.lastAt.localeCompare(a.lastAt))
+}
+
+/** Is the user already in this event's chat? ("Open Chat" on the event page) */
+export async function isInEventChat(username: string, eventId: string): Promise<boolean> {
+  const event = eventById[eventId]?.event
+  if (!event) return false
+  const chatId = event.chatId ?? `event-${event.id}`
+  return chatsOf(username).some(c => c.id === chatId)
 }
 
 /**

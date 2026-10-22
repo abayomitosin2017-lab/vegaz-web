@@ -387,3 +387,34 @@ Route: `/events/<event id>` (`app/pages/events/[id].vue`). Opened from home even
 **Phones (decision).** Event page: the title sits under the photos (24px gap; Figma has it above), and the details (address, date, price) start 24px under the title (was 40). All events page: one card per row, full width.
 
 **Testing.** `/dev/gallery?n=1…20` (dev only) shows the gallery with any number of photos. Checked automatically at 15 widths (320–1920) × 1–20 photos: every tile square, all photos present and loaded, no half-empty 2 × 2, strip reaches the edge or scrolls, no sideways page scroll (2,212 checks, all passing). Every event page checked at 320 / 375 / 800 / 1440: photo count, square tiles, title position, images load (384 checks).
+
+---
+
+## 22 Oct: buy ticket flow and event page text update (Figma section 10713:56670)
+
+**Event page text (Figma update).** Names under community photos 14/18 at every width (was 12/18 desktop, 10/14 phones); "+5" 18/28 semibold (was 16/24); the F/M letter Regular (was Light). Everything else on the page matches the new frames (checked text by text against Desktop 51–53 and iPhone 18–19).
+
+**Buy ticket flow** (`components/checkout/`, `services/checkout.ts`, `types/checkout.ts`). Desktop/tablet: 393px dialog on the page dimmed white 70%. Phones: bottom sheet (top corners 24, 24/24/40 padding) over black 50%.
+1. **Buy Ticket — contact** (email, phone). Signed-in buyers skip it (decision).
+2. **Give us more details** only when the email has no Vegaz account (demo rule, as login: only johnbade@gmail.com has one). First name, Last name (Figma says "First Name" twice; fixed), phone (filled from step 1), gender.
+3. **Ticket Cart.** Lines for the picked types with steppers; shares the picks with the page both ways (decision); a type set to 0 stays listed until the cart closes; "+ Add New Ticket" hidden when every type is in the cart; real total (Figma's ₦11,000 was placeholder); Checkout inactive at 0 tickets. Back: signed-in → closes; signed-out → previous step.
+4. **Add Ticket.** Select listing the types not in the cart; sold out greyed + "Sold out" chip (cannot be picked); low stock red "N tickets left" chip ("5 ticket left" fixed); adds one ticket.
+5. **Assign tickets.** The buyer holds the first ticket ("<type> · You · Ticket buyer"). "+ Assign Ticket" → **Add user** (full name, email, phone, tier); "Edit" reopens it as **Edit user** (proposed title). Every ticket must have a person (decision): Proceed is grey and inactive until 0 remaining. More than 3 people: the list scrolls with "Scroll to see all N assignees".
+6. **Pay with Paystack — mock** (decision; Figma has only a "PAYSTACK FLOW" box). NOT IN FIGMA (proposed): title, total row, demo note, "Pay ₦X". Skipped when the total is ₦0 (free tickets only), until the RSVP design arrives.
+7. **Your ticket is on its way...** Desktop: purple 479px card, radius 40. Phones: full purple screen with the light logo, "Join Chat with Others" and "Cancel". The buyer is signed in at this point (decision; new buyers get an account from their details). "Join Chat with Others" opens the event chat. Photos are the event's own (flier first). Copy fixes: "it's way" → "its way", "hangout chat" → "event chat".
+
+Not in Figma (proposed): inactive states of Proceed / Continue / Add to cart / Checkout until required fields are filled (grey secondary style, as Figma shows on Add user); field validation rules (valid email, phone 7+ digits; assignee phone optional); option hover; keyboard support in the selects; 32px tap area on the small close X.
+
+Typography: the flow uses the fixed "Mobile App" styles (`.text-app-*` classes in tokens/typography.css), which do not grow on desktop, as in Figma.
+
+**Open items (engineering):** account lookup; creating/holding the order; real Paystack checkout + server confirmation; emailing tickets to the buyer and assignees; signing in after purchase (all in `services/checkout.ts`). **Design:** RSVP flow for free events (coming); error states (payment failed, sold out mid-checkout, invalid email); whether assignee phone is required.
+
+**Owning a ticket (decisions 22 Oct, after testing).**
+- Tickets are held by email (`services/tickets.ts`, demo data in `mocks/orders.ts`): the buyer's ticket and every assigned guest's ticket. Assigned guests count as holders when they log in with that email.
+- Chat header: "Share Event" when you hold a ticket for that event, otherwise "Buy Ticket" (no longer fixed demo data). The demo account holds tickets for Ultimate Party Experience and Faaji at the Pent.
+- Chat "Buy Ticket" opens the buy flow on top of the chat at Add Ticket with an empty cart; Back goes to the empty cart, Back again closes. After buying, the header switches to Share Event; "Join Chat with Others" just closes the flow.
+- Event page with a ticket: ticket cards and Buy Ticket stay (buy more for others); the chat's "Share Event" button appears under them, full width. Buying more does not add the buyer again: every new ticket is assigned.
+- Already in the event's chat: "Join Community - Free" reads **Open Chat** (no + icon, proposed wording approved) and opens it; the phone "Not ready to buy a ticket?" card hides.
+- Memory only: a reload resets logins and purchases (decision).
+
+Test cases: `tests/buy-ticket-test-cases.md` (A–K, run at 1440 / 800 / 393).

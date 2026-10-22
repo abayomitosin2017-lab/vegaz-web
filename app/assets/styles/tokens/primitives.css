@@ -23,6 +23,8 @@
   /* Color: variant ramps. The Figma "Primary" light/dark ramp was blue
      (#ECEFFE, #9DB8FD, #6891FF, #1E387E, #132451) and has been removed by
      design decision: blue is replaced by Primary purple everywhere. */
+  /* Purple variant from Figma "Base-color-variant" (checkout success, 22 Oct) */
+  --primary-dark-2: #1e0440;
 
   --positive-light-3: #e6f7e4;
   --positive-light-2: #b6e9af;

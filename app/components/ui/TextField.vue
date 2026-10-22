@@ -7,6 +7,7 @@
  * States from Figma: default; `success` (green border + green tick, e.g. an
  * available username). Focus uses the approved purple focus border.
  * Text: Small semibold (14/20 below 1024px, 16/24 from 1024px).
+ * `fixed`: Mobile App Small semibold, 14/20 at every width (buy ticket flow).
  */
 defineOptions({ inheritAttrs: false })
 
@@ -19,8 +20,10 @@ const props = withDefaults(
     success?: boolean
     /** Screen-reader text announced with the green tick */
     successLabel?: string
+    /** Keep 14/20 text at every width (Figma "Mobile App" style) */
+    fixed?: boolean
   }>(),
-  { modelValue: '', label: undefined, placeholder: undefined, type: 'text', success: false, successLabel: 'Available' },
+  { modelValue: '', label: undefined, placeholder: undefined, type: 'text', success: false, successLabel: 'Available', fixed: false },
 )
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
 const id = useId()
@@ -29,12 +32,12 @@ const attrs = useAttrs()
 
 <template>
   <div class="ui-field">
-    <label v-if="label" :for="id" class="ui-field__label text-small-semibold">{{ label }}</label>
+    <label v-if="label" :for="id" :class="['ui-field__label', fixed ? 'text-app-small-semibold' : 'text-small-semibold']">{{ label }}</label>
     <div :class="['ui-field__box', { 'ui-field__box--success': success }]">
       <input
         :id="id"
         v-bind="attrs"
-        class="ui-field__input text-small-semibold"
+        :class="['ui-field__input', fixed ? 'text-app-small-semibold' : 'text-small-semibold']"
         :type="type"
         :value="modelValue"
         :placeholder="placeholder"

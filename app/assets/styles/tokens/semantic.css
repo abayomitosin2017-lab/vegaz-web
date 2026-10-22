@@ -126,6 +126,19 @@
   /* Gallery photos darken toward the bottom (Figma, phone gallery tiles) */
   --gradient-gallery-fade: linear-gradient(180deg, rgba(0, 0, 0, 0) 76.42%, rgba(0, 0, 0, 0.6) 92.9%);
 
+  /* Buy ticket flow (Figma section "event details", 10713:56670, 22 Oct) */
+  --color-overlay-sheet: rgba(0, 0, 0, 0.5);       /* phones: page behind a bottom sheet */
+  --color-text-checkout: #141316;                  /* titles and labels (raw "Base-color/Black" #141316 in these frames) */
+  --color-border-subtle: #f4f5f8;                  /* dropdown list edge (raw in Figma) */
+  --shadow-dropdown: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --color-badge-low: var(--base-negative);         /* "5 tickets left" chip */
+  --color-success-surface: var(--base-primary);    /* "Your ticket is on its way" */
+  --color-success-close: var(--primary-dark-2);
+  --color-success-title: #fffdf6;
+  --color-success-copy: #e3cffc;                   /* raw in Figma */
+  --color-success-outline: var(--grey-1);          /* phone "Cancel" outline */
+  --shadow-success-photo: 0 2.76px 16.56px rgba(0, 0, 0, 0.25);
+
   /* Focus ring: Border/Width/Emphasis (2px) in action primary, 2px offset */
   --focus-ring-color: var(--color-action-primary);
   --focus-ring-width: var(--border-width-emphasis);

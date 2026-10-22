@@ -26,7 +26,8 @@ export interface ChatSummary {
   unreadCount: number
   /** The event this chat belongs to (opens its details page) */
   eventId?: string
-  /** The signed-in user already has a ticket: "Share Event" replaces "Buy Ticket" */
+  /** The signed-in user holds a ticket for this event (bought or assigned):
+      "Share Event" replaces "Buy Ticket". Worked out by the service. */
   hasTicket?: boolean
 }
 

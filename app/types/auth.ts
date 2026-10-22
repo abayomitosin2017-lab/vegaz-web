@@ -19,4 +19,7 @@ export interface SessionUser {
   username: string
   /** Profile photo URL. Missing -> letter avatar (onboarding has no photo step) */
   avatarUrl?: string
+  /** Contact details, used to fill in the buy ticket flow (decision 22 Oct) */
+  email?: string
+  phone?: string
 }

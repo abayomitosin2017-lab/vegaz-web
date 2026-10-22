@@ -10,16 +10,19 @@
  * cards. The bottom bar (EventTicketBar) shows the total and Buy Ticket.
  *
  * Totals (decision 22 Oct): total = price x quantity for every type.
- * Buy Ticket has no action yet (decision 22 Oct; checkout not designed).
+ * Buy Ticket opens the buy ticket flow (the page shows CheckoutFlow).
  * Not in Figma (proposed): with nothing picked the button reads "Buy Ticket"
  * and is disabled.
+ * Holding a ticket (decision 22 Oct): the cards and Buy Ticket stay, so more
+ * can be bought for others, and the chat header's "Share Event" button
+ * (grey pill, share icon) appears under them, full width.
  */
 import type { TicketType } from '~/types/ticket'
 import { formatNaira } from '~/utils/money'
 
-const props = defineProps<{ tickets: TicketType[]; total: number; count: number }>()
+const props = defineProps<{ tickets: TicketType[]; total: number; count: number; holding?: boolean }>()
 const quantities = defineModel<Record<string, number>>('quantities', { required: true })
-const emit = defineEmits<{ buy: [] }>()
+const emit = defineEmits<{ buy: []; share: [] }>()
 
 const buyLabel = computed(() => (props.count ? `Buy Ticket (${formatNaira(props.total)})` : 'Buy Ticket'))
 </script>
@@ -32,6 +35,10 @@ const buyLabel = computed(() => (props.count ? `Buy Ticket (${formatNaira(props.
       </li>
     </ul>
     <UiButton class="ticket-panel__buy" text-style="web" :disabled="!count" @click="emit('buy')">{{ buyLabel }}</UiButton>
+    <UiButton v-if="holding" color="secondary" class="ticket-panel__share" @click="emit('share')">
+      <template #icon><img src="/images/chat/icon-share-24.svg" alt="" width="24" height="24" /></template>
+      Share Event
+    </UiButton>
   </section>
 </template>
 
@@ -47,6 +54,12 @@ const buyLabel = computed(() => (props.count ? `Buy Ticket (${formatNaira(props.
 }
 .ticket-panel__list { display: flex; flex-direction: column; gap: var(--spacing-md); margin: 0; padding: 0; list-style: none; }
 .ticket-panel__buy { width: 100%; }
+/* Same look as the chat header "Share Event" (grey pill, no border, 16/24) */
+.ticket-panel__share {
+  width: 100%;
+  margin-top: calc(var(--spacing-xs) - var(--spacing-section));
+  --ui-button-border-color: transparent;
+}
 
 /* Below 1024px: just the cards (phone frame); the bottom bar takes over */
 @media (max-width: 1023px) {

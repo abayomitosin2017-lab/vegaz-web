@@ -433,7 +433,28 @@
   --text-app-xsmall-semibold-size: 12px;  /* x-Small semibold */
   --text-app-xsmall-semibold-line: 18px;
   --text-app-xsmall-semibold-tracking: 0px;
+  /* More Mobile App styles, used by the buy ticket flow (fixed sizes) */
+  --text-app-h1-bold-size: 32px;          /* Headline 1 bold: success title */
+  --text-app-h1-bold-line: 40px;
+  --text-app-h1-bold-tracking: -1px;
+  --text-app-body-regular-size: 16px;
+  --text-app-body-regular-line: 24px;
+  --text-app-body-regular-tracking: 0px;
+  --text-app-small-bold-size: 14px;
+  --text-app-small-bold-line: 20px;
+  --text-app-small-bold-tracking: 0px;
 }
+
+/* Mobile App text classes: same size at every width (buy ticket flow) */
+.text-app-h1-bold { font-family: var(--font-family-base); font-weight: var(--font-weight-bold); font-size: var(--text-app-h1-bold-size); line-height: var(--text-app-h1-bold-line); letter-spacing: var(--text-app-h1-bold-tracking); }
+.text-app-h2-bold { font-family: var(--font-family-base); font-weight: var(--font-weight-bold); font-size: var(--text-app-h2-bold-size); line-height: var(--text-app-h2-bold-line); letter-spacing: var(--text-app-h2-bold-tracking); }
+.text-app-body-regular { font-family: var(--font-family-base); font-weight: var(--font-weight-regular); font-size: var(--text-app-body-regular-size); line-height: var(--text-app-body-regular-line); letter-spacing: var(--text-app-body-regular-tracking); }
+.text-app-body-semibold { font-family: var(--font-family-base); font-weight: var(--font-weight-semibold); font-size: var(--text-app-body-semibold-size); line-height: var(--text-app-body-semibold-line); letter-spacing: var(--text-app-body-semibold-tracking); }
+.text-app-small-regular { font-family: var(--font-family-base); font-weight: var(--font-weight-regular); font-size: var(--text-app-small-regular-size); line-height: var(--text-app-small-regular-line); letter-spacing: var(--text-app-small-regular-tracking); }
+.text-app-small-semibold { font-family: var(--font-family-base); font-weight: var(--font-weight-semibold); font-size: var(--text-app-small-semibold-size); line-height: var(--text-app-small-semibold-line); letter-spacing: var(--text-app-small-semibold-tracking); }
+.text-app-small-bold { font-family: var(--font-family-base); font-weight: var(--font-weight-bold); font-size: var(--text-app-small-bold-size); line-height: var(--text-app-small-bold-line); letter-spacing: var(--text-app-small-bold-tracking); }
+.text-app-xsmall-regular { font-family: var(--font-family-base); font-weight: var(--font-weight-regular); font-size: var(--text-app-xsmall-regular-size); line-height: var(--text-app-xsmall-regular-line); letter-spacing: var(--text-app-xsmall-regular-tracking); }
+.text-app-xsmall-semibold { font-family: var(--font-family-base); font-weight: var(--font-weight-semibold); font-size: var(--text-app-xsmall-semibold-size); line-height: var(--text-app-xsmall-semibold-line); letter-spacing: var(--text-app-xsmall-semibold-tracking); }
 
 /* ---- Text roles: size combinations Figma uses outside the standard ramp.
    Components reference these instead of writing sizes themselves. ---- */
@@ -467,6 +488,12 @@
   --text-input-mobile-tracking: 0px;
   /* Hero heading line height. FLAG: Figma mobile is 32/40; the token is 32/48 */
   --text-hero-title-line: 40px;
+  /* Community row on event details (Figma 10713:56670, 22 Oct): names
+     under the photos 14/18 and the "+5" count 18/28 semibold, every width */
+  --text-member-name-size: 14px;
+  --text-member-name-line: 18px;
+  --text-member-more-size: 18px;
+  --text-member-more-line: 28px;
   /* Internal component preview page labels (not a product screen) */
   --text-label-tracking: 0.5px;
 }
