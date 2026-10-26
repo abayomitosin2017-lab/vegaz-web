@@ -16,6 +16,8 @@ import { appStoreLinks, copyrightText, footerColumns } from '~/config/footer'
 
 // Mobile shows the four columns as two side-by-side pairs; desktop ignores the pairing.
 const columnPairs = [footerColumns.slice(0, 2), footerColumns.slice(2, 4)]
+// "Host an Event": same entry as the header button (logs in first when signed out)
+const { startHosting } = useHostEntry()
 
 withDefaults(defineProps<{ showAppLinks?: boolean; showNavigationLinks?: boolean }>(), {
   showAppLinks: true,
@@ -33,7 +35,9 @@ withDefaults(defineProps<{ showAppLinks?: boolean; showNavigationLinks?: boolean
               <h2 class="site-footer__heading text-body-semibold">{{ column.heading }}</h2>
               <ul class="site-footer__list">
                 <li v-for="link in column.links" :key="link.label">
-                  <a class="site-footer__link text-body-regular" :href="link.href">{{ link.label }}</a>
+                  <a v-if="link.action === 'host'" class="site-footer__link text-body-regular" :href="link.href" @click.prevent="startHosting">{{ link.label }}</a>
+                  <NuxtLink v-else-if="link.href.startsWith('/')" class="site-footer__link text-body-regular" :to="link.href">{{ link.label }}</NuxtLink>
+                  <a v-else class="site-footer__link text-body-regular" :href="link.href">{{ link.label }}</a>
                 </li>
               </ul>
             </div>

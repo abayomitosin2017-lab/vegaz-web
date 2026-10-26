@@ -238,7 +238,7 @@ function back() {
   .profile-edit__inner {
     width: auto;
     gap: 34px;
-    padding: calc(17px + env(safe-area-inset-top, 0px)) 17px calc(120px + env(safe-area-inset-bottom, 0px));
+    padding: calc(17px + env(safe-area-inset-top, 0px)) 17px 120px; /* the layout adds room for the bottom navigation */
   }
   .profile-edit__cols { flex-direction: column; align-items: stretch; gap: var(--spacing-lg); }
   .profile-edit__left, .profile-edit__right { width: auto; gap: var(--spacing-lg); }
@@ -248,9 +248,9 @@ function back() {
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: calc(var(--sizing-bottom-nav) + env(safe-area-inset-bottom, 0px)); /* sits on the bottom navigation (decision 26 Oct) */
     z-index: 5;
-    padding: 20px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+    padding: 20px;
     border-top: 1px solid rgba(225, 225, 225, 0.5); /* raw in Figma */
     background: var(--base-white);
   }

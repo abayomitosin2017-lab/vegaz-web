@@ -17,7 +17,7 @@ function save() { if (birthday.value) emit('save', birthday.value) }
 </script>
 
 <template>
-  <UiModal :open="open" :width="441" phone="sheet" card-class="profile-prompt-card" :labelledby="`${id}-t`" @close="emit('close')">
+  <UiModal :open="open" :width="441" phone="sheet" card-class="profile-prompt-card" :dismissible="!busy" :labelledby="`${id}-t`" @close="emit('close')">
     <form class="profile-prompt profile-prompt--bday" novalidate @submit.prevent="save">
       <div class="profile-prompt__top">
         <div class="profile-prompt__head">

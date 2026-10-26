@@ -1,4 +1,4 @@
-import type { ChatMessage, ChatPerson, ChatProfile, ChatSummary } from '~/types/chat'
+import type { ChatMessage, ChatPerson, ChatPostMessage, ChatProfile, ChatSummary } from '~/types/chat'
 import { mockExistingAccount } from './auth'
 import { placeholderPhoto, toSquare } from './placeholders'
 import { catalog, eventById } from './eventCatalog'
@@ -126,3 +126,14 @@ function profileEventsOf(personId: string): ChatProfile['events'] {
 export function mockProfile(person: ChatPerson): ChatProfile {
   return { ...person, photoUrl: toSquare(person.avatarUrl), gender: genderOf(person.id), events: profileEventsOf(person.id) }
 }
+
+/**
+ * Demo only (decision 26 Oct): the message that "arrives" while browsing so
+ * the chat dock's new-message preview can be seen. Not from Figma.
+ */
+export const mockIncoming = {
+  chatId: 'house-party',
+  afterMs: 12000,
+  message: { kind: 'post', id: 'incoming', chatId: 'house-party', sender: people.oreban, mine: false, text: 'Doors open at 7. Bring your best vibes and someone you love!', createdAt: '' } as ChatPostMessage,
+}
+

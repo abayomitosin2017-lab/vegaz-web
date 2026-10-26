@@ -591,3 +591,43 @@ Measured on airbnb.com (home + a listing page) at 375, 768 and 1440 in a real br
   - OPEN ITEM (engineering): the hello should be posted by the backend on join, so it isn't lost if the page closes.
 - **No modal animation**: modals, sheets, the photo viewer, the event-page profile panel and the phone ticket screen now open and close instantly (the animations glitched).
 - **Phone event gallery**: the photo strip runs to both screen edges, so photos scrolled to the left are no longer cut off at the page margin. Tablet and desktop unchanged.
+
+## 26 Oct — Chat dock (quick replies), built from Figma 10862:22113
+
+- **What**: a "Messages" dock bottom right on every page for signed-in people, on screens 768px and wider. Not on the Chat page or the hosting flow (own layout). Phones keep the Chat page; unread chats show as a red count on "Chat" in the profile menu and a red dot on the header photo.
+- **States**: minimized bar (360 × 56, red unread count) → chat list (360 × 560, search by event name) → one conversation at a time (360 × 520, 16 left of the list / bar; opening another chat replaces it) → minimized conversation tab (240 × 56). Open in the Chat page from the bar or the conversation.
+- **Tablet 768–1023**: one panel; opening a chat replaces the list, ← returns.
+- **New message** while that chat isn't open: unread count goes up and a preview shows above the bar for 5 s (paused on hover / focus); Reply opens that chat with the message box focused; it never opens the dock by itself. Messages arriving in the open chat appear in it and are marked read.
+- **Keyboard**: Enter sends; Escape minimizes the open window (conversation first, then the list). Open / minimized and the open chat are kept for the browser tab and cleared on log out.
+- **Event pages on tablets**: the dock sits above the bottom ticket bar.
+- **Code**: `components/chat/dock/*` (`<ChatDock>`, Bar, Row, Conversation, Message, Toast), `composables/useChatDock.ts`, `services/chat.ts` `onIncomingMessage()`. Dropdown items gained an optional `badge`.
+- MOCK / FLAG: there is no live server, so for the demo account one scripted message ("Doors open at 7…") arrives in Ultimate Party Experience about 12 s after a page loads, to show the preview. OPEN ITEMS (engineering): real-time delivery (websocket / push), sound, photo upload limits.
+
+## 26 Oct — Hero: "Explore Events" removed everywhere
+- The home hero now has only "Add your event" at every width (phones already had it removed). The "Explore all" button under "Explore all events" still goes to All events.
+
+## 26 Oct — Phone bottom navigation (Figma 10870:35376)
+- **Phones only (< 768px)**: Home, Create, Chat at the bottom of the screen (white, 1px black/10 line on top, 15 padding plus the phone's safe area, items 48 apart; 78 tall). Labels x-Small 12/18 semibold as in Figma: Grey_3, Primary when active; Create is a dark purple (#24044D) pill with a white +, label Grey_1.
+- **Active**: Home on Home and All events; Chat on the Chat page. Chat shows the red unread count (replaces the red dot on the header photo and the count in the menu).
+- **Create** starts Host an Event; **Chat** opens the Chat page. Signed out, both ask to log in first (as "Host an Event" and the Chat page already do).
+- **Where**: Home, All events, the Chat list and Edit Profile. Hidden inside an open conversation, on event pages (their ticket bar sits there), in hosting (own layout) and under modals. Edit Profile's Save bar now sits on top of the bar. The layout adds room at the bottom so nothing hides behind it.
+- **Profile menu on phones**: Edit Profile, My Activities, Log out ("Chat" moved to the bottom navigation). Desktop and tablet keep Chat in the menu (decision).
+- **Update (same day): bottom navigation on Airbnb sizing** (measured on airbnb.com at 375): bar 65 tall (1px line, 10 above and below the tabs, plus safe area); tabs 73 × 44, 2 apart, centred, 3px top padding, icon 24, 5 to the label; label 10/12, 0.2 letter spacing, 500 when active, 400 otherwise (`--text-nav-label-*`). Colours and the Create pill stay as in Figma. `--sizing-bottom-nav` is now 65.
+- **Figma update (same day)**: the first tab is now **Explore** (Compass icon, Linear / Bold when active) instead of Home. It still goes to Home and is active on Home and All events. Figma's 64 gap between tabs is replaced by Airbnb's 73-wide tabs 2 apart (decision: Airbnb sizing).
+- **Figma spacing update (same day)**: the three items hug their content and sit 64 apart, centred (Figma 10870:35167). Airbnb sizing kept for the bar (65 tall, 10 above / below), the 44-tall tabs (3px top padding, icon 24, 5 to the label) and the 10/12 labels.
+- **Label size (same day)**: bottom-nav labels are 11/13 (was Airbnb 10/12); weights and letter spacing unchanged.
+
+## 26 Oct — Footer links and legal pages
+- Footer "Create an Event" is now **"Host an Event"** and starts hosting like the header button (logs in first when signed out).
+- Copyright: **"© Vegaz 2026. All rights reserved."** (Figma 10875:35486; was "© 2077 Vegaz. All rights reserved.").
+- **Legal pages** (not in Figma, PROPOSED Airbnb-style reading page): `/legal/terms` (Terms of Service, 13 sections) and `/legal/privacy` (Privacy Policy, 12 sections), linked from the footer's Terms / Privacy. 720 reading width, draft notice, title, "Last updated", intro, "On this page" contents, numbered sections, link to the other page. Text lives in `config/legal.ts`.
+- **DRAFT FOR LEGAL REVIEW**: written in plain language from how the product works (email codes, profiles, hosting, Paystack tickets, free RSVPs, event chats, Nigeria Data Protection Act 2023). Not legal advice. Items marked [to confirm]: company legal name and address, contact emails, minimum age, refund rules, retention periods, service providers, liability limits, dispute process, analytics cookies. Remove the draft notice (`draft` prop) once approved.
+
+## 26 Oct — Modals: click outside to close, keyboard on phones
+- **Click outside closes** every modal and sheet (was: never). Exceptions:
+  - once something has been typed or changed in a field inside it (sign-up details, checkout contact, assignee, host dialogs, bio…): the outside click does nothing; X / Cancel / Escape still close;
+  - while busy (sending a code, saving, paying): `:dismissible="!busy"` and anything marked `aria-busy="true"`;
+  - the checkout success screen and the host "Event created" screen (`:dismissible="false"`).
+  - A press that starts inside the card and ends outside (selecting text) does not close.
+- **Phones, on-screen keyboard**: the dialog area follows the visible part of the screen (`visualViewport`), so bottom sheets sit on top of the keyboard, the card shrinks to the space left and scrolls, and the focused field is scrolled into view. Centred and full-screen dialogs do the same.
+- Already closing on outside click (unchanged): photo viewer, event-page profile panel, menus.

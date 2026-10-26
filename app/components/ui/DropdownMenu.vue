@@ -27,6 +27,8 @@ export interface DropdownItem {
   tone?: 'default' | 'danger'
   /** Draws the Grey_5 line above this item */
   separated?: boolean
+  /** Red count after the label (e.g. unread chats on phones); hidden at 0 */
+  badge?: number
 }
 
 const props = withDefaults(defineProps<{ items: DropdownItem[]; label: string; width?: number }>(), { width: 174 })
@@ -115,7 +117,7 @@ const triggerProps = computed(() => ({
           :class="['ui-dropdown__item', { 'ui-dropdown__item--danger': item.tone === 'danger' }]"
           @click="choose(item.id)"
         >
-          {{ item.label }}
+          {{ item.label }}<span v-if="item.badge" class="ui-dropdown__badge"><span class="ui-dropdown__sr">, </span>{{ item.badge > 99 ? '99+' : item.badge }}<span class="ui-dropdown__sr"> unread</span></span>
         </button>
       </template>
     </div>
@@ -156,6 +158,9 @@ const triggerProps = computed(() => ({
   cursor: pointer;
 }
 .ui-dropdown__item--danger { color: var(--color-status-error); }
+/* Unread count (proposed, decision 26 Oct: phones show unread chats on "Chat") */
+.ui-dropdown__badge { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; margin-left: var(--spacing-xs); padding: 0 var(--spacing-xs); box-sizing: border-box; border-radius: var(--radius-pill); background: var(--color-status-error); color: var(--base-white); font-weight: var(--font-weight-semibold); font-size: var(--text-xsmall-regular-size); line-height: var(--text-xsmall-regular-line); vertical-align: middle; }
+.ui-dropdown__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .ui-dropdown__item:hover,
 .ui-dropdown__item:focus-visible { background: var(--color-background-secondary); outline: none; } /* proposed */
 .ui-dropdown__item:focus-visible { box-shadow: inset 0 0 0 var(--focus-ring-width) var(--focus-ring-color); }

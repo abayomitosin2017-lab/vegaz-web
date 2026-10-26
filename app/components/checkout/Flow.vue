@@ -219,6 +219,7 @@ watch(step, () => nextTick(() => modal.value?.focusFirst()))
     card-class="checkout-card"
     :labelledby="titleId"
     fallback-focus="[data-account-trigger]"
+    :dismissible="!busy"
     @close="close"
   >
     <CheckoutContactStep v-if="step === 'contact'" :title-id="titleId" :free="free" :initial="contact" :busy="busy" @close="close" @submit="onContact" />
@@ -273,6 +274,7 @@ watch(step, () => nextTick(() => modal.value?.focusFirst()))
     phone="fullscreen"
     card-class="checkout-success-card"
     :labelledby="`${titleId}-done`"
+    :dismissible="false"
     fallback-focus="[data-account-trigger]"
     @close="close"
   >

@@ -1,12 +1,13 @@
 /**
  * Footer content, copied exactly from Figma Footer (node 9864:56123).
- * "Explore Events" opens the All events page (decision 22 Oct).
+ * "Explore Events" opens the All events page (decision 22 Oct). "Host an Event"
+ * starts hosting and Terms / Privacy open the legal pages (decision 26 Oct).
  * OPEN ITEM: every other `href` is a placeholder ('#'). Real routes and social
  * URLs are not in Figma and must be supplied.
  * FLAG: "X Formerly Twitter)" is missing its opening bracket in Figma.
  * Kept as designed until design confirms.
  */
-export interface FooterLink { label: string; href: string }
+export interface FooterLink { label: string; href: string; /** 'host' starts Host an Event (logs in first) instead of following href */ action?: 'host' }
 export interface FooterColumn { heading: string; links: FooterLink[] }
 
 export const footerColumns: FooterColumn[] = [
@@ -14,7 +15,7 @@ export const footerColumns: FooterColumn[] = [
     heading: 'Discover',
     links: [
       { label: 'Explore Events', href: '/events' },
-      { label: 'Create an Event', href: '#' },
+      { label: 'Host an Event', href: '/host', action: 'host' }, // decision 26 Oct (was "Create an Event")
       { label: 'Hot events right now', href: '#' },
       { label: 'Upcoming events', href: '#' },
     ],
@@ -39,8 +40,8 @@ export const footerColumns: FooterColumn[] = [
   {
     heading: 'Legal',
     links: [
-      { label: 'Terms', href: '#' },
-      { label: 'Privacy', href: '#' },
+      { label: 'Terms', href: '/legal/terms' },
+      { label: 'Privacy', href: '/legal/privacy' },
     ],
   },
 ]
@@ -50,5 +51,5 @@ export const appStoreLinks = [
   { label: 'Get it on Google Play', href: '#', image: '/images/badge-google-play.png' },
 ]
 
-/** FLAG: year 2077 is as designed in Figma; confirm with design. */
-export const copyrightText = '© 2077 Vegaz. All rights reserved.'
+/** Figma 10875:35486 (26 Oct) */
+export const copyrightText = '© Vegaz 2026. All rights reserved.'

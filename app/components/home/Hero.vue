@@ -5,10 +5,10 @@
  *   - 768px and up: Desktop - 29 (Figma 9917:22307), text left, buttons right
  *     (768-1023 is the desktop layout squeezed; no tablet design in Figma)
  * Copy is exactly as in Figma (the sentence has no full stop there).
- * Buttons emit `add-event` and `explore`; Home sends `explore` to the All
- * events page (decision 22 Oct); `add-event` opens Host an event (decision 23 Oct).
+ * "Add your event" emits `add-event`, which opens Host an event (decision 23 Oct).
+ * "Explore Events" was removed at every width (decision 26 Oct).
  */
-const emit = defineEmits<{ 'add-event': []; explore: [] }>()
+const emit = defineEmits<{ 'add-event': [] }>()
 </script>
 
 <template>
@@ -22,16 +22,6 @@ const emit = defineEmits<{ 'add-event': []; explore: [] }>()
       </div>
       <div class="home-hero__actions">
         <UiButton text-style="web" class="home-hero__button" @click="emit('add-event')">Add your event</UiButton>
-        <!-- Figma instance: Grey_3 border instead of the component's Grey_5 -->
-        <UiButton
-          color="secondary"
-          text-style="web"
-          class="home-hero__button home-hero__button--explore"
-          style="--ui-button-border-color: var(--color-border-stronger)"
-          @click="emit('explore')"
-        >
-          Explore Events
-        </UiButton>
       </div>
     </div>
   </section>
@@ -68,8 +58,6 @@ const emit = defineEmits<{ 'add-event': []; explore: [] }>()
   gap: var(--spacing-md);
 }
 .home-hero__button { width: 100%; }
-/* Phones: no "Explore Events" in the hero (decision 26 Oct) */
-@media (max-width: 767px) { .home-hero__button--explore { display: none; } }
 
 /* ---- 768px and up ---- */
 @media (min-width: 768px) {

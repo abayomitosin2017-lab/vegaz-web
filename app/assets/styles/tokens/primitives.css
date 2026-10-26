@@ -104,6 +104,8 @@
   --sizing-icon-button-lg: 48px;  /* search */
   /* Logo: Airbnb header logo is 32 tall at every width it shows */
   --sizing-logo-height: 32px;
+  /* Phone bottom navigation, Airbnb sizing: 1px line + 10 + 44 tab + 10 */
+  --sizing-bottom-nav: 65px;
   /* Header bar (Airbnb compact header with inline search) */
   --sizing-header-height: 80px;
 

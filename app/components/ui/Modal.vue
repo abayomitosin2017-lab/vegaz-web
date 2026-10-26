@@ -16,8 +16,16 @@
  *
  * Behaviour (standard dialog, not drawn in Figma): Escape closes; focus moves
  * into the dialog on open, stays inside while open, and returns to where it
- * was on close; the page behind does not scroll. Clicking the dimmed page
- * does not close it (forms would lose input).
+ * was on close; the page behind does not scroll.
+ * Clicking the dimmed page closes it (decision 26 Oct), except:
+ *   - once something has been typed or changed in a field inside it (so
+ *     input isn't lost; X / Cancel / Escape still close),
+ *   - while it is busy (anything inside marked aria-busy="true", e.g. paying),
+ *   - when the parent passes :dismissible="false" (success screens, saving).
+ * Phones, on-screen keyboard (decision 26 Oct): the dialog area follows the
+ * visible part of the screen (visualViewport), so sheets sit on top of the
+ * keyboard, the card shrinks to the space left and scrolls, and the focused
+ * field is scrolled into view.
  *
  * Motion (decision 22 Oct, "very subtle"): the dimmed page fades; the card
  * grows from 96% (200ms in, 150ms out). Phone sheets slide up from the
@@ -38,13 +46,48 @@ const props = withDefaults(
     phone?: 'center' | 'sheet' | 'fullscreen'
     /** Extra class on the card, to restyle it (e.g. purple success card) */
     cardClass?: string
+    /** Clicking the dimmed page closes it (default). false: only X / Escape */
+    dismissible?: boolean
   }>(),
-  { width: 375, labelledby: undefined, fallbackFocus: undefined, phone: 'center', cardClass: undefined },
+  { width: 375, labelledby: undefined, fallbackFocus: undefined, phone: 'center', cardClass: undefined, dismissible: true },
 )
 const emit = defineEmits<{ close: [] }>()
 
 const card = ref<HTMLElement | null>(null)
 let returnFocusTo: HTMLElement | null = null
+
+// ---- Click outside to close (unless typed in, busy, or not dismissible) ----
+let dirty = false
+let downOnBackdrop = false
+function onInput() { dirty = true }
+function onBackdropDown(e: PointerEvent) { downOnBackdrop = e.target === e.currentTarget }
+function onBackdropClick(e: MouseEvent) {
+  const fromBackdrop = downOnBackdrop && e.target === e.currentTarget
+  downOnBackdrop = false
+  if (!fromBackdrop || !props.dismissible || dirty) return
+  if (card.value?.querySelector('[aria-busy="true"]')) return
+  emit('close')
+}
+
+// ---- Phones: keep the dialog in the part of the screen the keyboard leaves ----
+const viewport = ref<{ top: number; height: number } | null>(null)
+function syncViewport() {
+  const vv = window.visualViewport
+  if (!vv) return
+  const covered = window.innerHeight - vv.height
+  viewport.value = covered > 80 ? { top: vv.offsetTop, height: vv.height } : null // > 80: a keyboard, not a browser bar
+  if (viewport.value) nextTick(revealFocused)
+}
+function revealFocused() {
+  const el = document.activeElement as HTMLElement | null
+  if (el && card.value?.contains(el) && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) el.scrollIntoView({ block: 'nearest' })
+}
+function watchViewport(on: boolean) {
+  const vv = window.visualViewport
+  if (!vv) return
+  if (on) { vv.addEventListener('resize', syncViewport); vv.addEventListener('scroll', syncViewport); syncViewport() }
+  else { vv.removeEventListener('resize', syncViewport); vv.removeEventListener('scroll', syncViewport); viewport.value = null }
+}
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
 
@@ -74,7 +117,9 @@ watch(
   async (isOpen, wasOpen) => {
     if (!import.meta.client) return
     if (!isOpen && !wasOpen) return // created closed: nothing to undo
+    watchViewport(isOpen)
     if (isOpen) {
+      dirty = false
       returnFocusTo = document.activeElement as HTMLElement | null
       document.documentElement.style.overflow = 'hidden'
       await nextTick()
@@ -94,6 +139,7 @@ watch(
 onMounted(() => document.addEventListener('keydown', onKeydown))
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKeydown)
+  if (import.meta.client) watchViewport(false)
   document.documentElement.style.overflow = ''
 })
 
@@ -103,7 +149,16 @@ defineExpose({ focusFirst })
 <template>
   <Teleport to="body">
     <Transition name="ui-modal" appear>
-    <div v-if="open" :class="['ui-modal', `ui-modal--${phone}`]">
+    <div
+      v-if="open"
+      :class="['ui-modal', `ui-modal--${phone}`, { 'ui-modal--keyboard': viewport }]"
+      :style="viewport ? { top: `${viewport.top}px`, height: `${viewport.height}px`, bottom: 'auto' } : undefined"
+      @pointerdown="onBackdropDown"
+      @click="onBackdropClick"
+      @input.capture="onInput"
+      @change.capture="onInput"
+      @focusin="viewport && nextTick(revealFocused)"
+    >
       <div
         ref="card"
         :class="['ui-modal__card', cardClass]"
@@ -172,5 +227,9 @@ defineExpose({ focusFirst })
     border-radius: 0;
     box-shadow: none;
   }
+  /* Keyboard open: the dialog area is the visible part of the screen */
+  .ui-modal--keyboard .ui-modal__card { max-height: calc(100% - var(--spacing-lg)); overflow-y: auto; }
+  .ui-modal--keyboard.ui-modal--sheet .ui-modal__card { padding-bottom: var(--spacing-lg); }
+  .ui-modal--keyboard.ui-modal--fullscreen .ui-modal__card { min-height: 100%; max-height: 100%; }
 }
 </style>

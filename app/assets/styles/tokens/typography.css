@@ -266,8 +266,8 @@
   --text-badge-weight: 600;
   --text-badge-tracking: 0px;
   /* phone bottom tab label 10/12 ls 0.2 (w500 active, w400 others) */
-  --text-nav-label-size: 10px;
-  --text-nav-label-line: 12px;
+  --text-nav-label-size: 11px; /* decision 26 Oct: 11 (Airbnb 10) */
+  --text-nav-label-line: 13px;
   --text-nav-label-weight: 500;
   --text-nav-label-tracking: 0.2px;
   /* big numbers 26/30 w600 -0.52 */

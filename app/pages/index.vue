@@ -14,7 +14,7 @@ const { startHosting } = useHostEntry()
 
 <template>
   <div class="home">
-    <HomeHero @explore="navigateTo('/events')" @add-event="startHosting" />
+    <HomeHero @add-event="startHosting" />
 
     <div v-if="events" class="home__content">
       <EventSection title="Happening this week" :events="events.happeningThisWeek" card-size="small" />

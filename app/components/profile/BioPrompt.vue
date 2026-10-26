@@ -31,7 +31,7 @@ function save() { if (ready.value) emit('save', bio.value) }
 </script>
 
 <template>
-  <UiModal :open="open" :width="441" phone="sheet" card-class="profile-prompt-card" :labelledby="`${id}-t`" @close="emit('close')">
+  <UiModal :open="open" :width="441" phone="sheet" card-class="profile-prompt-card" :dismissible="!busy" :labelledby="`${id}-t`" @close="emit('close')">
     <form class="profile-bio" novalidate @submit.prevent="save">
       <div class="profile-bio__top">
         <div class="profile-bio__head">

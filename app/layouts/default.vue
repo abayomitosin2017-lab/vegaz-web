@@ -39,20 +39,34 @@ async function confirmLogout() {
     loggingOut.value = false
   }
 }
+// Chat dock (decision 26 Oct): forget its chats and state on log out
+const chatDock = useChatDock()
+watch(user, (u, was) => { if (!u && was) { chatDock.reset(); try { sessionStorage.removeItem('vegaz-chat-dock') } catch { /* ignore */ } } })
+// Phone bottom navigation (Figma 10870:35376, decision 26 Oct): on the main
+// pages; hidden on event pages (their ticket bar sits there), inside an open
+// conversation and on full-screen phone screens. Edit Profile keeps it (its
+// Save bar sits above it).
+const isPhone = usePhoneLayout()
+const showBottomNav = computed(() => isPhone.value
+  && !route.path.startsWith('/events/')
+  && !(route.path === '/chat' && route.query.chat)
+  && (!hideHeaderOnPhone.value || route.path === '/profile/edit'))
 </script>
 
 <template>
-  <div class="layout">
+  <div :class="['layout', { 'layout--bottom-nav': showBottomNav }]">
     <LayoutHeader :class="{ 'layout__header--hide-phone': hideHeaderOnPhone }" :user="user" @login="openAuth" @menu="onMenu" @host="startHosting" />
     <main id="main" class="layout__main">
       <slot />
     </main>
     <LayoutFooter v-if="route.meta.footer !== false" :class="{ 'layout__footer--hide-phone': route.meta.footer === 'desktop' }" />
+    <LayoutBottomNav v-if="showBottomNav" />
     <AuthOnboardingModal />
     <AuthLogoutDialog :open="logoutOpen" :busy="loggingOut" @close="logoutOpen = false" @confirm="confirmLogout" />
     <HostChoiceSheet :open="hostSheetOpen" @close="hostSheetOpen = false" />
     <ProfileActivitiesModal :open="activitiesOpen" @close="activitiesOpen = false" @host="startHosting" />
     <ProfileBirthdayPrompt :open="prompts.prompt.value === 'birthday'" :busy="prompts.busy.value" @close="prompts.close" @save="prompts.onBirthday" />
+    <ClientOnly><ChatDock v-if="user && route.path !== '/chat'" /></ClientOnly>
     <ProfileGenderPrompt :open="prompts.prompt.value === 'gender'" :busy="prompts.busy.value" :initial="user?.gender" @close="prompts.close" @save="prompts.onGender" />
   </div>
 </template>
@@ -66,5 +80,7 @@ async function confirmLogout() {
 .layout__main { flex: 1 0 auto; display: flex; flex-direction: column; }
 @media (max-width: 767px) {
   .layout__header--hide-phone, .layout__footer--hide-phone { display: none; }
+  /* room for the fixed bottom navigation */
+  .layout--bottom-nav { padding-bottom: calc(var(--sizing-bottom-nav) + env(safe-area-inset-bottom, 0px)); }
 }
 </style>

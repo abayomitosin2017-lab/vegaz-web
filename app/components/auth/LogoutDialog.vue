@@ -23,7 +23,7 @@ const id = useId()
 </script>
 
 <template>
-  <UiModal :open="open" :width="375" :labelledby="`${id}-t`" card-class="auth-logout-card" @close="emit('close')">
+  <UiModal :open="open" :width="375" :dismissible="!busy" :labelledby="`${id}-t`" card-class="auth-logout-card" @close="emit('close')">
     <div class="auth-logout">
       <button type="button" class="auth-logout__close" aria-label="Close" @click="emit('close')">
         <img src="/images/host/icon-close-16.svg" alt="" width="16" height="16" />

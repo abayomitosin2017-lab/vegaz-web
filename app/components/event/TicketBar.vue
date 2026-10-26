@@ -15,10 +15,15 @@ const emit = defineEmits<{ buy: [] }>()
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`
 const summary = computed(() => `${plural(props.count, 'Ticket')}, ${plural(props.tiers, 'Tier')}`)
+// Lift the chat dock (tablets) above this bar while it shows
+const { bottomOffset } = useChatDock()
+const barEl = ref<HTMLElement | null>(null)
+onMounted(() => { bottomOffset.value = barEl.value?.offsetHeight ?? 0 })
+onBeforeUnmount(() => { bottomOffset.value = 0 })
 </script>
 
 <template>
-  <div class="ticket-bar" role="region" aria-label="Your tickets">
+  <div ref="barEl" class="ticket-bar" role="region" aria-label="Your tickets">
     <div class="ticket-bar__info" aria-live="polite" :aria-label="`${formatNaira(total)}, ${summary}`">
       <p class="ticket-bar__total">{{ formatNaira(total) }}</p>
       <p class="ticket-bar__meta text-small-regular" aria-hidden="true">

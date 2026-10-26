@@ -30,6 +30,7 @@
  */
 import type { SessionUser } from '~/types/auth'
 import { profileMenuItems } from '~/config/profileMenu'
+import type { DropdownItem } from '~/components/ui/DropdownMenu.vue'
 
 const props = withDefaults(defineProps<{ showActions?: boolean; user?: SessionUser | null }>(), { showActions: true, user: null })
 
@@ -67,6 +68,9 @@ function onMobileSearchKey(e: KeyboardEvent) {
 }
 const route = useRoute()
 watch(() => route.fullPath, () => { mobileSearchOpen.value = false })
+// Phones: Chat lives in the bottom navigation (with its unread count), so
+// the phone menu is Edit Profile, My Activities, Log out (decision 26 Oct)
+const mobileMenuItems = computed<DropdownItem[]>(() => profileMenuItems.filter(i => i.id !== 'chat'))
 </script>
 
 <template>
@@ -105,7 +109,7 @@ watch(() => route.fullPath, () => { mobileSearchOpen.value = false })
         >
           <template #icon><img src="/images/icon-profile-24.svg" alt="" width="24" height="24" /></template>
         </UiButton>
-        <UiDropdownMenu v-else :items="profileMenuItems" label="Account" @select="emit('menu', $event)">
+        <UiDropdownMenu v-else :items="mobileMenuItems" label="Account" @select="emit('menu', $event)">
           <template #trigger="{ props: trigger }">
             <button type="button" class="site-header__avatar-button" :aria-label="accountLabel" data-account-trigger v-bind="trigger">
               <UiAvatar :name="user.firstName" :seed="user.username" :src="user.avatarUrl" />
@@ -260,6 +264,7 @@ watch(() => route.fullPath, () => { mobileSearchOpen.value = false })
    avatar at 4px inside a 48px row; arrow added by decision 22 Oct, 4px gap,
    proposed). The arrow also widens the tap area past 44px. */
 .site-header__avatar-button {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xxs);

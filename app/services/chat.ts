@@ -1,5 +1,5 @@
 import type { ChatMessage, ChatPerson, ChatPostMessage, ChatProfile, ChatSummary, NewMessage } from '~/types/chat'
-import { mockChatOwnerUsername, mockChats, mockMessages, mockProfile } from '~/mocks/chat'
+import { mockChatOwnerUsername, mockChats, mockIncoming, mockMessages, mockProfile } from '~/mocks/chat'
 import { eventById } from '~/mocks/eventCatalog'
 import { mockLatencyMs } from '~/mocks/auth'
 import { ticketsHeld } from './tickets'
@@ -123,3 +123,29 @@ export async function getProfile(person: ChatPerson): Promise<ChatProfile> {
   await wait(150)
   return mockProfile(person)
 }
+
+/**
+ * New messages from other people, for the chat dock's unread count and its
+ * "new message" preview (decision 26 Oct). Returns a function that stops
+ * listening.
+ * MOCK: no real-time server. For the demo account, one scripted message
+ * arrives in "House Party" ~12 s after the page loads, so the preview can be
+ * seen. OPEN ITEM (engineering): websocket / push delivery.
+ */
+export function onIncomingMessage(username: string, listener: (message: ChatPostMessage, chat: ChatSummary) => void): () => void {
+  if (username !== mockChatOwnerUsername || deliveredDemo) return () => {}
+  const timer = setTimeout(() => {
+    deliveredDemo = true
+    const chat = [...chats, ...Object.values(joined).flat()].find(c => c.id === mockIncoming.chatId)
+    if (!chat) return
+    const message: ChatPostMessage = { ...structuredClone(mockIncoming.message), id: `incoming-${Date.now()}`, createdAt: new Date().toISOString() }
+    ;(messages[chat.id] ??= []).push(message)
+    chat.lastAt = message.createdAt
+    chat.lastMessage = { senderFirstName: message.sender.name.split(' ')[0]!, text: message.text ?? 'Photo' }
+    chat.unreadCount += 1
+    listener(structuredClone(message), structuredClone(chat))
+  }, mockIncoming.afterMs)
+  return () => clearTimeout(timer)
+}
+let deliveredDemo = false
+

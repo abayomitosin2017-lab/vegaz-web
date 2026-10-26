@@ -99,7 +99,7 @@ function back() {
 </script>
 
 <template>
-  <UiModal ref="modal" :open="isOpen" :width="widths[step]" :labelledby="titleId" fallback-focus="[data-account-trigger]" @close="closeModal">
+  <UiModal ref="modal" :open="isOpen" :width="widths[step]" :labelledby="titleId" fallback-focus="[data-account-trigger]" :dismissible="!busy" @close="closeModal">
     <AuthEmailStep v-if="step === 'email'" :title-id="titleId" :busy="busy" :initial-email="email" @close="closeModal" @submit="onEmail" />
     <AuthCodeStep v-else-if="step === 'code'" :title-id="titleId" :email="email" @close="closeModal" @back="back" @verified="onVerified" />
     <AuthNamesStep v-else-if="step === 'names'" :title-id="titleId" :initial="names" @close="closeModal" @back="back" @submit="onNames" />

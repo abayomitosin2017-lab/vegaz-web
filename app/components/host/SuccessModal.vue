@@ -27,7 +27,7 @@ const link = computed(() => (import.meta.client && props.eventId ? eventUrl(prop
 </script>
 
 <template>
-  <UiModal :open="open" :width="479" phone="fullscreen" card-class="host-success-card" :labelledby="`${id}-t`" @close="emit('close')">
+  <UiModal :open="open" :width="479" phone="fullscreen" card-class="host-success-card" :dismissible="false" :labelledby="`${id}-t`" @close="emit('close')">
     <div class="host-success">
       <img class="host-success__confetti" src="/images/host/m-confetti.svg" alt="" aria-hidden="true" width="402" height="244" />
       <button type="button" class="host-success__close" aria-label="Close" @click="emit('close')">
