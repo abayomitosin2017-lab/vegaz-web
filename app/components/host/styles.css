@@ -1,0 +1,180 @@
+/* Shared pieces of the host an event screens (Figma section 10754:68066,
+   desktop frames edited by design, 23 Oct). Imported by the host components. */
+
+/* Step header: H3 web bold 24/32 + Small web regular 16/24 secondary, 8 apart */
+.host-step-head { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+.host-step-head__title { margin: 0; color: var(--color-text-primary); }
+.host-step-head__copy { margin: 0; color: var(--color-text-secondary); }
+
+/* Section inside a step ("Create ticket", "Add an item"): Body web semibold
+   18/28 + x-Small web regular 14/18 secondary; 16 apart */
+.host-section { display: flex; flex-direction: column; gap: var(--spacing-md); }
+.host-section__title { margin: 0; color: var(--color-text-primary); }
+.host-section__copy { margin: 0; margin-top: calc(var(--spacing-xs) - var(--spacing-md)); color: var(--color-text-secondary); }
+
+/* Field: label Small app semibold 14/20 + 8px + input */
+.host-field { display: flex; flex-direction: column; gap: var(--spacing-xs); min-width: 0; }
+.host-field__label { color: var(--color-text-option); }
+.host-field__label-row { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-xs); }
+
+/* Input: white, 1px #E5E7EF, 14/16 padding, radius 12, Body app 16/24 */
+.host-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--sizing-control-field);
+  /* Figma strokes sit inside the box: padding minus the 1px line */
+  padding: calc(var(--spacing-field) - var(--border-width-default)) calc(var(--spacing-md) - var(--border-width-default));
+  border: var(--border-width-default) solid var(--color-host-field-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background-primary);
+  color: var(--color-text-option);
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-app-body-semibold-size);
+  line-height: var(--text-app-body-semibold-line);
+  outline: none;
+  transition: border-color 150ms ease;
+}
+.host-input::placeholder { color: var(--color-text-placeholder-subtle); font-weight: var(--font-weight-regular); }
+.host-input:hover { border-color: var(--color-border-strong); }
+.host-input:focus-visible,
+.host-input:focus { border-color: var(--color-border-focus); }
+.host-input--error { border-color: var(--color-host-danger); }
+textarea.host-input { resize: none; display: block; }
+
+/* Text area with the "0/100 Characters" counter inside the box */
+.host-textarea {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: calc(var(--spacing-field) - var(--border-width-default)) calc(var(--spacing-md) - var(--border-width-default));
+  border: var(--border-width-default) solid var(--color-host-field-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background-primary);
+  transition: border-color 150ms ease;
+}
+.host-textarea:hover { border-color: var(--color-border-strong); }
+.host-textarea:focus-within { border-color: var(--color-border-focus); }
+.host-textarea textarea {
+  width: 100%;
+  min-height: 24px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-option);
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-app-body-semibold-size);
+  line-height: var(--text-app-body-semibold-line);
+  resize: none;
+  outline: none;
+}
+.host-textarea textarea::placeholder { color: var(--color-text-placeholder-subtle); }
+.host-textarea__count { color: var(--color-text-muted); }
+
+/* Grey note ("Exact location will be visible...", fee note) */
+.host-note {
+  margin: 0;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 0.5px solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-background-secondary);
+  color: var(--color-text-option);
+}
+.host-note strong { font-weight: var(--font-weight-bold); }
+
+/* Side panel header: "Your tickets" + "4 tickets" */
+.host-side-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--spacing-xs); }
+.host-side-head__title { margin: 0; color: var(--color-text-primary); }
+.host-side-head__count { color: var(--color-text-secondary); }
+
+/* Empty box in the side panel */
+.host-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2xl);
+  padding: var(--spacing-2xl) var(--spacing-md);
+  border-radius: 16px;
+  background: var(--color-host-empty);
+  text-align: center;
+}
+.host-empty__text { margin: 0; color: var(--color-text-option); }
+
+/* Round 34px icon buttons on cards (pen / delete) */
+.host-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: var(--spacing-xs);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+.host-icon-btn:hover { background: var(--color-background-secondary); }
+.host-icon-btn:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: 0; }
+
+/* Dialog header: H2 app bold 24/32 + Small app regular Grey_2, close X 16 */
+.host-dialog { display: flex; flex-direction: column; gap: var(--spacing-lg); }
+.host-dialog__head { display: flex; align-items: flex-start; gap: var(--spacing-xs); }
+.host-dialog__titles { flex: 1; display: flex; flex-direction: column; gap: var(--spacing-xxs); min-width: 0; }
+.host-dialog__title { margin: 0; color: var(--color-text-checkout); }
+.host-dialog__copy { margin: 0; color: var(--color-text-secondary); }
+.host-dialog__close {
+  display: inline-flex;
+  flex: none;
+  padding: var(--spacing-xxs);
+  margin: calc(-1 * var(--spacing-xxs)) calc(-1 * var(--spacing-xxs)) 0 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  cursor: pointer;
+}
+.host-dialog__close:hover { background: var(--color-background-secondary); }
+.host-dialog__close:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); }
+.host-dialog .ui-button { width: 100%; }
+.host-dialog__actions { display: flex; gap: var(--spacing-md); }
+.host-dialog__actions > * { flex: 1 0 0; min-width: 0; }
+
+/* Inactive primary action: Figma draws it as the secondary button (Grey_6,
+   Grey_1 text), not the greyed disabled style. It stays focusable and
+   announces itself as unavailable (aria-disabled). */
+.host-inactive.ui-button { cursor: default; }
+
+.host-visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0);
+  white-space: nowrap; border: 0;
+}
+
+/* Ticket drawing: Figma frame is 303 x 64; the tilted ticket reaches below it */
+.host-empty__art { display: block; }
+.host-empty__art--tickets { width: 303px; max-width: 100%; height: 64px; }
+.host-empty__art--tickets img { display: block; width: 303px; max-width: 100%; height: auto; }
+
+/* Cards appearing / leaving in the side panel (proposed, subtle) */
+.host-list-enter-active { transition: opacity 200ms ease, transform 200ms var(--ease-out-strong); }
+.host-list-leave-active { transition: opacity 150ms ease; }
+.host-list-enter-from { opacity: 0; transform: translateY(-4px); }
+.host-list-leave-to { opacity: 0; }
+.host-list-move { transition: transform 200ms var(--ease-out-strong); }
+@media (prefers-reduced-motion: reduce) {
+  .host-list-enter-active, .host-list-leave-active, .host-list-move { transition: none; }
+}
+
+/* "Event Created" purple card (same as the buy-ticket success card).
+   Selectors doubled to win over UiModal's own card rules. */
+.ui-modal .ui-modal__card.host-success-card.host-success-card {
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-pill);
+  background: var(--color-success-surface);
+}
+@media (max-width: 767px) {
+  .ui-modal .ui-modal__card.host-success-card.host-success-card { padding: 0; border-radius: 0; }
+}

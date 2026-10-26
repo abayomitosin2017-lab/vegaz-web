@@ -1,6 +1,7 @@
 import type { EventDetails, EventSummary, HomeEvents } from '~/types/event'
 import { homeEventsMock } from '~/mocks/events'
 import { catalog, eventById } from '~/mocks/eventCatalog'
+import { createdEventIds } from '~/mocks/hosting'
 
 /**
  * Events data service (MOCK). Components never import mocks directly; they
@@ -13,8 +14,16 @@ import { catalog, eventById } from '~/mocks/eventCatalog'
  */
 const wait = (ms = 150) => new Promise(resolve => setTimeout(resolve, ms))
 
+const summary = ({ id, title, location, dateLabel, category, imageUrl }: EventDetails): EventSummary => ({ id, title, location, dateLabel, category, imageUrl })
+
 export async function getHomeEvents(): Promise<HomeEvents> {
-  return structuredClone(homeEventsMock)
+  const home = structuredClone(homeEventsMock)
+  // Events hosted in this session show first in "Upcoming" and "Explore all"
+  // (demo, decision 23 Oct). OPEN ITEM: how new events reach Home.
+  const created = createdEventIds.map(id => eventById[id]?.event).filter((e): e is EventDetails => !!e).map(summary)
+  home.upcoming.unshift(...created)
+  home.exploreAll.unshift(...structuredClone(created))
+  return home
 }
 
 /**

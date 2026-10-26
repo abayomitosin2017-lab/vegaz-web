@@ -9,11 +9,12 @@
 import { getHomeEvents } from '~/services/events'
 
 const { data: events } = await useAsyncData('home-events', getHomeEvents)
+const { startHosting } = useHostEntry()
 </script>
 
 <template>
   <div class="home">
-    <HomeHero @explore="navigateTo('/events')" />
+    <HomeHero @explore="navigateTo('/events')" @add-event="startHosting" />
 
     <div v-if="events" class="home__content">
       <EventSection title="Happening this week" :events="events.happeningThisWeek" card-size="small" />

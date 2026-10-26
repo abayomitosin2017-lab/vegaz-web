@@ -6,7 +6,7 @@
  *     (768-1023 is the desktop layout squeezed; no tablet design in Figma)
  * Copy is exactly as in Figma (the sentence has no full stop there).
  * Buttons emit `add-event` and `explore`; Home sends `explore` to the All
- * events page (decision 22 Oct); `add-event` has no destination yet.
+ * events page (decision 22 Oct); `add-event` opens Host an event (decision 23 Oct).
  */
 const emit = defineEmits<{ 'add-event': []; explore: [] }>()
 </script>

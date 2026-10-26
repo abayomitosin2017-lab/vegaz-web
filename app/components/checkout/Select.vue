@@ -14,6 +14,14 @@
  * Chips: 'neutral' Grey_5 + Grey_1 semibold ("Sold out"); 'alert' red +
  * white regular ("5 tickets left").
  *
+ * 'preset' (host an event, Figma frame 09): green 7% fill, 10% green
+ * line, green x-Small regular ("Preset").
+ *
+ * variant 'host' (host an event "Ticket Type", Figma frames 07-14): label
+ * raw black; placeholder Small app regular, chosen value Body app semibold
+ * 16/24; 24px arrow; descriptions Small app regular 14/20; lines #F4F5F8;
+ * the list sits right under the field (no gap). Not scrolled (5 items).
+ *
  * Keyboard (listbox pattern, not drawn in Figma): Enter / Space / Down
  * opens the list; Up / Down move; Enter picks; Escape closes.
  */
@@ -23,11 +31,11 @@ export interface SelectOption {
   description?: string
   value?: string
   chip?: string
-  chipTone?: 'neutral' | 'alert'
+  chipTone?: 'neutral' | 'alert' | 'preset'
   disabled?: boolean
 }
 
-const props = defineProps<{ options: SelectOption[]; label: string; placeholder: string }>()
+const props = withDefaults(defineProps<{ options: SelectOption[]; label: string; placeholder: string; variant?: 'checkout' | 'host' }>(), { variant: 'checkout' })
 const model = defineModel<string | null>({ default: null })
 
 const open = ref(false)
@@ -71,7 +79,7 @@ function onKeydown(e: KeyboardEvent) {
 </script>
 
 <template>
-  <div class="checkout-select">
+  <div :class="['checkout-select', `checkout-select--${variant}`]">
     <span :id="`${id}-label`" class="checkout-select__label text-app-small-semibold">{{ label }}</span>
     <button
       ref="field"
@@ -85,8 +93,9 @@ function onKeydown(e: KeyboardEvent) {
       @click="toggle"
       @keydown="onKeydown"
     >
-      <span :id="`${id}-value`" class="checkout-select__value text-app-small-semibold">{{ selected?.label ?? placeholder }}</span>
-      <img :class="['checkout-select__chevron', { 'checkout-select__chevron--up': open }]" src="/images/icon-arrow-down-16.svg" alt="" width="16" height="16" />
+      <span :id="`${id}-value`" :class="['checkout-select__value', variant === 'host' ? (selected ? 'text-app-body-semibold' : 'text-app-small-regular') : 'text-app-small-semibold']">{{ selected?.label ?? placeholder }}</span>
+      <img v-if="variant === 'host'" :class="['checkout-select__chevron', { 'checkout-select__chevron--up': open }]" src="/images/host/icon-arrow-down-24.svg" alt="" width="24" height="24" />
+      <img v-else :class="['checkout-select__chevron', { 'checkout-select__chevron--up': open }]" src="/images/icon-arrow-down-16.svg" alt="" width="16" height="16" />
     </button>
 
     <ul v-show="open" :id="listId" class="checkout-select__list" role="listbox" :aria-labelledby="`${id}-label`">
@@ -105,9 +114,9 @@ function onKeydown(e: KeyboardEvent) {
         <span class="checkout-select__text">
           <span class="checkout-select__name">
             <span class="checkout-select__option-label text-app-small-semibold">{{ o.label }}</span>
-            <span v-if="o.chip" :class="['checkout-select__chip', `checkout-select__chip--${o.chipTone ?? 'neutral'}`, o.chipTone === 'alert' ? 'text-app-xsmall-regular' : 'text-app-xsmall-semibold']">{{ o.chip }}</span>
+            <span v-if="o.chip" :class="['checkout-select__chip', `checkout-select__chip--${o.chipTone ?? 'neutral'}`, o.chipTone === 'neutral' || !o.chipTone ? 'text-app-xsmall-semibold' : 'text-app-xsmall-regular']">{{ o.chip }}</span>
           </span>
-          <span v-if="o.description" class="checkout-select__desc text-app-xsmall-regular">{{ o.description }}</span>
+          <span v-if="o.description" :class="['checkout-select__desc', variant === 'host' ? 'text-app-small-regular' : 'text-app-xsmall-regular']">{{ o.description }}</span>
         </span>
         <span v-if="o.value" class="checkout-select__price text-app-small-semibold">{{ o.value }}</span>
       </li>
@@ -185,5 +194,16 @@ function onKeydown(e: KeyboardEvent) {
 .checkout-select__chip { display: inline-flex; align-items: center; height: 20px; padding: 0 var(--spacing-xs); border-radius: var(--radius-pill); white-space: nowrap; }
 .checkout-select__chip--neutral { background: var(--color-background-neutral); color: var(--color-text-strong); }
 .checkout-select__chip--alert { padding-inline: 7px; background: var(--color-badge-low); color: var(--color-text-inverse); }
+/* Host an event (Figma frames 07-14) */
+.checkout-select__chip--preset { padding: var(--spacing-micro) var(--spacing-xs); height: auto; border: var(--border-width-default) solid var(--color-host-preset-border); background: var(--color-host-preset-bg); color: var(--color-host-preset); }
+.checkout-select--host .checkout-select__label { color: var(--color-text-option); }
+.checkout-select--host .checkout-select__field { min-height: var(--sizing-control-field); padding-block: calc(var(--spacing-field) - var(--border-width-default)); border-color: var(--color-host-field-border); }
+.checkout-select--host .checkout-select__field:hover { border-color: var(--color-border-strong); }
+.checkout-select--host .checkout-select__field[aria-expanded='true'], .checkout-select--host .checkout-select__field:focus-visible { border-color: var(--color-border-focus); }
+.checkout-select--host .checkout-select__list { max-height: none; }
+.checkout-select--host .checkout-select__option { padding-block: var(--spacing-sm) calc(var(--spacing-sm) - 2px); }
+.checkout-select--host .checkout-select__text { gap: 10px; }
+.checkout-select--host .checkout-select__option + .checkout-select__option::before { border-top-color: var(--color-border-subtle); }
+
 @media (prefers-reduced-motion: reduce) { .checkout-select__chevron { transition: none; } }
 </style>

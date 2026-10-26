@@ -119,6 +119,15 @@ function closeProfile() {
 const hideHeaderOnPhone = useState('hide-header-phone', () => false)
 watchEffect(() => { hideHeaderOnPhone.value = !!profile.value })
 onBeforeUnmount(() => { hideHeaderOnPhone.value = false })
+
+// ---- "Event Created" (host an event, Figma frame 20) ----
+// The host flow opens the new event with ?created=1; closing the dialog
+// (or "Go to event") leaves the page as it is, without the query.
+const createdOpen = computed(() => route.query.created === '1' && !!event.value)
+function closeCreated() {
+  const { created: _created, ...query } = route.query
+  navigateTo({ path: route.path, query }, { replace: true })
+}
 </script>
 
 <template>
@@ -186,6 +195,8 @@ onBeforeUnmount(() => { hideHeaderOnPhone.value = false })
       @purchased="refreshStatus"
       @join-chat="join"
     />
+
+    <HostSuccessModal :open="createdOpen" :event-id="event.id" :title="event.title" @close="closeCreated" />
 
     <UiToast :message="toast" @done="toast = ''" />
   </div>

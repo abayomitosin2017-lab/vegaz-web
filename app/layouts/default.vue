@@ -8,6 +8,9 @@ const { user, logout } = useSession()
 const route = useRoute()
 // Phones: some screens (an open chat) use their own top bar instead
 const hideHeaderOnPhone = useState('hide-header-phone', () => false)
+// "Host an Event": log in first when signed out (decision 23 Oct)
+const { startHosting, watchLogin } = useHostEntry()
+watchLogin()
 
 // Profile menu: "Chat" opens the chat page, "Log out" signs out (and leaves
 // pages that need an account). Edit Profile, Settings and My Activities have
@@ -23,7 +26,7 @@ async function onMenu(id: string) {
 
 <template>
   <div class="layout">
-    <LayoutHeader :class="{ 'layout__header--hide-phone': hideHeaderOnPhone }" :user="user" @login="openAuth" @menu="onMenu" />
+    <LayoutHeader :class="{ 'layout__header--hide-phone': hideHeaderOnPhone }" :user="user" @login="openAuth" @menu="onMenu" @host="startHosting" />
     <main id="main" class="layout__main">
       <slot />
     </main>

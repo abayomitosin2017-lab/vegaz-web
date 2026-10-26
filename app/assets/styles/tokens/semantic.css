@@ -164,4 +164,26 @@
   --focus-ring-color: var(--color-action-primary);
   --focus-ring-width: var(--border-width-emphasis);
   --focus-ring-offset: 2px;
+
+  /* Host an event (Figma section 10754:68066, desktop frames, 23 Oct) */
+  --color-host-selected: #eceffe;          /* chosen option / ticket being edited (Primary light 3, raw) */
+  --color-host-empty: #f4f5f8;             /* "No ticket has been created yet" box, chips (raw) */
+  --color-host-field-border: #e5e7ef;      /* form inputs (raw, = Grey_5) */
+  --color-host-row-label: #0e0f11;         /* details row label */
+  --color-host-row-value: #8895a7;         /* details row value (raw) */
+  --color-host-note: #303237;              /* info note text (= Grey_1) */
+  --color-host-cover-chip: var(--accent-lime); /* "Cover" chip on a thumbnail */
+  --color-host-crop-shade: rgba(44, 44, 44, 0.8); /* outside the crop on the cover */
+  --color-host-thumb-remove: rgba(44, 44, 44, 0.6);
+  --color-host-preset: var(--base-positive);   /* "Preset" chip text */
+  --color-host-preset-bg: rgba(32, 175, 11, 0.07);
+  --color-host-preset-border: rgba(32, 175, 11, 0.1);
+  --color-host-danger: var(--base-negative);   /* Delete button, delete icons, past-time error */
+  --color-host-delete-circle: #141316;
+  --shadow-host-card: 0 4px 16px rgba(0, 0, 0, 0.05);
+  --sizing-host-topbar: 72px;
+  --sizing-host-bottombar: 80px;
+  --sizing-host-rail: 360px;
+  --sizing-host-side: 400px;
+  --sizing-host-photo: 408px;
 }
