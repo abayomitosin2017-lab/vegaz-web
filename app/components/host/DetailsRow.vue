@@ -51,7 +51,7 @@ defineEmits<{ open: [] }>()
 .host-row--button:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: 4px; }
 .host-row--button:hover .host-row__label { color: var(--color-action-primary); }
 .host-row__icon { flex: none; width: 24px; height: 24px; }
-.host-row__label { flex: 1 1 auto; min-width: 0; color: var(--color-host-row-label); transition: color 150ms ease; }
+.host-row__label { flex: 1 0 auto; min-width: 0; white-space: nowrap; color: var(--color-host-row-label); transition: color 150ms ease; }
 .host-row__value { flex: 0 1 auto; min-width: 0; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--color-host-row-value); }
 .host-row__edit {
   flex: none;

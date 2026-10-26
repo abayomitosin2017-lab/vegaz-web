@@ -53,10 +53,38 @@ export async function listHostEvents(): Promise<HostedEventOption[]> {
     .map(({ id, title, location, dateLabel, imageUrl }) => ({ id, title, location, dateLabel, imageUrl }))
 }
 
-/** The event a new edition continues: title, about and photos to start from */
-export async function getEditionBase(eventId: string): Promise<{ title: string; about: string; category: string; location: string } | null> {
-  const e = eventById[eventId]?.event
-  return e ? { title: e.title, about: e.about, category: e.category, location: e.location } : null
+/** Catalog names that differ from the host category list */
+const CATEGORY_ALIASES: Record<string, string> = { 'Food & Drinks': 'Food and Drink', Sports: 'Sport' }
+
+/**
+ * Everything a new edition starts with (decision 24 Oct): the chosen event's
+ * title, description, photos, location, category, tickets and "What to
+ * expect", all editable. Only the date and time start empty.
+ * Tickets: each one becomes a Custom ticket (Free when it costs nothing)
+ * with its name, price, description and limit.
+ * MOCK: the demo catalog stores the price guests pay; it is used as the
+ * host's price here. OPEN ITEM: the API should send the host's own price.
+ */
+export async function getEditionBase(eventId: string): Promise<Omit<EventDraft, 'date' | 'time' | 'coverIndex' | 'editionOf'> | null> {
+  await wait(150)
+  const found = eventById[eventId]
+  if (!found) return null
+  const e = found.event
+  return {
+    title: e.title,
+    description: e.about,
+    photos: e.photos.slice(0, 5).map((url, i) => ({ id: `${eventId}-photo-${i}`, url, focusX: 50, focusY: 50 })),
+    location: e.address || e.location,
+    category: CATEGORY_ALIASES[e.category] ?? (hostCategories.includes(e.category) ? e.category : null),
+    participants: 'all',
+    tickets: found.tickets.map<DraftTicket>(t => ({
+      id: `${eventId}-${t.id}`,
+      kind: t.price > 0 ? 'custom' : 'free',
+      name: t.price > 0 ? t.name : presetName('free'),
+      lines: [{ price: t.price, quantity: t.maxQuantity ?? null, description: t.description }],
+    })),
+    expectations: e.expectations.map((x, i) => ({ id: `${eventId}-expect-${i}`, ...x })),
+  }
 }
 
 /**
@@ -82,7 +110,7 @@ function toTicketTypes(tickets: DraftTicket[]): TicketType[] {
   const out: TicketType[] = []
   for (const t of tickets) {
     t.lines.forEach((line, i) => {
-      const suffix = t.kind === 'gender' ? (i === 0 ? ' · FEMALE' : ' · MALE') : ''
+      const suffix = t.kind === 'gender' && t.lines.length > 1 ? (i === 0 ? ' · FEMALE' : ' · MALE') : ''
       const price = guestPrice(line.price)
       out.push({
         id: `${t.id}-${i}`,
@@ -102,7 +130,8 @@ const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(
 
 /**
  * Publishes the event (MOCK: adds it to the demo catalog) and returns its id.
- * A new edition keeps the original event's chat and community.
+ * A new edition keeps the original event's chat and community; the person
+ * publishing becomes its host.
  */
 export async function createEvent(draft: EventDraft, user: SessionUser): Promise<string> {
   await wait(600)
@@ -125,11 +154,12 @@ export async function createEvent(draft: EventDraft, user: SessionUser): Promise
     category: draft.category ?? '',
     imageUrl: ordered[0]?.url,
     photos: ordered.map(p => p.url),
-    host: base?.host ?? me,
+    // The person publishing hosts it, also for a new edition (decision 26 Oct)
+    host: me,
     about: draft.description.trim(),
     expectations: draft.expectations.map(({ title, description, imageUrl }) => ({ title, description, imageUrl })),
     communityCount: base?.communityCount ?? 1,
-    members: base?.members ?? [{ person: me, isHost: true }],
+    members: [{ person: me, isHost: true }, ...(base?.members ?? []).filter(m => !m.isHost && m.person.username !== me.username)].slice(0, 5),
     chatId: base?.chatId,
   }
   const entry = { event, tickets: toTicketTypes(draft.tickets) }

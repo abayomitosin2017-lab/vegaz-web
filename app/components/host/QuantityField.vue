@@ -40,7 +40,8 @@ function onInput(e: Event) {
     </div>
     <div :class="['host-qty__stepper', { 'host-qty__stepper--off': unlimited }]">
       <button type="button" class="host-qty__btn" :disabled="unlimited || quantity <= min" :aria-label="`Fewer (${label})`" @click="set(quantity - 1)">
-        <img :src="quantity > min && !unlimited ? '/images/host/icon-minus-circle-on-32.svg' : '/images/host/icon-minus-circle-32.svg'" alt="" width="32" height="32" />
+        <img class="host-qty__icon-web" :src="quantity > min && !unlimited ? '/images/host/icon-minus-circle-on-32.svg' : '/images/host/icon-minus-circle-32.svg'" alt="" width="32" height="32" />
+        <img class="host-qty__icon-phone" src="/images/host/m-minus-24.svg" alt="" width="24" height="24" />
       </button>
       <input
         :id="`${id}-n`"
@@ -54,7 +55,8 @@ function onInput(e: Event) {
         @keydown.down.prevent="set(quantity - 1)"
       />
       <button type="button" class="host-qty__btn" :disabled="unlimited || quantity >= max" :aria-label="`More (${label})`" @click="set(quantity + 1)">
-        <img :src="quantity < max && !unlimited ? '/images/host/icon-add-circle-32.svg' : '/images/host/icon-add-circle-off-32.svg'" alt="" width="32" height="32" />
+        <img class="host-qty__icon-web" :src="quantity < max && !unlimited ? '/images/host/icon-add-circle-32.svg' : '/images/host/icon-add-circle-off-32.svg'" alt="" width="32" height="32" />
+        <img class="host-qty__icon-phone" src="/images/host/m-plus-24.svg" alt="" width="24" height="24" />
       </button>
     </div>
   </div>
@@ -93,4 +95,18 @@ function onInput(e: Event) {
 }
 .host-qty__value:focus { border-color: var(--color-border-focus); }
 .host-qty__value:disabled { background: var(--color-background-primary); }
+
+.host-qty__icon-phone { display: none; }
+/* Phones (Figma mobile Create Ticket 10754:71510): #F4F5F8 box, radius 24,
+   8 / 16 padding, 8 apart; 40px round buttons with a white 24px circle icon
+   (minus Grey_4 when it can't go lower, plus Primary); white number box
+   (1px #E5E7EF, radius 12, 14 / 16 padding), number Headline 3 semibold 20/26 */
+@media (max-width: 767px) {
+  .host-qty__icon-web { display: none; }
+  .host-qty__icon-phone { display: block; }
+  .host-qty__stepper { gap: var(--spacing-xs); padding: var(--spacing-xs) var(--spacing-md); border: 0; border-radius: var(--radius-lg); background: var(--color-host-empty); }
+  .host-qty__btn { padding: calc(var(--spacing-xs) - 0.5px); border: 0.5px solid rgba(75, 9, 159, 0.1); border-radius: var(--radius-pill); background: var(--color-action-primary); }
+  .host-qty__btn:disabled { background: var(--color-border-strong); }
+  .host-qty__value { padding: calc(var(--spacing-field) - 1px) calc(var(--spacing-md) - 1px); font-size: 20px; line-height: 26px; font-weight: var(--font-weight-semibold); color: var(--color-text-checkout); }
+}
 </style>

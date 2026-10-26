@@ -7,6 +7,7 @@
  * Top bar: 72px tall, 0 64px padding, 1px Grey_5 line below. Logo 78 x 33.
  * Exit: small secondary button, 96px wide; leaves the flow for Home.
  * OPEN ITEM (design): ask before leaving with unsaved changes? Not drawn.
+ * Phones: no top bar (mobile Figma frames); see HostFlow.
  */
 </script>
 
@@ -50,8 +51,9 @@
 .host-layout__exit.ui-button { width: 96px; }
 .host-layout__main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 
-/* No phone design: narrower padding so it still fits (flagged) */
+/* Phones: the mobile Figma screens have no logo bar; each screen has its
+   own back button (HostMobileTopBar) */
 @media (max-width: 767px) {
-  .host-layout__bar { padding: 0 var(--spacing-md); }
+  .host-layout__bar { display: none; }
 }
 </style>

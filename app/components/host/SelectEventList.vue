@@ -80,5 +80,10 @@ const shown = computed(() => {
 .host-select-event__meta { display: flex; align-items: center; gap: var(--spacing-xs); color: var(--color-text-muted); white-space: nowrap; overflow: hidden; }
 .host-select-event__dot { width: 4px; height: 4px; border-radius: 50%; background: var(--color-text-muted); flex: none; }
 .host-select-event__radio { flex: none; }
-@media (max-width: 767px) { .host-select-event__grid { grid-template-columns: 1fr; } }
+/* Phones (Figma mobile Select Event 10754:73375): one column, 14 apart,
+   24 under the search */
+@media (max-width: 767px) {
+  .host-select-event { gap: var(--spacing-lg); }
+  .host-select-event__grid { grid-template-columns: 1fr; gap: 14px; }
+}
 </style>

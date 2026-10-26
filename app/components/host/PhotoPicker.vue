@@ -145,7 +145,8 @@ function onKey(e: KeyboardEvent) {
         </div>
         <p class="host-photos__note text-app-small-regular">
           <img src="/images/host/icon-info-24.svg" alt="" width="24" height="24" />
-          Click any image below to set it as your cover image
+          <span class="host-photos__web">Click any image below to set it as your cover image</span>
+          <span class="host-photos__phone">Tap any image below to set it as your cover image</span>
         </p>
       </div>
 
@@ -172,7 +173,7 @@ function onKey(e: KeyboardEvent) {
           >
             <img src="/images/host/icon-gallery-add-24.svg" alt="" width="24" height="24" />
           </button>
-          <span class="host-photos__badge" aria-hidden="true"><img src="/images/host/icon-image-16.svg" alt="" width="16" height="16" /></span>
+          <img class="host-photos__badge" src="/images/host/badge-add-photo-25.svg" alt="" width="25" height="25" />
         </li>
       </ul>
     </template>
@@ -308,12 +309,21 @@ function onKey(e: KeyboardEvent) {
   position: absolute;
   left: 26px;
   top: 68px;
-  display: inline-flex;
-  padding: var(--spacing-xxs);
-  border: var(--border-width-default) solid var(--base-white);
-  border-radius: var(--radius-pill);
-  background: var(--color-text-muted);
+  width: 25px;
+  height: 25px;
   pointer-events: none;
+}
+/* Phones (Figma mobile Create New Edition 10754:73664): the cover is 325 x
+   402 (it fills the width), the note says "Tap", the thumbnails scroll
+   sideways */
+.host-photos__phone { display: none; }
+@media (max-width: 767px) {
+  .host-photos { width: 100%; }
+  .host-photos__drop, .host-photos__cover { aspect-ratio: 325 / 402; }
+  .host-photos__web { display: none; }
+  .host-photos__phone { display: inline; }
+  .host-photos__thumbs { overflow-x: auto; margin-right: calc(-1 * var(--spacing-lg)); padding-right: var(--spacing-lg); scrollbar-width: none; }
+  .host-photos__thumbs::-webkit-scrollbar { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .host-photos__thumb-btn img { transition: none; } }
 </style>

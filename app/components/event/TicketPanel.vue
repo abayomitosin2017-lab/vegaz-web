@@ -16,13 +16,16 @@
  * Holding a ticket (decision 22 Oct): the cards and Buy Ticket stay, so more
  * can be bought for others, and the chat header's "Share Event" button
  * (grey pill, share icon) appears under them, full width.
+ * Host's own event (decision 26 Oct, PROPOSED look): the cards show without
+ * steppers, "Open Chat" replaces Buy Ticket (on every screen size) and
+ * Share Event sits under it.
  */
 import type { TicketType } from '~/types/ticket'
 import { formatNaira } from '~/utils/money'
 
-const props = defineProps<{ tickets: TicketType[]; total: number; count: number; holding?: boolean }>()
+const props = defineProps<{ tickets: TicketType[]; total: number; count: number; holding?: boolean; host?: boolean; busy?: boolean }>()
 const quantities = defineModel<Record<string, number>>('quantities', { required: true })
-const emit = defineEmits<{ buy: []; share: [] }>()
+const emit = defineEmits<{ buy: []; share: []; chat: [] }>()
 
 const buyLabel = computed(() => (props.count ? `Buy Ticket (${formatNaira(props.total)})` : 'Buy Ticket'))
 </script>
@@ -31,11 +34,15 @@ const buyLabel = computed(() => (props.count ? `Buy Ticket (${formatNaira(props.
   <section class="ticket-panel" aria-label="Tickets">
     <ul class="ticket-panel__list">
       <li v-for="t in tickets" :key="t.id">
-        <TicketOption v-model:quantity="quantities[t.id]" :ticket="t" />
+        <TicketOption v-model:quantity="quantities[t.id]" :ticket="t" :preview="host" />
       </li>
     </ul>
-    <UiButton class="ticket-panel__buy" text-style="web" :disabled="!count" @click="emit('buy')">{{ buyLabel }}</UiButton>
-    <UiButton v-if="holding" color="secondary" class="ticket-panel__share" @click="emit('share')">
+    <UiButton v-if="host" class="ticket-panel__buy ticket-panel__chat" text-style="web" :aria-busy="busy ? 'true' : undefined" @click="!busy && emit('chat')">
+      <template #icon><img src="/images/host/icon-chat-light-24.svg" alt="" width="24" height="24" /></template>
+      Open Chat
+    </UiButton>
+    <UiButton v-else class="ticket-panel__buy" text-style="web" :disabled="!count" @click="emit('buy')">{{ buyLabel }}</UiButton>
+    <UiButton v-if="holding || host" color="secondary" class="ticket-panel__share" @click="emit('share')">
       <template #icon><img src="/images/chat/icon-share-24.svg" alt="" width="24" height="24" /></template>
       Share Event
     </UiButton>
@@ -64,6 +71,6 @@ const buyLabel = computed(() => (props.count ? `Buy Ticket (${formatNaira(props.
 /* Below 1024px: just the cards (phone frame); the bottom bar takes over */
 @media (max-width: 1023px) {
   .ticket-panel { padding: 0; border: 0; border-radius: 0; }
-  .ticket-panel__buy { display: none; }
+  .ticket-panel__buy:not(.ticket-panel__chat) { display: none; }
 }
 </style>

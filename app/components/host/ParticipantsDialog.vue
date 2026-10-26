@@ -25,7 +25,7 @@ watch(() => props.open, o => { if (o) picked.value = props.value })
     <div class="host-parts" role="radiogroup" aria-label="Participants">
       <label v-for="o in options" :key="o.value" class="host-parts__opt">
         <input v-model="picked" class="host-visually-hidden" type="radio" name="participants" :value="o.value" />
-        <img :src="picked === o.value ? '/images/auth/radio-on.svg' : '/images/auth/radio-off.svg'" alt="" width="24" height="24" />
+        <img :src="picked === o.value ? '/images/host/radio-on-24.svg' : '/images/host/radio-off-24.svg'" alt="" width="24" height="24" />
         <span class="text-app-small-semibold">{{ o.label }}</span>
       </label>
     </div>

@@ -6,7 +6,9 @@ import './styles.css'
  * "Back" + "Save". Save stays inactive for a past time (error shown under
  * the time, as on the Date & tickets step).
  */
-const props = defineProps<{ open: boolean; date: string; time: string }>()
+// `fresh`: a new event sets its date here on phones (decision 26 Oct).
+// Its title and copy are PROPOSED (only the edition version is drawn).
+const props = defineProps<{ open: boolean; date: string; time: string; fresh?: boolean }>()
 const emit = defineEmits<{ close: []; save: [value: { date: string; time: string }] }>()
 const d = ref('')
 const t = ref('')
@@ -16,7 +18,7 @@ const ok = computed(() => !!d.value && !!t.value && !past.value)
 </script>
 
 <template>
-  <HostDialog :open="open" title="Edit date & time" copy="What is the new date and time for this edition" @close="emit('close')">
+  <HostDialog :open="open" :title="fresh ? 'Date & time' : 'Edit date & time'" :copy="fresh ? 'When is your event happening?' : 'What is the new date and time for this edition'" @close="emit('close')">
     <HostDateTimeFields v-model:date="d" v-model:time="t" stacked />
     <div class="host-dialog__actions host-edit-date__actions">
       <UiButton color="secondary" @click="emit('close')">Back</UiButton>

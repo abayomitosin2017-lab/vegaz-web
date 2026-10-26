@@ -17,7 +17,9 @@ import { formatNaira } from '~/utils/money'
  *   Custom        Name, Price, fee note, Quantity, Description
  *   First to Buy / Early Bird
  *                 Price, fee note, Quantity, Description
- *   Gender-Based  "FEMALE" chip + Price, Quantity, Description; then "MALE"
+ *   Gender-Based  "FEMALE" chip + Price, Quantity, Description; then "MALE".
+ *                 "Add" creates two tickets, "FEMALE TICKET" and "MALE TICKET"
+ *                 (decision 26 Oct). Editing one shows only its own group.
  *   Free          Quantity, Description
  * Fields 17 apart (Figma). Fee note (Grey_6, 0.5px Grey_5, radius 12,
  * 12px padding, x-Small regular): shows once a price is typed, with the
@@ -27,7 +29,7 @@ import { formatNaira } from '~/utils/money'
  * Complete = a type is chosen, Custom has a name, paid types have a price.
  * Description is optional, up to 100 characters ("0/100 Characters").
  */
-const props = defineProps<{ kinds: TicketKindOption[]; editing: DraftTicket | null }>()
+const props = defineProps<{ kinds: TicketKindOption[]; editing: DraftTicket | null; phone?: boolean }>()
 const emit = defineEmits<{ add: [ticket: DraftTicket]; save: [ticket: DraftTicket]; cancel: [] }>()
 
 interface LineForm { price: string; quantity: number; unlimited: boolean; description: string }
@@ -43,14 +45,17 @@ const kindModel = computed({
   set: (v: string | null) => { kind.value = v as TicketKind | null },
 })
 
-// Gender-based has two groups; every other type has one
+// Gender-based has two groups (female, male) when creating; editing one of
+// the two tickets it made shows only that ticket's group
+const editGender = ref<'female' | 'male' | null>(null)
 watch(kind, k => {
-  const want = k === 'gender' ? 2 : 1
+  const want = k === 'gender' && !editGender.value ? 2 : 1
   while (lines.value.length < want) lines.value.push(blankLine())
   if (lines.value.length > want) lines.value = lines.value.slice(0, want)
 })
 
 function load(t: DraftTicket | null) {
+  editGender.value = t?.kind === 'gender' && t.gender ? t.gender : null
   if (!t) { kind.value = null; name.value = ''; lines.value = [blankLine()]; return }
   kind.value = t.kind
   name.value = t.kind === 'custom' ? t.name : ''
@@ -74,35 +79,37 @@ function onPrice(l: LineForm, e: Event) {
   el.value = l.price
 }
 
-function build(id: string): DraftTicket {
+const toLine = (l: LineForm, k: TicketKind): TicketPriceLine => ({
+  price: k === 'free' ? 0 : priceOf(l),
+  quantity: l.unlimited ? null : l.quantity,
+  description: l.description.trim(),
+})
+const genderName = (g: 'female' | 'male') => (g === 'female' ? 'FEMALE TICKET' : 'MALE TICKET')
+/** The ticket(s) this form makes: two for a new gender-based ticket */
+function build(id: string | null): DraftTicket[] {
   const k = kind.value!
-  return {
-    id,
-    kind: k,
-    name: k === 'custom' ? name.value.trim() : presetName(k),
-    lines: lines.value.map<TicketPriceLine>(l => ({
-      price: k === 'free' ? 0 : priceOf(l),
-      quantity: l.unlimited ? null : l.quantity,
-      description: l.description.trim(),
-    })),
+  if (k === 'gender') {
+    const genders: ('female' | 'male')[] = editGender.value ? [editGender.value] : ['female', 'male']
+    return genders.map((g, i) => ({ id: id ?? crypto.randomUUID(), kind: k, gender: g, name: genderName(g), lines: [toLine(lines.value[i]!, k)] }))
   }
+  return [{ id: id ?? crypto.randomUUID(), kind: k, name: k === 'custom' ? name.value.trim() : presetName(k), lines: lines.value.map(l => toLine(l, k)) }]
 }
 function submit() {
   if (!ready.value) return
-  if (props.editing) emit('save', build(props.editing.id))
+  if (props.editing) emit('save', build(props.editing.id)[0]!)
   else {
-    emit('add', build(crypto.randomUUID()))
+    build(null).forEach(t => emit('add', t))
     load(null)
   }
 }
-const groupLabel = (i: number) => (kind.value === 'gender' ? (i === 0 ? 'FEMALE' : 'MALE') : '')
+const groupLabel = (i: number) => (kind.value !== 'gender' ? '' : (editGender.value ?? (i === 0 ? 'female' : 'male')).toUpperCase())
 const id = useId()
 </script>
 
 <template>
-  <section class="host-section host-ticket-form" :aria-labelledby="`${id}-h`">
-    <h3 :id="`${id}-h`" class="host-section__title text-body-semibold">{{ editing ? 'Edit ticket' : 'Create ticket' }}</h3>
-    <p class="host-section__copy text-xsmall-regular">{{ editing ? 'Update this ticket, then save your changes.' : 'Add as many ticket types as you need. Each one appears on the right.' }}</p>
+  <section :class="['host-section host-ticket-form', { 'host-ticket-form--phone': phone }]" :aria-labelledby="phone ? undefined : `${id}-h`" :aria-label="phone ? (editing ? 'Edit ticket' : 'Create ticket') : undefined">
+    <h3 v-if="!phone" :id="`${id}-h`" class="host-section__title text-body-semibold">{{ editing ? 'Edit ticket' : 'Create ticket' }}</h3>
+    <p v-if="!phone" class="host-section__copy text-xsmall-regular">{{ editing ? 'Update this ticket, then save your changes.' : 'Add as many ticket types as you need. Each one appears on the right.' }}</p>
 
     <div class="host-ticket-form__fields">
       <CheckoutSelect v-model="kindModel" variant="host" :options="options" label="Ticket Type" placeholder="Select Type" />
@@ -137,13 +144,13 @@ const id = useId()
     </div>
 
     <div class="host-ticket-form__actions">
-      <UiButton v-if="editing" class="host-ticket-form__cancel" color="secondary" @click="emit('cancel')">Cancel</UiButton>
+      <UiButton v-if="editing && !phone" class="host-ticket-form__cancel" color="secondary" @click="emit('cancel')">Cancel</UiButton>
       <UiButton
         :class="['host-ticket-form__submit', { 'host-inactive': !ready }]"
         :color="ready ? 'primary' : 'secondary'"
         :aria-disabled="!ready ? 'true' : undefined"
         @click="submit"
-      >{{ editing ? 'Save changes' : 'Add ticket' }}</UiButton>
+      >{{ phone ? (editing ? 'Save Changes' : 'Add Ticket') : (editing ? 'Save changes' : 'Add ticket') }}</UiButton>
     </div>
   </section>
 </template>
@@ -165,4 +172,18 @@ const id = useId()
 .host-ticket-form__actions { display: flex; gap: var(--spacing-md); }
 .host-ticket-form__cancel.ui-button { width: 140px; }
 .host-ticket-form__submit.ui-button { width: 200px; }
+/* Phones (Figma mobile Create Ticket): the screen has the title; the button
+   sits 40px above the bottom, 327 wide, over a white fade */
+.host-ticket-form--phone { padding-bottom: 112px; }
+.host-ticket-form--phone .host-ticket-form__actions {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  justify-content: center;
+  padding: var(--spacing-md) var(--spacing-lg) calc(var(--spacing-2xl) + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0), var(--base-white) 30%);
+}
+.host-ticket-form--phone .host-ticket-form__submit.ui-button { width: min(327px, 100%); }
 </style>

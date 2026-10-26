@@ -32,8 +32,16 @@ export interface DraftTicket {
   kind: TicketKind
   /** Custom: typed by the host. Presets: the preset name (e.g. "FIRST TO BUY") */
   name: string
-  /** Most kinds have one line. Gender-based has two: female, then male. */
+  /**
+   * One price line. (Older drafts: gender-based had two, female then male.)
+   */
   lines: TicketPriceLine[]
+  /**
+   * Gender-based only (decision 26 Oct): the form asks for both groups at
+   * once, then "Add" creates two tickets, "FEMALE TICKET" and "MALE TICKET",
+   * each with its own price, quantity and description.
+   */
+  gender?: 'female' | 'male'
 }
 
 /** One "What to expect" item */

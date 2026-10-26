@@ -168,13 +168,38 @@ textarea.host-input { resize: none; display: block; }
   .host-list-enter-active, .host-list-leave-active, .host-list-move { transition: none; }
 }
 
-/* "Event Created" purple card (same as the buy-ticket success card).
+/* "Event Created" card: white, content edge to edge (confetti), radius 24.
    Selectors doubled to win over UiModal's own card rules. */
 .ui-modal .ui-modal__card.host-success-card.host-success-card {
-  padding: var(--spacing-lg);
-  border-radius: var(--radius-pill);
-  background: var(--color-success-surface);
+  padding: 0;
+  overflow: hidden;
 }
 @media (max-width: 767px) {
   .ui-modal .ui-modal__card.host-success-card.host-success-card { padding: 0; border-radius: 0; }
+}
+
+/* Date / time pop-ups (DatePicker, TimePicker): open under their field */
+.host-pop {
+  position: absolute;
+  top: calc(100% + var(--spacing-xs));
+  left: 0;
+  z-index: 30;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border: var(--border-width-default) solid var(--color-border-subtle);
+  border-radius: 16px;
+  background: var(--color-background-primary);
+  box-shadow: var(--shadow-dropdown);
+  animation: host-pop-in var(--duration-popup-in) var(--ease-out-strong);
+}
+.host-pop__title { margin: 0; color: var(--color-text-strong); font-weight: var(--font-weight-bold); }
+@keyframes host-pop-in { from { opacity: 0; transform: translateY(-4px); } }
+@media (prefers-reduced-motion: reduce) { .host-pop { animation: none; } }
+
+/* Phone "Create event" sheet: 16px sides (Figma mobile 10754:75731) */
+@media (max-width: 767px) {
+  .ui-modal .ui-modal__card.host-choice-sheet.host-choice-sheet { padding-left: var(--spacing-md); padding-right: var(--spacing-md); }
 }

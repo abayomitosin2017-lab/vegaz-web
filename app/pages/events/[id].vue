@@ -55,6 +55,9 @@ const price = computed(() => priceRange((tickets.value ?? []).map(t => t.price))
 const checkoutOpen = ref(false)
 // Tickets the signed-in user holds for this event, and whether they're in its chat
 const holding = ref(0)
+// The signed-in user hosts this event (they created it): their main action is
+// to open its chat, not to join or buy (decision 26 Oct)
+const isHost = computed(() => !!user.value && !!event.value && event.value.host.username === user.value.username)
 const inChat = ref(false)
 async function refreshStatus() {
   holding.value = ticketsHeld(user.value?.email, id.value)
@@ -135,8 +138,8 @@ function closeCreated() {
     <div class="event-page__top">
       <h1 class="event-page__title text-page-title">{{ event.title }}</h1>
       <UiButton color="secondary" text-style="web" class="event-page__join" :disabled="joining" @click="join">
-        <template v-if="!inChat" #icon><img src="/images/event/icon-plus-24.svg" alt="" width="24" height="24" /></template>
-        {{ inChat ? 'Open Chat' : 'Join Community - Free' }}
+        <template v-if="!inChat && !isHost" #icon><img src="/images/event/icon-plus-24.svg" alt="" width="24" height="24" /></template>
+        {{ inChat || isHost ? 'Open Chat' : 'Join Community - Free' }}
       </UiButton>
     </div>
 
@@ -149,7 +152,7 @@ function closeCreated() {
       </div>
 
       <div class="event-page__tickets">
-        <EventTicketPanel v-model:quantities="quantities" :tickets="tickets ?? []" :total="total" :count="count" :holding="holding > 0" @buy="buy" @share="invite" />
+        <EventTicketPanel v-model:quantities="quantities" :tickets="tickets ?? []" :total="total" :count="count" :holding="holding > 0" :host="isHost" :busy="joining" @buy="buy" @share="invite" @chat="join" />
       </div>
 
       <section class="event-page__about" aria-labelledby="event-about-title">
@@ -159,7 +162,7 @@ function closeCreated() {
 
       <EventExpectList class="event-page__expect" :items="event.expectations" />
 
-      <EventJoinCard v-if="!inChat" class="event-page__join-card" :busy="joining" @join="join" />
+      <EventJoinCard v-if="!inChat && !isHost" class="event-page__join-card" :busy="joining" @join="join" />
 
       <EventCommunity class="event-page__community" :members="event.members" :count="event.communityCount" @invite="invite" />
 
@@ -168,7 +171,7 @@ function closeCreated() {
       <EventAppBanner class="event-page__banner" />
     </div>
 
-    <EventTicketBar v-if="count > 0" class="event-page__bar" :total="total" :count="count" :tiers="picked.length" @buy="buy" />
+    <EventTicketBar v-if="count > 0 && !isHost" class="event-page__bar" :total="total" :count="count" :tiers="picked.length" @buy="buy" />
 
     <UiPhotoViewer
       :open="viewerIndex !== null"

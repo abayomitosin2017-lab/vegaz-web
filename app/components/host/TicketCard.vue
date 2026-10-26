@@ -10,14 +10,14 @@ import { formatNaira, priceRange } from '~/utils/money'
  * Grey_3. Right: edit (pen) and delete (red bin) 34px round buttons.
  * Being edited (15b): #ECEFFE fill and a 2px solid Primary line.
  * Shows the host's price (before the fee), as drawn.
- * Gender-based (not drawn as a card): one quantity chip per group
- * ("F 10", "M 5") and the price range. FLAG for design.
+ * Gender-based: since 26 Oct each gender is its own ticket ("FEMALE TICKET",
+ * "MALE TICKET") with one chip and one price, like any other ticket.
  */
 const props = defineProps<{ ticket: DraftTicket; editing?: boolean }>()
 defineEmits<{ edit: []; delete: [] }>()
 
 const qty = (q: number | null) => (q === null ? 'Unlimited' : String(q))
-const chips = computed(() => props.ticket.kind === 'gender'
+const chips = computed(() => props.ticket.kind === 'gender' && props.ticket.lines.length > 1
   ? props.ticket.lines.map((l, i) => `${i === 0 ? 'F' : 'M'} ${qty(l.quantity)}`)
   : [qty(props.ticket.lines[0]?.quantity ?? null)])
 const price = computed(() => props.ticket.lines.length > 1 ? priceRange(props.ticket.lines.map(l => l.price)) : formatNaira(props.ticket.lines[0]?.price ?? 0))

@@ -6,7 +6,8 @@ import '~/components/host/styles.css'
  * "How would you like to create your next event?" (Small web regular,
  * secondary), 32 above two option cards (360 x 180, 24 apart, 24 padding,
  * radius 16). Chosen card: Primary light 3 (#ECEFFE) with a 2px Primary
- * line and the 32px pen icon; the other: white with a 1px Grey_5 line.
+ * line; the other: white with a 1px Grey_5 line. Each card has its 32px icon
+ * (Start fresh: Pen 2; Use existing: Restart Circle, updated by design 24 Oct).
  * Bottom bar: "Cancel" (back to Home) and "Continue".
  * Signed out: back to Home and the login opens; after login it returns here.
  */
@@ -16,14 +17,16 @@ useHead({ title: 'Create event · Vegaz' })
 const { user } = useSession()
 const { startHosting } = useHostEntry()
 onMounted(() => {
-  if (!user.value) { navigateTo('/'); startHosting() }
+  if (!user.value) { navigateTo('/'); startHosting(); return }
+  // Phones use the "Create event" sheet (Figma mobile) over Home instead
+  if (window.matchMedia('(max-width: 767px)').matches) { navigateTo('/'); startHosting() }
 })
 
 type Choice = 'fresh' | 'edition'
 const choice = ref<Choice>('fresh')
-const options: { id: Choice; title: string; description: string }[] = [
-  { id: 'fresh', title: 'Start fresh event', description: 'Create a brand new event' },
-  { id: 'edition', title: 'Use existing event', description: 'An event with existing chat room and members, recommended for a new edition of an event' },
+const options: { id: Choice; title: string; description: string; icon: string }[] = [
+  { id: 'fresh', title: 'Start fresh event', description: 'Create a brand new event', icon: '/images/host/icon-pen-32.svg' },
+  { id: 'edition', title: 'Use existing event', description: 'An event with existing chat room and members, recommended for a new edition of an event', icon: '/images/host/icon-restart-32.svg' },
 ]
 const go = () => navigateTo(choice.value === 'fresh' ? '/host/new' : '/host/edition')
 </script>
@@ -38,7 +41,7 @@ const go = () => navigateTo(choice.value === 'fresh' ? '/host/new' : '/host/edit
       <div class="host-choice__options" role="radiogroup" aria-label="How would you like to create your next event?">
         <label v-for="o in options" :key="o.id" :class="['host-choice__card', { 'host-choice__card--on': choice === o.id }]">
           <input v-model="choice" class="host-visually-hidden" type="radio" name="host-choice" :value="o.id" />
-          <img v-if="choice === o.id" src="/images/host/icon-pen-32.svg" alt="" width="32" height="32" />
+          <img :src="o.icon" alt="" width="32" height="32" />
           <span class="host-choice__title text-small-semibold">{{ o.title }}</span>
           <span class="host-choice__copy text-xsmall-regular">{{ o.description }}</span>
         </label>

@@ -16,6 +16,10 @@ import { createEvent, getCategories, getEditionBase, getTicketKinds, listHostEve
  *            3 Tickets                                   (E06)
  *            4 What to expect  optional
  *
+ * New edition: choosing the event fills in every detail from it (photos,
+ * title, description, location, category, tickets, What to expect); only
+ * the date and time are left empty (decision 24 Oct).
+ *
  * Finishing ("Proceed" or "Skip" on the last step) publishes the event and
  * opens its page with the "Event Created" dialog (pages/events/[id].vue).
  *
@@ -27,6 +31,12 @@ import { createEvent, getCategories, getEditionBase, getTicketKinds, listHostEve
  *   Tickets (edition)        1+ ticket
  *   What to expect           "Proceed" needs 1+ item; "Skip" finishes without
  * Data stays in this page only (lost on reload). MOCK publishing.
+ *
+ * Phones (below 768px, decision 26 Oct): a separate layout that follows the
+ * mobile Figma frames (no step rail or bottom bar): top bar with a back
+ * button, one screen per step, "Create Ticket" as its own full screen,
+ * "Create Item" as a bottom sheet, actions at the bottom of the screen.
+ * Same data and rules as desktop; switching size keeps what is typed.
  */
 const props = defineProps<{ mode: 'fresh' | 'edition' }>()
 const { user } = useSession()
@@ -88,15 +98,20 @@ const dateLabel = computed(() => {
   return `${d}-${m}-${y}, ${String(((hh ?? 0) % 12) || 12).padStart(2, '0')}:${String(mm).padStart(2, '0')} ${(hh ?? 0) < 12 ? 'AM' : 'PM'}`
 })
 
+// Where the date and time are set: on the details step for a new edition,
+// and on phones for every event (decision 26 Oct: the new-event Ticket
+// Pricing screen matches the edition one); on the desktop tickets step
+// for a new event (desktop frames)
+const dateOnDetails = computed(() => props.mode === 'edition' || isPhone.value)
 const canContinue = computed(() => {
   switch (step.value) {
     case 'select': return !!editionOf.value
     case 'details': {
       const base = !!title.value.trim() && photos.value.length > 0 && !!location.value && !!category.value
-      return props.mode === 'edition' ? base && !!date.value && !!time.value && !isPast.value : base
+      return dateOnDetails.value ? base && !!date.value && !!time.value && !isPast.value : base
     }
     case 'tickets': {
-      const dated = props.mode === 'edition' || (!!date.value && !!time.value && !isPast.value)
+      const dated = dateOnDetails.value || (!!date.value && !!time.value && !isPast.value)
       return dated && tickets.value.length > 0 && !editingTicket.value
     }
     case 'expect': return expectations.value.length > 0 && !editingItem.value
@@ -107,10 +122,29 @@ const canContinue = computed(() => {
 const frame = ref<{ scrollTop: () => void } | null>(null)
 const busy = ref(false)
 
+// New edition: everything from the chosen event is filled in except the
+// date and time (decision 24 Oct). Picking a different event refills it.
+const prefilledFrom = ref<string | null>(null)
+async function prefill(eventId: string) {
+  const base = await getEditionBase(eventId)
+  if (!base) return
+  title.value = base.title
+  description.value = base.description
+  photos.value = base.photos
+  cover.value = 0
+  location.value = base.location
+  category.value = base.category
+  participants.value = base.participants
+  tickets.value = base.tickets
+  expectations.value = base.expectations
+  editingTicket.value = null
+  editingItem.value = null
+  prefilledFrom.value = eventId
+}
+
 async function next() {
-  if (step.value === 'select' && editionOf.value) {
-    const base = await getEditionBase(editionOf.value)
-    if (base && !title.value) { title.value = base.title; description.value = base.about }
+  if (step.value === 'select' && editionOf.value && prefilledFrom.value !== editionOf.value) {
+    await prefill(editionOf.value)
   }
   if (index.value < steps.value.length - 1) {
     index.value += 1
@@ -181,10 +215,121 @@ const headers: Record<StepId, { title: string; copy: string }> = {
 }
 const isLast = computed(() => index.value === steps.value.length - 1)
 const id = useId()
+
+// ---- phones ----
+const isPhone = usePhoneLayout()
+const ticketScreen = ref(false)
+const mobileExpect = ref<{ openNew: () => void } | null>(null)
+const mscroll = ref<HTMLElement | null>(null)
+watch(index, () => nextTick(() => mscroll.value?.scrollTo({ top: 0 })))
+function openTicketScreen(t: DraftTicket | null = null) { editingTicket.value = t; ticketScreen.value = true }
+function closeTicketScreen() { ticketScreen.value = false; editingTicket.value = null }
+function addTicketPhone(t: DraftTicket) { addTicket(t); closeTicketScreen() }
+function saveTicketPhone(t: DraftTicket) { saveTicket(t); closeTicketScreen() }
+const mobileTitles = computed(() => ({
+  select: 'Select Event',
+  details: props.mode === 'fresh' ? 'Create new event' : 'Create New Edition',
+  tickets: 'Ticket Details',
+  expect: '',
+}))
 </script>
 
 <template>
+  <!-- ================= Phones: mobile Figma frames ================= -->
+  <div v-if="isPhone" ref="mscroll" :class="['host-m', `host-m--${step}`]">
+    <HostMobileTopBar
+      class="host-m__bar"
+      :title="mobileTitles[step] || undefined"
+      :back="mode === 'edition' && (step === 'select' || step === 'details') ? 'plain' : 'circle'"
+      @back="back"
+    />
+
+    <!-- Edition 1: Select Event (10754:73375) -->
+    <div v-if="step === 'select'" class="host-m__body host-m__body--select">
+      <HostSelectEventList v-model="editionOf" :events="hostEvents" :loading="loadingEvents" />
+    </div>
+
+    <!-- Create new event / Create New Edition (10754:72118, 10754:73664) -->
+    <div v-else-if="step === 'details'" class="host-m__body host-m__body--details">
+      <HostPhotoPicker v-model:photos="photos" v-model:cover="cover" />
+      <div v-if="mode === 'fresh'" class="host-m__fields">
+        <div class="host-field">
+          <label :for="`${id}-mtitle`" class="host-field__label text-app-small-semibold">Title</label>
+          <input :id="`${id}-mtitle`" v-model="title" class="host-input host-m__input" type="text" maxlength="60" placeholder="What is your event title?" />
+        </div>
+        <div class="host-field">
+          <label :for="`${id}-mdesc`" class="host-field__label text-app-small-semibold">Description</label>
+          <textarea :id="`${id}-mdesc`" v-model="description" class="host-input host-m__input host-details-step__desc" placeholder="Share some exciting and memorable words about your event!" />
+        </div>
+      </div>
+      <div class="host-m__details">
+        <HostDetailsList v-if="mode === 'fresh'" heading="Details">
+          <HostDetailsRow icon="date-time" label="Date & Time" :value="dateLabel || undefined" edit @open="dialog = 'edit-date'" />
+          <HostDetailsRow icon="location" label="Location" :value="location || undefined" @open="dialog = 'location'" />
+          <HostDetailsRow icon="categories" label="Categories" :value="category ?? 'Select'" @open="dialog = 'category'" />
+          <HostDetailsRow icon="participants" label="Participants" :value="participantLabel[participants]" @open="dialog = 'participants'" />
+        </HostDetailsList>
+        <HostDetailsList v-else heading="Edit Details">
+          <HostDetailsRow icon="event-details" label="Event Details" :value="title || undefined" @open="dialog = 'edit-details'" />
+          <HostDetailsRow icon="date-time" label="Date & Time" :value="dateLabel || undefined" edit @open="dialog = 'edit-date'" />
+          <HostDetailsRow icon="edition" label="Edition" :value="editionNumber" :clickable="false" />
+          <HostDetailsRow icon="location" label="Location" :value="location || undefined" @open="dialog = 'location'" />
+          <HostDetailsRow icon="categories" label="Categories" :value="category ?? 'Select'" @open="dialog = 'category'" />
+          <HostDetailsRow icon="participants" label="Participants" :value="participantLabel[participants]" @open="dialog = 'participants'" />
+        </HostDetailsList>
+        <p v-if="isPast" class="host-details-step__error text-app-small-regular" role="alert">You cannot choose a past time.</p>
+        <UiButton
+          :class="['host-m__wide', { 'host-inactive': !canContinue }]"
+          :color="canContinue ? 'primary' : 'secondary'"
+          :aria-disabled="!canContinue ? 'true' : undefined"
+          @click="canContinue && next()"
+        >Proceed to ticket setup</UiButton>
+      </div>
+    </div>
+
+    <!-- Ticket Details (10754:71208-71966) -->
+    <div v-else-if="step === 'tickets'" class="host-m__body host-m__body--tickets">
+      <section class="host-m__section host-m__section--24">
+        <h2 class="host-m__heading text-app-small-semibold">Ticket Pricing</h2>
+        <HostMobileTicketList v-model:tickets="tickets" @create="openTicketScreen()" @edit="t => openTicketScreen(t)" @delete="t => (deleting = { kind: 'ticket', id: t.id })" />
+      </section>
+    </div>
+
+    <!-- What to expect (10754:69503-69746) -->
+    <div v-else-if="step === 'expect'" class="host-m__body host-m__body--expect">
+      <div class="host-m__intro">
+        <h1 class="host-m__h1">What to expect</h1>
+        <p class="host-m__lead text-app-small-regular">To boost engagement and conversion, create a list of experience your guest should expect at the event</p>
+      </div>
+      <HostMobileExpect ref="mobileExpect" v-model:items="expectations" v-model:editing="editingItem" @delete="i => (deleting = { kind: 'item', id: i.id })" />
+    </div>
+
+    <!-- Bottom actions -->
+    <div v-if="step === 'tickets'" class="host-m__float">
+      <UiButton
+        :class="['host-m__wide', { 'host-inactive': !canContinue }]"
+        :color="canContinue ? 'primary' : 'secondary'"
+        :aria-disabled="!canContinue ? 'true' : undefined"
+        @click="canContinue && next()"
+      >Proceed</UiButton>
+    </div>
+    <div v-else-if="step === 'select' || step === 'expect'" class="host-m__foot">
+      <UiButton v-if="step === 'expect'" class="host-m__skip" color="secondary" :aria-disabled="busy ? 'true' : undefined" @click="!busy && publish(true)">Skip</UiButton>
+      <UiButton
+        :class="['host-m__wide', { 'host-inactive': !canContinue }]"
+        :color="canContinue ? 'primary' : 'secondary'"
+        :aria-disabled="!canContinue || busy ? 'true' : undefined"
+        :aria-busy="busy ? 'true' : undefined"
+        @click="canContinue && !busy && next()"
+      >{{ step === 'select' ? 'Create New Edition' : busy ? 'Publishing…' : 'Proceed' }}</UiButton>
+    </div>
+
+    <HostMobileTicketScreen :open="ticketScreen" :kinds="ticketKinds" :editing="editingTicket" @close="closeTicketScreen" @add="addTicketPhone" @save="saveTicketPhone" />
+  </div>
+
+  <!-- ================= Desktop: desktop Figma frames ================= -->
   <HostFrame
+    v-else
     ref="frame"
     :can-continue="canContinue"
     :busy="busy"
@@ -264,7 +409,7 @@ const id = useId()
   <HostCategoryDialog :open="dialog === 'category'" :value="category" :options="categories" @close="dialog = null" @save="v => { category = v; dialog = null }" />
   <HostParticipantsDialog :open="dialog === 'participants'" :value="participants" @close="dialog = null" @save="v => { participants = v; dialog = null }" />
   <HostEditDetailsDialog :open="dialog === 'edit-details'" :title="title" :description="description" @close="dialog = null" @save="v => { title = v.title; description = v.description; dialog = null }" />
-  <HostEditDateDialog :open="dialog === 'edit-date'" :date="date" :time="time" @close="dialog = null" @save="v => { date = v.date; time = v.time; dialog = null }" />
+  <HostEditDateDialog :open="dialog === 'edit-date'" :fresh="mode === 'fresh'" :date="date" :time="time" @close="dialog = null" @save="v => { date = v.date; time = v.time; dialog = null }" />
   <HostDeleteDialog
     :open="!!deleting"
     :title="deleting?.kind === 'item' ? 'Delete Item' : 'Delete Ticket'"
@@ -281,6 +426,65 @@ const id = useId()
 .host-details-step__desc { height: 122px; }
 .host-details-step__error { margin: 0; color: var(--color-host-danger); }
 .host-divider { width: 100%; height: 1px; margin: 0; border: 0; background: var(--color-border-default); }
+/* ---- Phones (mobile Figma frames; the phone status bar is not part of
+   the web page, so Figma's top 44px are left out) ---- */
+.host-m {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--spacing-section) var(--spacing-lg) 136px;
+  background: var(--color-background-primary);
+}
+.host-m--details { padding-bottom: var(--spacing-2xl); }
+.host-m--select { padding-left: var(--spacing-section); padding-right: var(--spacing-section); }
+.host-m__bar { margin-bottom: 35px; }
+.host-m--select .host-m__bar, .host-m--details.host-m .host-m__bar { margin-bottom: var(--spacing-lg); }
+.host-m--expect .host-m__bar { margin-bottom: var(--spacing-lg); }
+.host-m__body { display: flex; flex-direction: column; }
+.host-m__body--details { gap: var(--spacing-xl); }
+.host-m__fields { display: flex; flex-direction: column; gap: var(--spacing-md); padding: 0 var(--spacing-xs); }
+.host-m__input::placeholder { font-weight: var(--font-weight-regular); }
+.host-m__details { display: flex; flex-direction: column; gap: var(--spacing-2xl); padding: 0 var(--spacing-xxs); }
+.host-m__wide.ui-button { width: 100%; }
+.host-m__body--tickets { gap: var(--spacing-lg); }
+.host-m__section { display: flex; flex-direction: column; gap: var(--spacing-md); }
+.host-m__section--24 { gap: var(--spacing-lg); }
+.host-m__heading { margin: 0; color: var(--color-text-checkout); }
+.host-m__body--expect { gap: 23px; }
+.host-m__intro { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+.host-m__h1 { margin: 0; color: var(--color-text-checkout); font-family: var(--font-family-base); font-weight: var(--font-weight-semibold); font-size: 24px; line-height: 32px; letter-spacing: -0.5px; }
+.host-m__lead { margin: 0; color: var(--color-host-note); }
+/* "Proceed" 40px above the bottom, 327 wide (Ticket Details) */
+.host-m__float {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  padding: var(--spacing-md) var(--spacing-lg) calc(var(--spacing-2xl) + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0), var(--base-white) 30%);
+}
+.host-m__float .ui-button { max-width: 327px; }
+/* Bottom bar with a top line (Select Event, What to expect): white,
+   rgba(225,225,225,0.5) line, 20 padding; Skip (Grey_6, Primary text) +
+   Proceed, 16 apart */
+.host-m__foot {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-section) var(--spacing-section) calc(var(--spacing-section) + 22px + env(safe-area-inset-bottom, 0px));
+  border-top: var(--border-width-default) solid rgba(225, 225, 225, 0.5);
+  background: var(--base-white);
+}
+.host-m__foot > .ui-button { flex: 1 0 0; min-width: 0; }
+.host-m__skip.ui-button { --btn-border: transparent; --btn-fg: var(--color-action-primary); }
+
 /* Narrow screens (no design): photos go under the fields */
 @media (max-width: 1279px) {
   .host-details-step { flex-direction: column; align-items: stretch; gap: var(--spacing-xl); }

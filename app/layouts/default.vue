@@ -9,11 +9,11 @@ const route = useRoute()
 // Phones: some screens (an open chat) use their own top bar instead
 const hideHeaderOnPhone = useState('hide-header-phone', () => false)
 // "Host an Event": log in first when signed out (decision 23 Oct)
-const { startHosting, watchLogin } = useHostEntry()
+const { startHosting, watchLogin, sheetOpen: hostSheetOpen } = useHostEntry()
 watchLogin()
 
 // Profile menu: "Chat" opens the chat page, "Log out" signs out (and leaves
-// pages that need an account). Edit Profile, Settings and My Activities have
+// pages that need an account). Edit Profile and My Activities have
 // no pages yet.
 async function onMenu(id: string) {
   if (id === 'chat') await navigateTo('/chat')
@@ -32,6 +32,7 @@ async function onMenu(id: string) {
     </main>
     <LayoutFooter v-if="route.meta.footer !== false" />
     <AuthOnboardingModal />
+    <HostChoiceSheet :open="hostSheetOpen" @close="hostSheetOpen = false" />
   </div>
 </template>
 

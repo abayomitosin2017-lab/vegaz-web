@@ -13,10 +13,12 @@
  * card (25px overlap) with price, description (max 2 lines, then "...") and
  * the quantity stepper. Width comes from the parent (415px in Figma).
  * Text uses the fixed Mobile App styles, as in Figma.
+ * `preview`: the host's own event; the card shows without the stepper
+ * (hosts don't buy their own tickets, decision 26 Oct).
  */
 import type { TicketType } from '~/types/ticket'
 
-const props = defineProps<{ ticket: TicketType }>()
+const props = defineProps<{ ticket: TicketType; preview?: boolean }>()
 const quantity = defineModel<number>('quantity', { default: 0 })
 const nameId = useId()
 const isSoldOut = computed(() => props.ticket.availability === 'sold-out')
@@ -39,6 +41,7 @@ const isSoldOut = computed(() => props.ticket.availability === 'sold-out')
         <p class="ticket-option__description">{{ ticket.description }}</p>
       </div>
       <UiQuantityStepper
+        v-if="!preview"
         v-model="quantity"
         :max="ticket.maxQuantity"
         :unavailable="isSoldOut"

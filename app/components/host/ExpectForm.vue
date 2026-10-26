@@ -43,11 +43,17 @@ function submit() {
   if (props.editing) emit('save', item)
   else { emit('add', item); load(null) }
 }
-function grow(e: Event) {
-  const el = e.target as HTMLTextAreaElement
+// Grows with the text; re-measured whenever the text changes (typing, reset
+// after "Add item", loading an item to edit) so it never keeps an old height
+const descEl = ref<HTMLTextAreaElement | null>(null)
+function fit() {
+  const el = descEl.value
+  if (!el) return
   el.style.height = 'auto'
   el.style.height = `${el.scrollHeight}px`
 }
+watch(description, () => nextTick(fit))
+onMounted(fit)
 </script>
 
 <template>
@@ -72,7 +78,7 @@ function grow(e: Event) {
       </div>
       <div class="host-field">
         <label :for="`${id}-d`" class="host-field__label text-app-small-semibold">Description</label>
-        <textarea :id="`${id}-d`" v-model="description" class="host-input host-expect-form__desc" rows="1" maxlength="120" placeholder="e.g a delightful experience that brings joy and laughter." @input="grow" />
+        <textarea :id="`${id}-d`" v-model="description" ref="descEl" class="host-input host-expect-form__desc" rows="1" maxlength="120" placeholder="e.g a delightful experience that brings joy and laughter." />
       </div>
     </div>
 

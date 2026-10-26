@@ -33,4 +33,6 @@ defineProps<{ heading: string }>()
   height: 1px;
   background: var(--color-border-default);
 }
+/* Phones (Figma mobile 10754:73664): 24 between the heading and the rows */
+@media (max-width: 767px) { .host-details { gap: var(--spacing-lg); } }
 </style>
