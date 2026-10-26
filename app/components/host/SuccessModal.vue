@@ -38,7 +38,7 @@ const link = computed(() => (import.meta.client && props.eventId ? eventUrl(prop
         <div class="host-success__text">
           <h2 :id="`${id}-t`" class="host-success__title text-app-h1-bold">Event Created</h2>
           <p :id="`${id}-c`" class="host-success__copy text-app-small-regular">
-            Your event is live, get your people to join you. Download the Vegaz app to finish setting it up: advanced settings, moderation and more.
+            Your event is live. Share the link below to invite people. To manage settings and moderate your event, download the Vegaz app.
           </p>
         </div>
       </div>
