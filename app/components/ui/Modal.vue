@@ -22,10 +22,11 @@
  *     input isn't lost; X / Cancel / Escape still close),
  *   - while it is busy (anything inside marked aria-busy="true", e.g. paying),
  *   - when the parent passes :dismissible="false" (success screens, saving).
- * Phones, on-screen keyboard (decision 26 Oct): the dialog area follows the
- * visible part of the screen (visualViewport), so sheets sit on top of the
- * keyboard, the card shrinks to the space left and scrolls, and the focused
- * field is scrolled into view.
+ * Phones, on-screen keyboard (decision 26 Oct): BOTTOM SHEETS ONLY. The sheet
+ * rises so its bottom edge sits on the keyboard (keyboard height from
+ * visualViewport), shrinks to the space left and scrolls inside, and the
+ * focused field is scrolled into view. Centred and full-screen dialogs are
+ * left to the browser, as before.
  *
  * Motion (decision 22 Oct, "very subtle"): the dimmed page fades; the card
  * grows from 96% (200ms in, 150ms out). Phone sheets slide up from the
@@ -69,25 +70,38 @@ function onBackdropClick(e: MouseEvent) {
   emit('close')
 }
 
-// ---- Phones: keep the dialog in the part of the screen the keyboard leaves ----
-const viewport = ref<{ top: number; height: number } | null>(null)
+// ---- Phones, bottom sheets: sit on top of the on-screen keyboard ----
+/** Height of the screen the keyboard covers, and the space left above it */
+const keyboard = ref<{ cover: number; space: number } | null>(null)
+let frame = 0
 function syncViewport() {
-  const vv = window.visualViewport
-  if (!vv) return
-  const covered = window.innerHeight - vv.height
-  viewport.value = covered > 80 ? { top: vv.offsetTop, height: vv.height } : null // > 80: a keyboard, not a browser bar
-  if (viewport.value) nextTick(revealFocused)
+  cancelAnimationFrame(frame)
+  frame = requestAnimationFrame(() => {
+    const vv = window.visualViewport
+    if (!vv) return
+    const cover = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop))
+    const next = cover > 80 ? { cover, space: Math.round(vv.height) } : null // > 80: a keyboard, not a browser bar
+    if (next?.cover !== keyboard.value?.cover || next?.space !== keyboard.value?.space) keyboard.value = next
+    if (next) nextTick(revealFocused)
+  })
 }
 function revealFocused() {
   const el = document.activeElement as HTMLElement | null
   if (el && card.value?.contains(el) && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)) el.scrollIntoView({ block: 'nearest' })
 }
+const sheetOnPhone = () => props.phone === 'sheet' && window.matchMedia('(max-width: 767px)').matches
 function watchViewport(on: boolean) {
   const vv = window.visualViewport
   if (!vv) return
-  if (on) { vv.addEventListener('resize', syncViewport); vv.addEventListener('scroll', syncViewport); syncViewport() }
-  else { vv.removeEventListener('resize', syncViewport); vv.removeEventListener('scroll', syncViewport); viewport.value = null }
+  vv.removeEventListener('resize', syncViewport)
+  vv.removeEventListener('scroll', syncViewport)
+  keyboard.value = null
+  if (on && sheetOnPhone()) { vv.addEventListener('resize', syncViewport); vv.addEventListener('scroll', syncViewport); syncViewport() }
 }
+const cardStyle = computed(() => ({
+  '--ui-modal-width': `${props.width}px`,
+  ...(keyboard.value ? { marginBottom: `${keyboard.value.cover}px`, maxHeight: `${keyboard.value.space - 24}px`, paddingBottom: 'var(--spacing-lg)' } : {}),
+}))
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
 
@@ -139,7 +153,7 @@ watch(
 onMounted(() => document.addEventListener('keydown', onKeydown))
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKeydown)
-  if (import.meta.client) watchViewport(false)
+  if (import.meta.client) { watchViewport(false); cancelAnimationFrame(frame) }
   document.documentElement.style.overflow = ''
 })
 
@@ -151,13 +165,12 @@ defineExpose({ focusFirst })
     <Transition name="ui-modal" appear>
     <div
       v-if="open"
-      :class="['ui-modal', `ui-modal--${phone}`, { 'ui-modal--keyboard': viewport }]"
-      :style="viewport ? { top: `${viewport.top}px`, height: `${viewport.height}px`, bottom: 'auto' } : undefined"
+      :class="['ui-modal', `ui-modal--${phone}`]"
       @pointerdown="onBackdropDown"
       @click="onBackdropClick"
       @input.capture="onInput"
       @change.capture="onInput"
-      @focusin="viewport && nextTick(revealFocused)"
+      @focusin="keyboard && nextTick(revealFocused)"
     >
       <div
         ref="card"
@@ -165,7 +178,7 @@ defineExpose({ focusFirst })
         role="dialog"
         aria-modal="true"
         :aria-labelledby="labelledby"
-        :style="{ '--ui-modal-width': `${width}px` }"
+        :style="cardStyle"
       >
         <slot />
       </div>
@@ -227,9 +240,5 @@ defineExpose({ focusFirst })
     border-radius: 0;
     box-shadow: none;
   }
-  /* Keyboard open: the dialog area is the visible part of the screen */
-  .ui-modal--keyboard .ui-modal__card { max-height: calc(100% - var(--spacing-lg)); overflow-y: auto; }
-  .ui-modal--keyboard.ui-modal--sheet .ui-modal__card { padding-bottom: var(--spacing-lg); }
-  .ui-modal--keyboard.ui-modal--fullscreen .ui-modal__card { min-height: 100%; max-height: 100%; }
 }
 </style>

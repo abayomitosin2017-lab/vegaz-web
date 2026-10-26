@@ -629,5 +629,10 @@ Measured on airbnb.com (home + a listing page) at 375, 768 and 1440 in a real br
   - while busy (sending a code, saving, paying): `:dismissible="!busy"` and anything marked `aria-busy="true"`;
   - the checkout success screen and the host "Event created" screen (`:dismissible="false"`).
   - A press that starts inside the card and ends outside (selecting text) does not close.
-- **Phones, on-screen keyboard**: the dialog area follows the visible part of the screen (`visualViewport`), so bottom sheets sit on top of the keyboard, the card shrinks to the space left and scrolls, and the focused field is scrolled into view. Centred and full-screen dialogs do the same.
+- **Phones, on-screen keyboard** (corrected 26 Oct): **bottom sheets only**. The sheet rises so its bottom edge sits exactly on the keyboard's top edge (keyboard height from `visualViewport`, updated once per frame so it doesn't flicker); if it is taller than the space left it scrolls inside, and the focused field is scrolled into view. Centred and full-screen dialogs are back to how they were before (the browser handles the keyboard); tap outside to close still applies to them.
 - Already closing on outside click (unchanged): photo viewer, event-page profile panel, menus.
+
+## 26 Oct — Event page photos: no dark fade
+
+- The phone gallery photos had a dark gradient at the bottom (from the Figma phone frames). Removed: photos show as they are, on phones and everywhere else. The `--gradient-gallery-fade` token is deleted.
+- Unchanged: the blurred, darkened backdrop behind 1–3 photos on desktop (it is a background, not on the photos).

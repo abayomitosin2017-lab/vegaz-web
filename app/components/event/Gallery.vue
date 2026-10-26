@@ -169,7 +169,7 @@ onBeforeUnmount(() => resize?.disconnect())
   <section class="event-gallery" :aria-label="`Photos of ${title}`">
     <!-- Phones, 1 photo: centred portrait -->
     <div v-if="layout === 'phone-one'" class="event-gallery__single">
-      <button type="button" class="event-gallery__tile event-gallery__tile--faded img-zoom" :style="morphStyle" :aria-label="label(0)" @click="emit('open', 0)">
+      <button type="button" class="event-gallery__tile img-zoom" :style="morphStyle" :aria-label="label(0)" @click="emit('open', 0)">
         <img v-if="photos[0]" :src="photos[0]" alt="" draggable="false" />
       </button>
     </div>
@@ -406,15 +406,7 @@ onBeforeUnmount(() => resize?.disconnect())
   /* 1 photo: centred portrait */
   .event-gallery__single { display: flex; justify-content: center; }
   .event-gallery__single .event-gallery__tile { width: min(300px, 100%); aspect-ratio: 1; --gallery-radius: var(--radius-lg); }
-  /* Photos darken toward the bottom (Figma phone frames) */
-  .event-gallery__tile--faded::after,
-  .event-gallery__strip .event-gallery__tile:not(.event-gallery__more)::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--gradient-gallery-fade);
-    pointer-events: none;
-  }
+  /* No dark fade on the photos (decision 26 Oct; Figma phone frames had one) */
   .event-gallery__arrow { display: none; }
 }
 </style>

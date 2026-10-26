@@ -124,7 +124,6 @@
   --color-avatar-more-text: var(--gray-600);
   --shadow-host-tag: 0 4px 24px rgba(0, 0, 0, 0.05);
   /* Gallery photos darken toward the bottom (Figma, phone gallery tiles) */
-  --gradient-gallery-fade: linear-gradient(180deg, rgba(0, 0, 0, 0) 76.42%, rgba(0, 0, 0, 0.6) 92.9%);
 
   /* Buy ticket flow (Figma section "event details", 10713:56670, 22 Oct) */
   --color-overlay-sheet: rgba(0, 0, 0, 0.5);       /* phones: page behind a bottom sheet */
