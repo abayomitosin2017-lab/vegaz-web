@@ -5,12 +5,12 @@
  * decision 22 Oct). White, Dp1 shadow, 20px padding.
  * Left: total (Body semibold, 26px line) over "3 Tickets • 2 Tiers"
  * (Small regular Grey_3, 4px dot between). Right: "Buy Ticket" small primary
- * button (40px). Tickets = all quantities added up; Tiers = ticket types with
+ * button (40px); "RSVP" when only free tickets are picked (decision 26 Oct). Tickets = all quantities added up; Tiers = ticket types with
  * at least one picked (decision 22 Oct).
  */
 import { formatNaira } from '~/utils/money'
 
-const props = defineProps<{ total: number; count: number; tiers: number }>()
+const props = defineProps<{ total: number; count: number; tiers: number; free?: boolean }>()
 const emit = defineEmits<{ buy: [] }>()
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`
@@ -25,7 +25,7 @@ const summary = computed(() => `${plural(props.count, 'Ticket')}, ${plural(props
         {{ plural(count, 'Ticket') }}<span class="ticket-bar__dot" />{{ plural(tiers, 'Tier') }}
       </p>
     </div>
-    <UiButton size="small" class="ticket-bar__buy" @click="emit('buy')">Buy Ticket</UiButton>
+    <UiButton size="small" class="ticket-bar__buy" @click="emit('buy')">{{ free ? 'RSVP' : 'Buy Ticket' }}</UiButton>
   </div>
 </template>
 
@@ -48,7 +48,7 @@ const summary = computed(() => `${plural(props.count, 'Ticket')}, ${plural(props
   margin: 0;
   color: var(--color-text-option); /* Figma: black */
   font-size: var(--text-body-semibold-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--text-body-semibold-weight);
   line-height: 26px;
 }
 .ticket-bar__meta { display: flex; align-items: center; gap: var(--spacing-xs); margin: 0; color: var(--color-text-muted); }

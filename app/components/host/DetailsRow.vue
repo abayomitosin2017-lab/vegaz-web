@@ -60,9 +60,7 @@ defineEmits<{ open: [] }>()
   background: var(--color-background-secondary);
   color: var(--color-text-strong);
   font-family: var(--font-family-base);
-  font-weight: var(--font-weight-semibold);
-  font-size: 11px; /* Figma 10.58px */
-  line-height: 16px;
+  font-weight: var(--text-badge-weight); font-size: var(--text-badge-size); line-height: var(--text-badge-line); letter-spacing: var(--text-badge-tracking); /* Airbnb badge 11/13 w600 */
 }
 .host-row__chevron { flex: none; width: 16px; height: 16px; }
 </style>

@@ -41,8 +41,8 @@ const headingId = useId()
   grid-row: 1;
   color: var(--color-text-primary);
   white-space: nowrap;
-  /* Figma mobile frame uses the desktop Headline 3 semibold values (24/32,
-     -0.5) at every width, not the token's mobile 16/26. FLAG for the token. */
+  /* Airbnb home row title: 18/24 w600 -0.18 on phones, 20/24 from 768 */
+  font-weight: var(--text-section-title-weight);
   font-size: var(--text-section-title-size);
   line-height: var(--text-section-title-line);
   letter-spacing: var(--text-section-title-tracking);

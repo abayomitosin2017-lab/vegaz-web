@@ -1,527 +1,347 @@
 /* =============================================================
-   TYPOGRAPHY TOKENS — family Outfit, web only (Web Mobile + Web Desktop).
-   Values are what the Figma text styles resolve to. Where a style's
-   size/line-height is bound to a variable with an unexpected name, the
-   resolved value is used as-is (project decision). Flagged below.
-   FLAGS (kept as Figma has them, review with design if they look wrong):
-   - Web Mobile Headline 2: 24px size with 48px line-height.
-   - Web Mobile Headline 3: bold is 18px, other weights 16px.
-   - Web Desktop Headline 1: size follows a 56 variable; bold line-height 60.
-   - Display exists only in bold.
-   Mobile values are the default; desktop values apply at >= 1024px
-   (the proposed Large breakpoint).
+   TYPOGRAPHY TOKENS (family: Outfit)
+   Sizes, line heights, weights and letter spacing measured on airbnb.com
+   (home and a listing page, 375 / 768 / 1440, 26 Oct 2026; Airbnb Cereal VF).
+   Only the family stays Outfit. Every style now carries its own weight
+   token (--text-<style>-weight), because Airbnb's weights don't follow the
+   names: most headings and buttons are 500, section titles 600, small
+   meta 700. Decision 26 Oct: every heading style is one step bolder than
+   Airbnb's (500 -> 600, 600 -> 700); the hero title stays 700.
+   Like Airbnb, text does NOT grow on desktop: one ramp for every width.
+   The only width changes are the roles at the bottom (section titles).
+   Breakpoints for tokens: phone < 768, tablet 768-1127, desktop >= 1128
+   (Airbnb's own desktop switch).
+   Full table: DECISIONS.md "Airbnb sizing".
    ============================================================= */
 :root {
   --font-family-base: "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-weight-light: 300;
   --font-weight-regular: 400;
-  --font-weight-medium: 500; /* letter avatars only (Figma Outfit Medium) */
+  --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  --text-display-bold-size: 48px;
-  --text-display-bold-line: 48px;
-  --text-display-bold-tracking: -1px;
-  --text-h1-bold-size: 32px;
-  --text-h1-bold-line: 48px;
-  --text-h1-bold-tracking: -1px;
-  --text-h1-semibold-size: 32px;
-  --text-h1-semibold-line: 48px;
-  --text-h1-semibold-tracking: -0.5px;
-  --text-h1-regular-size: 32px;
-  --text-h1-regular-line: 48px;
-  --text-h1-regular-tracking: -1px;
-  --text-h1-light-size: 32px;
-  --text-h1-light-line: 48px;
-  --text-h1-light-tracking: -1px;
-  --text-h2-light-size: 24px;
-  --text-h2-light-line: 48px;
-  --text-h2-light-tracking: -0.5px;
-  --text-h2-regular-size: 24px;
-  --text-h2-regular-line: 48px;
-  --text-h2-regular-tracking: -0.5px;
-  --text-h2-semibold-size: 24px;
-  --text-h2-semibold-line: 48px;
-  --text-h2-semibold-tracking: -0.5px;
-  --text-h2-bold-size: 24px;
-  --text-h2-bold-line: 48px;
-  --text-h2-bold-tracking: -0.5px;
+  /* host card headline 32/36 w700 -0.96 */
+  --text-display-bold-size: 32px;
+  --text-display-bold-line: 36px;
+  --text-display-bold-weight: 700;
+  --text-display-bold-tracking: -0.96px;
+  /* listing H1 26/30 w500 */
+  --text-h1-bold-size: 26px;
+  --text-h1-bold-line: 30px;
+  --text-h1-bold-weight: 600;
+  --text-h1-bold-tracking: 0px;
+  /* listing H1 26/30 w500 */
+  --text-h1-semibold-size: 26px;
+  --text-h1-semibold-line: 30px;
+  --text-h1-semibold-weight: 600;
+  --text-h1-semibold-tracking: 0px;
+  /* H1 size, regular */
+  --text-h1-regular-size: 26px;
+  --text-h1-regular-line: 30px;
+  --text-h1-regular-weight: 500;
+  --text-h1-regular-tracking: 0px;
+  /* H1 size, light */
+  --text-h1-light-size: 26px;
+  --text-h1-light-line: 30px;
+  --text-h1-light-weight: 400;
+  --text-h1-light-tracking: 0px;
+  /* listing H2 22/26 w500 -0.44 */
+  --text-h2-bold-size: 22px;
+  --text-h2-bold-line: 26px;
+  --text-h2-bold-weight: 600;
+  --text-h2-bold-tracking: -0.44px;
+  /* listing H2 22/26 w500 -0.44 */
+  --text-h2-semibold-size: 22px;
+  --text-h2-semibold-line: 26px;
+  --text-h2-semibold-weight: 600;
+  --text-h2-semibold-tracking: -0.44px;
+  /* H2 size, regular ("Add dates for prices" 22/26 w400) */
+  --text-h2-regular-size: 22px;
+  --text-h2-regular-line: 26px;
+  --text-h2-regular-weight: 500;
+  --text-h2-regular-tracking: -0.44px;
+  /* H2 size, light */
+  --text-h2-light-size: 22px;
+  --text-h2-light-line: 26px;
+  --text-h2-light-weight: 400;
+  --text-h2-light-tracking: -0.44px;
+  /* subhead 18/24 w600 -0.18 ("Guests mention") */
   --text-h3-bold-size: 18px;
-  --text-h3-bold-line: 28px;
-  --text-h3-bold-tracking: -0.2px;
-  --text-h3-semibold-size: 16px;
-  --text-h3-semibold-line: 26px;
+  --text-h3-bold-line: 24px;
+  --text-h3-bold-weight: 700;
+  --text-h3-bold-tracking: -0.18px;
+  /* subhead 18/24 w500 ("Host details") */
+  --text-h3-semibold-size: 18px;
+  --text-h3-semibold-line: 24px;
+  --text-h3-semibold-weight: 600;
   --text-h3-semibold-tracking: 0px;
-  --text-h3-regular-size: 16px;
-  --text-h3-regular-line: 28px;
-  --text-h3-regular-tracking: -0.2px;
-  --text-h3-light-size: 16px;
-  --text-h3-light-line: 28px;
-  --text-h3-light-tracking: -0.2px;
+  /* H3 size, regular */
+  --text-h3-regular-size: 18px;
+  --text-h3-regular-line: 24px;
+  --text-h3-regular-weight: 500;
+  --text-h3-regular-tracking: 0px;
+  /* H3 size, light */
+  --text-h3-light-size: 18px;
+  --text-h3-light-line: 24px;
+  --text-h3-light-weight: 400;
+  --text-h3-light-tracking: 0px;
+  /* 16/20 w500 (buttons, "Hosted by"); Airbnb has no heavier 16px text */
   --text-body-bold-size: 16px;
-  --text-body-bold-line: 24px;
+  --text-body-bold-line: 20px;
+  --text-body-bold-weight: 500;
   --text-body-bold-tracking: 0px;
+  /* 16/20 w500 (buttons, "Hosted by") */
   --text-body-semibold-size: 16px;
-  --text-body-semibold-line: 24px;
+  --text-body-semibold-line: 20px;
+  --text-body-semibold-weight: 500;
   --text-body-semibold-tracking: 0px;
+  /* reading text 16/24 w400 (reviews) */
   --text-body-regular-size: 16px;
   --text-body-regular-line: 24px;
-  --text-body-regular-tracking: -0.2px;
+  --text-body-regular-weight: 400;
+  --text-body-regular-tracking: 0px;
+  /* body size, light */
   --text-body-light-size: 16px;
   --text-body-light-line: 24px;
+  --text-body-light-weight: 300;
   --text-body-light-tracking: 0px;
-  --text-small-light-size: 14px;
-  --text-small-light-line: 20px;
-  --text-small-light-tracking: 0px;
-  --text-small-regular-size: 14px;
-  --text-small-regular-line: 20px;
-  --text-small-regular-tracking: 0px;
-  --text-small-semibold-size: 14px;
-  --text-small-semibold-line: 20px;
-  --text-small-semibold-tracking: 0px;
+  /* 14/20 w600 ("Guest favorite") */
   --text-small-bold-size: 14px;
   --text-small-bold-line: 20px;
+  --text-small-bold-weight: 600;
   --text-small-bold-tracking: 0px;
-  --text-xsmall-light-size: 12px;
-  --text-xsmall-light-line: 18px;
-  --text-xsmall-light-tracking: 0px;
-  --text-xsmall-regular-size: 12px;
-  --text-xsmall-regular-line: 18px;
-  --text-xsmall-regular-tracking: 0px;
-  --text-xsmall-semibold-size: 12px;
-  --text-xsmall-semibold-line: 18px;
-  --text-xsmall-semibold-tracking: 0px;
+  /* 14/18 w500 (nav, Share/Save, "Use app") */
+  --text-small-semibold-size: 14px;
+  --text-small-semibold-line: 18px;
+  --text-small-semibold-weight: 500;
+  --text-small-semibold-tracking: 0px;
+  /* base text 14/20 w400 (page body) */
+  --text-small-regular-size: 14px;
+  --text-small-regular-line: 20px;
+  --text-small-regular-weight: 400;
+  --text-small-regular-tracking: 0px;
+  /* small size, light */
+  --text-small-light-size: 14px;
+  --text-small-light-line: 20px;
+  --text-small-light-weight: 300;
+  --text-small-light-tracking: 0px;
+  /* card meta bold 12/16 w700 */
   --text-xsmall-bold-size: 12px;
-  --text-xsmall-bold-line: 18px;
+  --text-xsmall-bold-line: 16px;
+  --text-xsmall-bold-weight: 700;
   --text-xsmall-bold-tracking: 0px;
-  --text-sub-light-size: 10px;
-  --text-sub-light-line: 14px;
-  --text-sub-light-tracking: 0px;
-  --text-sub-regular-size: 10px;
-  --text-sub-regular-line: 14px;
-  --text-sub-regular-tracking: 0px;
+  /* 12/16 w500 ("Show all photos", calendar days) */
+  --text-xsmall-semibold-size: 12px;
+  --text-xsmall-semibold-line: 16px;
+  --text-xsmall-semibold-weight: 500;
+  --text-xsmall-semibold-tracking: 0px;
+  /* card meta 12/16 w400 */
+  --text-xsmall-regular-size: 12px;
+  --text-xsmall-regular-line: 16px;
+  --text-xsmall-regular-weight: 400;
+  --text-xsmall-regular-tracking: 0px;
+  /* x-small size, light */
+  --text-xsmall-light-size: 12px;
+  --text-xsmall-light-line: 16px;
+  --text-xsmall-light-weight: 300;
+  --text-xsmall-light-tracking: 0px;
+  /* 10/12 w700 (Check-in / Checkout labels) */
+  --text-sub-bold-size: 10px;
+  --text-sub-bold-line: 12px;
+  --text-sub-bold-weight: 700;
+  --text-sub-bold-tracking: 0px;
+  /* 10/14 w500 (host stat labels) */
   --text-sub-semibold-size: 10px;
   --text-sub-semibold-line: 14px;
+  --text-sub-semibold-weight: 500;
   --text-sub-semibold-tracking: 0px;
-  --text-sub-bold-size: 10px;
-  --text-sub-bold-line: 14px;
-  --text-sub-bold-tracking: 0px;
-}
+  /* 10/12 w400 (rating bars) */
+  --text-sub-regular-size: 10px;
+  --text-sub-regular-line: 12px;
+  --text-sub-regular-weight: 400;
+  --text-sub-regular-tracking: 0px;
+  /* sub size, light */
+  --text-sub-light-size: 10px;
+  --text-sub-light-line: 12px;
+  --text-sub-light-weight: 300;
+  --text-sub-light-tracking: 0px;
 
-@media (min-width: 1024px) {
-  :root {
-    --text-display-bold-size: 64px;
-    --text-display-bold-line: 61px;
-    --text-display-bold-tracking: -1px;
-    --text-h1-bold-size: 56px;
-    --text-h1-bold-line: 60px;
-    --text-h1-bold-tracking: -1px;
-    --text-h1-semibold-size: 56px;
-    --text-h1-semibold-line: 56px;
-    --text-h1-semibold-tracking: -0.5px;
-    --text-h1-regular-size: 56px;
-    --text-h1-regular-line: 56px;
-    --text-h1-regular-tracking: -1px;
-    --text-h1-light-size: 56px;
-    --text-h1-light-line: 64px;
-    --text-h1-light-tracking: -1px;
-    --text-h2-light-size: 40px;
-    --text-h2-light-line: 48px;
-    --text-h2-light-tracking: -0.5px;
-    --text-h2-regular-size: 40px;
-    --text-h2-regular-line: 48px;
-    --text-h2-regular-tracking: -0.5px;
-    --text-h2-semibold-size: 40px;
-    --text-h2-semibold-line: 48px;
-    --text-h2-semibold-tracking: -0.5px;
-    --text-h2-bold-size: 40px;
-    --text-h2-bold-line: 48px;
-    --text-h2-bold-tracking: -0.5px;
-    --text-h3-bold-size: 24px;
-    --text-h3-bold-line: 32px;
-    --text-h3-bold-tracking: -0.2px;
-    --text-h3-semibold-size: 24px;
-    --text-h3-semibold-line: 32px;
-    --text-h3-semibold-tracking: -0.5px;
-    --text-h3-regular-size: 24px;
-    --text-h3-regular-line: 32px;
-    --text-h3-regular-tracking: -0.2px;
-    --text-h3-light-size: 24px;
-    --text-h3-light-line: 32px;
-    --text-h3-light-tracking: -0.2px;
-    --text-body-light-size: 18px;
-    --text-body-light-line: 28px;
-    --text-body-light-tracking: 0px;
-    --text-body-regular-size: 18px;
-    --text-body-regular-line: 28px;
-    --text-body-regular-tracking: 0px;
-    --text-body-semibold-size: 18px;
-    --text-body-semibold-line: 28px;
-    --text-body-semibold-tracking: 0px;
-    --text-body-bold-size: 18px;
-    --text-body-bold-line: 28px;
-    --text-body-bold-tracking: 0px;
-    --text-small-light-size: 16px;
-    --text-small-light-line: 24px;
-    --text-small-light-tracking: 0px;
-    --text-small-regular-size: 16px;
-    --text-small-regular-line: 24px;
-    --text-small-regular-tracking: 0px;
-    --text-small-semibold-size: 16px;
-    --text-small-semibold-line: 24px;
-    --text-small-semibold-tracking: 0px;
-    --text-small-bold-size: 16px;
-    --text-small-bold-line: 24px;
-    --text-small-bold-tracking: 0px;
-    --text-xsmall-light-size: 14px;
-    --text-xsmall-light-line: 18px;
-    --text-xsmall-light-tracking: 0px;
-    --text-xsmall-regular-size: 14px;
-    --text-xsmall-regular-line: 18px;
-    --text-xsmall-regular-tracking: 0px;
-    --text-xsmall-semibold-size: 14px;
-    --text-xsmall-semibold-line: 18px;
-    --text-xsmall-semibold-tracking: 0px;
-    --text-xsmall-bold-size: 14px;
-    --text-xsmall-bold-line: 18px;
-    --text-xsmall-bold-tracking: 0px;
-    --text-sub-light-size: 10px;
-    --text-sub-light-line: 14px;
-    --text-sub-light-tracking: 0px;
-    --text-sub-regular-size: 10px;
-    --text-sub-regular-line: 14px;
-    --text-sub-regular-tracking: 0px;
-    --text-sub-semibold-size: 10px;
-    --text-sub-semibold-line: 14px;
-    --text-sub-semibold-tracking: 0px;
-    --text-sub-bold-size: 10px;
-    --text-sub-bold-line: 14px;
-    --text-sub-bold-tracking: 0px;
-  }
-}
-
-/* Text style classes: .text-<style>-<weight> */
-.text-display-bold {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--text-display-bold-size);
-  line-height: var(--text-display-bold-line);
-  letter-spacing: var(--text-display-bold-tracking);
-}
-.text-h1-bold {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--text-h1-bold-size);
-  line-height: var(--text-h1-bold-line);
-  letter-spacing: var(--text-h1-bold-tracking);
-}
-.text-h1-semibold {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--text-h1-semibold-size);
-  line-height: var(--text-h1-semibold-line);
-  letter-spacing: var(--text-h1-semibold-tracking);
-}
-.text-h1-regular {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-regular);
-  font-size: var(--text-h1-regular-size);
-  line-height: var(--text-h1-regular-line);
-  letter-spacing: var(--text-h1-regular-tracking);
-}
-.text-h1-light {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-light);
-  font-size: var(--text-h1-light-size);
-  line-height: var(--text-h1-light-line);
-  letter-spacing: var(--text-h1-light-tracking);
-}
-.text-h2-light {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-light);
-  font-size: var(--text-h2-light-size);
-  line-height: var(--text-h2-light-line);
-  letter-spacing: var(--text-h2-light-tracking);
-}
-.text-h2-regular {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-regular);
-  font-size: var(--text-h2-regular-size);
-  line-height: var(--text-h2-regular-line);
-  letter-spacing: var(--text-h2-regular-tracking);
-}
-.text-h2-semibold {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--text-h2-semibold-size);
-  line-height: var(--text-h2-semibold-line);
-  letter-spacing: var(--text-h2-semibold-tracking);
-}
-.text-h2-bold {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--text-h2-bold-size);
-  line-height: var(--text-h2-bold-line);
-  letter-spacing: var(--text-h2-bold-tracking);
-}
-.text-h3-bold {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--text-h3-bold-size);
-  line-height: var(--text-h3-bold-line);
-  letter-spacing: var(--text-h3-bold-tracking);
-}
-.text-h3-semibold {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--text-h3-semibold-size);
-  line-height: var(--text-h3-semibold-line);
-  letter-spacing: var(--text-h3-semibold-tracking);
-}
-.text-h3-regular {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-regular);
-  font-size: var(--text-h3-regular-size);
-  line-height: var(--text-h3-regular-line);
-  letter-spacing: var(--text-h3-regular-tracking);
-}
-.text-h3-light {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-light);
-  font-size: var(--text-h3-light-size);
-  line-height: var(--text-h3-light-line);
-  letter-spacing: var(--text-h3-light-tracking);
-}
-.text-body-light {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-light);
-  font-size: var(--text-body-light-size);
-  line-height: var(--text-body-light-line);
-  letter-spacing: var(--text-body-light-tracking);
-}
-.text-body-regular {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-regular);
-  font-size: var(--text-body-regular-size);
-  line-height: var(--text-body-regular-line);
-  letter-spacing: var(--text-body-regular-tracking);
-}
-.text-body-semibold {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--text-body-semibold-size);
-  line-height: var(--text-body-semibold-line);
-  letter-spacing: var(--text-body-semibold-tracking);
-}
-.text-body-bold {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--text-body-bold-size);
-  line-height: var(--text-body-bold-line);
-  letter-spacing: var(--text-body-bold-tracking);
-}
-.text-small-light {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-light);
-  font-size: var(--text-small-light-size);
-  line-height: var(--text-small-light-line);
-  letter-spacing: var(--text-small-light-tracking);
-}
-.text-small-regular {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-regular);
-  font-size: var(--text-small-regular-size);
-  line-height: var(--text-small-regular-line);
-  letter-spacing: var(--text-small-regular-tracking);
-}
-.text-small-semibold {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--text-small-semibold-size);
-  line-height: var(--text-small-semibold-line);
-  letter-spacing: var(--text-small-semibold-tracking);
-}
-.text-small-bold {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--text-small-bold-size);
-  line-height: var(--text-small-bold-line);
-  letter-spacing: var(--text-small-bold-tracking);
-}
-.text-xsmall-light {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-light);
-  font-size: var(--text-xsmall-light-size);
-  line-height: var(--text-xsmall-light-line);
-  letter-spacing: var(--text-xsmall-light-tracking);
-}
-.text-xsmall-regular {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-regular);
-  font-size: var(--text-xsmall-regular-size);
-  line-height: var(--text-xsmall-regular-line);
-  letter-spacing: var(--text-xsmall-regular-tracking);
-}
-.text-xsmall-semibold {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--text-xsmall-semibold-size);
-  line-height: var(--text-xsmall-semibold-line);
-  letter-spacing: var(--text-xsmall-semibold-tracking);
-}
-.text-xsmall-bold {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--text-xsmall-bold-size);
-  line-height: var(--text-xsmall-bold-line);
-  letter-spacing: var(--text-xsmall-bold-tracking);
-}
-.text-sub-light {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-light);
-  font-size: var(--text-sub-light-size);
-  line-height: var(--text-sub-light-line);
-  letter-spacing: var(--text-sub-light-tracking);
-}
-.text-sub-regular {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-regular);
-  font-size: var(--text-sub-regular-size);
-  line-height: var(--text-sub-regular-line);
-  letter-spacing: var(--text-sub-regular-tracking);
-}
-.text-sub-semibold {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--text-sub-semibold-size);
-  line-height: var(--text-sub-semibold-line);
-  letter-spacing: var(--text-sub-semibold-tracking);
-}
-.text-sub-bold {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--text-sub-bold-size);
-  line-height: var(--text-sub-bold-line);
-  letter-spacing: var(--text-sub-bold-tracking);
-}
-
-/* Control text. Figma buttons use the "Mobile App" Body and Small semibold
-   styles (16/24 and 14/20), which do NOT grow on desktop. Kept fixed here so
-   buttons match Figma at every width. */
-:root {
+  /* App styles (fixed in the old system); same Airbnb ramp */
+  /* was 32/40 bold -1 -> Airbnb 32/36 w700 -0.96 */
+  --text-app-h1-bold-size: 32px;
+  --text-app-h1-bold-line: 36px;
+  --text-app-h1-bold-weight: 700;
+  --text-app-h1-bold-tracking: -0.96px;
+  /* was 24/32 bold -0.5 -> Airbnb H2 22/26 w500 -0.44 */
+  --text-app-h2-bold-size: 22px;
+  --text-app-h2-bold-line: 26px;
+  --text-app-h2-bold-weight: 600;
+  --text-app-h2-bold-tracking: -0.44px;
+  /* was 20/26 -> Airbnb section title 20/24 w600 -0.18 */
+  --text-app-h3-semibold-size: 20px;
+  --text-app-h3-semibold-line: 24px;
+  --text-app-h3-semibold-weight: 700;
+  --text-app-h3-semibold-tracking: -0.18px;
+  /* was 16/24 w600 -> Airbnb button 16/20 w500 */
   --text-app-body-semibold-size: 16px;
-  --text-app-body-semibold-line: 24px;
+  --text-app-body-semibold-line: 20px;
+  --text-app-body-semibold-weight: 500;
   --text-app-body-semibold-tracking: 0px;
-  --text-app-small-semibold-size: 14px;
-  --text-app-small-semibold-line: 20px;
-  --text-app-small-semibold-tracking: 0px;
-  /* Mobile App Small regular (14/20): input text (UiInput default) */
-  --text-app-small-regular-size: 14px;
-  --text-app-small-regular-line: 20px;
-  --text-app-small-regular-tracking: 0px;
-  /* Mobile App styles used by the ticket option card (Figma 9832:32993).
-     Fixed sizes: they do not grow on desktop. */
-  --text-app-h2-bold-size: 24px;          /* Headline 2 bold */
-  --text-app-h2-bold-line: 32px;
-  --text-app-h2-bold-tracking: -0.5px;
-  --text-app-h3-semibold-size: 20px;      /* Headline 3 semibold (compatibility line height) */
-  --text-app-h3-semibold-line: 26px;
-  --text-app-h3-semibold-tracking: 0px;
-  --text-app-xsmall-regular-size: 12px;   /* x-Small regular */
-  --text-app-xsmall-regular-line: 18px;
-  --text-app-xsmall-regular-tracking: 0px;
-  --text-app-xsmall-semibold-size: 12px;  /* x-Small semibold */
-  --text-app-xsmall-semibold-line: 18px;
-  --text-app-xsmall-semibold-tracking: 0px;
-  /* More Mobile App styles, used by the buy ticket flow (fixed sizes) */
-  --text-app-h1-bold-size: 32px;          /* Headline 1 bold: success title */
-  --text-app-h1-bold-line: 40px;
-  --text-app-h1-bold-tracking: -1px;
+  /* Airbnb reading text 16/24 w400 */
   --text-app-body-regular-size: 16px;
   --text-app-body-regular-line: 24px;
+  --text-app-body-regular-weight: 400;
   --text-app-body-regular-tracking: 0px;
+  /* was 14/20 w600 -> Airbnb 14/18 w500 */
+  --text-app-small-semibold-size: 14px;
+  --text-app-small-semibold-line: 18px;
+  --text-app-small-semibold-weight: 500;
+  --text-app-small-semibold-tracking: 0px;
+  /* Airbnb 14/20 w400 */
+  --text-app-small-regular-size: 14px;
+  --text-app-small-regular-line: 20px;
+  --text-app-small-regular-weight: 400;
+  --text-app-small-regular-tracking: 0px;
+  /* was 14/20 w700 -> Airbnb 14/20 w600 */
   --text-app-small-bold-size: 14px;
   --text-app-small-bold-line: 20px;
+  --text-app-small-bold-weight: 600;
   --text-app-small-bold-tracking: 0px;
-}
+  /* was 12/18 w600 -> Airbnb 12/16 w500 */
+  --text-app-xsmall-semibold-size: 12px;
+  --text-app-xsmall-semibold-line: 16px;
+  --text-app-xsmall-semibold-weight: 500;
+  --text-app-xsmall-semibold-tracking: 0px;
+  /* was 12/18 -> Airbnb 12/16 w400 */
+  --text-app-xsmall-regular-size: 12px;
+  --text-app-xsmall-regular-line: 16px;
+  --text-app-xsmall-regular-weight: 400;
+  --text-app-xsmall-regular-tracking: 0px;
 
-/* Mobile App text classes: same size at every width (buy ticket flow) */
-.text-app-h1-bold { font-family: var(--font-family-base); font-weight: var(--font-weight-bold); font-size: var(--text-app-h1-bold-size); line-height: var(--text-app-h1-bold-line); letter-spacing: var(--text-app-h1-bold-tracking); }
-.text-app-h2-bold { font-family: var(--font-family-base); font-weight: var(--font-weight-bold); font-size: var(--text-app-h2-bold-size); line-height: var(--text-app-h2-bold-line); letter-spacing: var(--text-app-h2-bold-tracking); }
-.text-app-body-regular { font-family: var(--font-family-base); font-weight: var(--font-weight-regular); font-size: var(--text-app-body-regular-size); line-height: var(--text-app-body-regular-line); letter-spacing: var(--text-app-body-regular-tracking); }
-.text-app-body-semibold { font-family: var(--font-family-base); font-weight: var(--font-weight-semibold); font-size: var(--text-app-body-semibold-size); line-height: var(--text-app-body-semibold-line); letter-spacing: var(--text-app-body-semibold-tracking); }
-.text-app-small-regular { font-family: var(--font-family-base); font-weight: var(--font-weight-regular); font-size: var(--text-app-small-regular-size); line-height: var(--text-app-small-regular-line); letter-spacing: var(--text-app-small-regular-tracking); }
-.text-app-small-semibold { font-family: var(--font-family-base); font-weight: var(--font-weight-semibold); font-size: var(--text-app-small-semibold-size); line-height: var(--text-app-small-semibold-line); letter-spacing: var(--text-app-small-semibold-tracking); }
-.text-app-small-bold { font-family: var(--font-family-base); font-weight: var(--font-weight-bold); font-size: var(--text-app-small-bold-size); line-height: var(--text-app-small-bold-line); letter-spacing: var(--text-app-small-bold-tracking); }
-.text-app-xsmall-regular { font-family: var(--font-family-base); font-weight: var(--font-weight-regular); font-size: var(--text-app-xsmall-regular-size); line-height: var(--text-app-xsmall-regular-line); letter-spacing: var(--text-app-xsmall-regular-tracking); }
-.text-app-xsmall-semibold { font-family: var(--font-family-base); font-weight: var(--font-weight-semibold); font-size: var(--text-app-xsmall-semibold-size); line-height: var(--text-app-xsmall-semibold-line); letter-spacing: var(--text-app-xsmall-semibold-tracking); }
-
-/* ---- Text roles: size combinations Figma uses outside the standard ramp.
-   Components reference these instead of writing sizes themselves. ---- */
-:root {
-  /* Home section titles: 24/32, -0.5 at every width (Figma mobile and desktop).
-     FLAG: the Headline 3 token is 16/26 on mobile. */
-  --text-section-title-size: 24px;
-  --text-section-title-line: 32px;
-  --text-section-title-tracking: -0.5px;
-  /* Page title (event details "Games Night & Good Vibes"): 24/32 bold on
-     phones, Headline 2 web desktop 40/48 from 1024px. -0.5 tracking. */
-  --text-page-title-size: 24px;
-  --text-page-title-line: 32px;
-  --text-page-title-tracking: -0.5px;
-  /* Modal titles: 24/32; -0.5 below 1024px, -0.2 from 1024px */
-  --text-modal-title-size: 24px;
-  --text-modal-title-line: 32px;
-  --text-modal-title-tracking: -0.5px;
-  /* Menu items (profile dropdown): Figma uses Web Body desktop, 18/28, at
-     every width */
-  --text-menu-item-size: 18px;
-  --text-menu-item-line: 28px;
+  /* Roles */
+  /* home row titles: 18/24 w600 -0.18 phone, 20/24 from 768 (Airbnb home) */
+  --text-section-title-size: 18px;
+  --text-section-title-line: 24px;
+  --text-section-title-weight: 700;
+  --text-section-title-tracking: -0.18px;
+  /* event page sections: Airbnb listing H2 22/26 w500 -0.44 (tablet and desktop measured) */
+  --text-detail-section-title-size: 22px;
+  --text-detail-section-title-line: 26px;
+  --text-detail-section-title-weight: 600;
+  --text-detail-section-title-tracking: -0.44px;
+  /* event title: Airbnb listing H1 26/30 w500 (tablet and desktop measured) */
+  --text-page-title-size: 26px;
+  --text-page-title-line: 30px;
+  --text-page-title-weight: 600;
+  --text-page-title-tracking: 0px;
+  /* modal titles: Airbnb H2 22/26 w500 -0.44 */
+  --text-modal-title-size: 22px;
+  --text-modal-title-line: 26px;
+  --text-modal-title-weight: 600;
+  --text-modal-title-tracking: -0.44px;
+  /* menu rows: Airbnb nav text 14/18 w500 (menu itself not measurable) */
+  --text-menu-item-size: 14px;
+  --text-menu-item-line: 18px;
+  --text-menu-item-weight: 500;
   --text-menu-item-tracking: 0px;
-  /* Text typed into input fields on phones (< 768px), decision 21 Oct:
-     16px, the Body regular size. Also stops iPhones zooming into a field
-     when it is tapped (they zoom on anything under 16px). Each field keeps
-     its own weight. Line height stays 20px (the old 14/20 line) so every
-     field keeps its Figma height. */
+  /* typed text on phones: 16 (stops iPhone zoom), unchanged */
   --text-input-mobile-size: 16px;
   --text-input-mobile-line: 20px;
+  --text-input-mobile-weight: 400;
   --text-input-mobile-tracking: 0px;
-  /* Hero heading line height. FLAG: Figma mobile is 32/40; the token is 32/48 */
-  --text-hero-title-line: 40px;
-  /* Community row on event details (Figma 10713:56670, 22 Oct): names
-     under the photos 14/18 and the "+5" count 18/28 semibold, every width */
+  /* Airbnb 14/18 w400 */
   --text-member-name-size: 14px;
   --text-member-name-line: 18px;
+  --text-member-name-weight: 400;
+  --text-member-name-tracking: 0px;
+  /* Airbnb 18/24 w600 -0.18 */
   --text-member-more-size: 18px;
-  --text-member-more-line: 28px;
-  /* Internal component preview page labels (not a product screen) */
-  --text-label-tracking: 0.5px;
+  --text-member-more-line: 24px;
+  --text-member-more-weight: 600;
+  --text-member-more-tracking: -0.18px;
+  /* Airbnb badge 11/13 w600 ("Guest favorite" card badge) */
+  --text-badge-size: 11px;
+  --text-badge-line: 13px;
+  --text-badge-weight: 600;
+  --text-badge-tracking: 0px;
+  /* phone bottom tab label 10/12 ls 0.2 (w500 active, w400 others) */
+  --text-nav-label-size: 10px;
+  --text-nav-label-line: 12px;
+  --text-nav-label-weight: 500;
+  --text-nav-label-tracking: 0.2px;
+  /* big numbers 26/30 w600 -0.52 */
+  --text-stat-size: 26px;
+  --text-stat-line: 30px;
+  --text-stat-weight: 600;
+  --text-stat-tracking: -0.52px;
+  /* home hero: 32/40 bold on phones, 40/48 from 768 (decision 26 Oct) */
+  --text-hero-title-size: 32px;
+  --text-hero-title-line: 40px;
+  --text-hero-title-weight: 700;
+  --text-hero-title-tracking: 0px;
+  --text-label-tracking: 0.5px; /* internal preview page labels */
 }
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   :root {
-    --text-modal-title-tracking: -0.2px;
-    --text-hero-title-line: var(--text-h1-bold-line);
-    --text-page-title-size: var(--text-h2-bold-size);
-    --text-page-title-line: var(--text-h2-bold-line);
+    --text-hero-title-size: 40px;
+    --text-hero-title-line: 48px;
+    --text-section-title-size: 20px;
+    --text-section-title-line: 24px;
+    --text-section-title-weight: 700;
+    --text-section-title-tracking: -0.18px;
   }
 }
 
-/* Section headings: "About Event", "What to expect", "Community" (event
-   details) and the home section titles. Semibold 24/32, -0.5, every width. */
-.text-section-title {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--text-section-title-size);
-  line-height: var(--text-section-title-line);
-  letter-spacing: var(--text-section-title-tracking);
-}
-
-/* Page title (event details): bold 24/32 on phones, 40/48 from 1024px */
-.text-page-title {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--text-page-title-size);
-  line-height: var(--text-page-title-line);
-  letter-spacing: var(--text-page-title-tracking);
-}
-
+/* Text style classes: .text-<style> */
+.text-display-bold { font-family: var(--font-family-base); font-weight: var(--text-display-bold-weight); font-size: var(--text-display-bold-size); line-height: var(--text-display-bold-line); letter-spacing: var(--text-display-bold-tracking); }
+.text-h1-bold { font-family: var(--font-family-base); font-weight: var(--text-h1-bold-weight); font-size: var(--text-h1-bold-size); line-height: var(--text-h1-bold-line); letter-spacing: var(--text-h1-bold-tracking); }
+.text-h1-semibold { font-family: var(--font-family-base); font-weight: var(--text-h1-semibold-weight); font-size: var(--text-h1-semibold-size); line-height: var(--text-h1-semibold-line); letter-spacing: var(--text-h1-semibold-tracking); }
+.text-h1-regular { font-family: var(--font-family-base); font-weight: var(--text-h1-regular-weight); font-size: var(--text-h1-regular-size); line-height: var(--text-h1-regular-line); letter-spacing: var(--text-h1-regular-tracking); }
+.text-h1-light { font-family: var(--font-family-base); font-weight: var(--text-h1-light-weight); font-size: var(--text-h1-light-size); line-height: var(--text-h1-light-line); letter-spacing: var(--text-h1-light-tracking); }
+.text-h2-bold { font-family: var(--font-family-base); font-weight: var(--text-h2-bold-weight); font-size: var(--text-h2-bold-size); line-height: var(--text-h2-bold-line); letter-spacing: var(--text-h2-bold-tracking); }
+.text-h2-semibold { font-family: var(--font-family-base); font-weight: var(--text-h2-semibold-weight); font-size: var(--text-h2-semibold-size); line-height: var(--text-h2-semibold-line); letter-spacing: var(--text-h2-semibold-tracking); }
+.text-h2-regular { font-family: var(--font-family-base); font-weight: var(--text-h2-regular-weight); font-size: var(--text-h2-regular-size); line-height: var(--text-h2-regular-line); letter-spacing: var(--text-h2-regular-tracking); }
+.text-h2-light { font-family: var(--font-family-base); font-weight: var(--text-h2-light-weight); font-size: var(--text-h2-light-size); line-height: var(--text-h2-light-line); letter-spacing: var(--text-h2-light-tracking); }
+.text-h3-bold { font-family: var(--font-family-base); font-weight: var(--text-h3-bold-weight); font-size: var(--text-h3-bold-size); line-height: var(--text-h3-bold-line); letter-spacing: var(--text-h3-bold-tracking); }
+.text-h3-semibold { font-family: var(--font-family-base); font-weight: var(--text-h3-semibold-weight); font-size: var(--text-h3-semibold-size); line-height: var(--text-h3-semibold-line); letter-spacing: var(--text-h3-semibold-tracking); }
+.text-h3-regular { font-family: var(--font-family-base); font-weight: var(--text-h3-regular-weight); font-size: var(--text-h3-regular-size); line-height: var(--text-h3-regular-line); letter-spacing: var(--text-h3-regular-tracking); }
+.text-h3-light { font-family: var(--font-family-base); font-weight: var(--text-h3-light-weight); font-size: var(--text-h3-light-size); line-height: var(--text-h3-light-line); letter-spacing: var(--text-h3-light-tracking); }
+.text-body-bold { font-family: var(--font-family-base); font-weight: var(--text-body-bold-weight); font-size: var(--text-body-bold-size); line-height: var(--text-body-bold-line); letter-spacing: var(--text-body-bold-tracking); }
+.text-body-semibold { font-family: var(--font-family-base); font-weight: var(--text-body-semibold-weight); font-size: var(--text-body-semibold-size); line-height: var(--text-body-semibold-line); letter-spacing: var(--text-body-semibold-tracking); }
+.text-body-regular { font-family: var(--font-family-base); font-weight: var(--text-body-regular-weight); font-size: var(--text-body-regular-size); line-height: var(--text-body-regular-line); letter-spacing: var(--text-body-regular-tracking); }
+.text-body-light { font-family: var(--font-family-base); font-weight: var(--text-body-light-weight); font-size: var(--text-body-light-size); line-height: var(--text-body-light-line); letter-spacing: var(--text-body-light-tracking); }
+.text-small-bold { font-family: var(--font-family-base); font-weight: var(--text-small-bold-weight); font-size: var(--text-small-bold-size); line-height: var(--text-small-bold-line); letter-spacing: var(--text-small-bold-tracking); }
+.text-small-semibold { font-family: var(--font-family-base); font-weight: var(--text-small-semibold-weight); font-size: var(--text-small-semibold-size); line-height: var(--text-small-semibold-line); letter-spacing: var(--text-small-semibold-tracking); }
+.text-small-regular { font-family: var(--font-family-base); font-weight: var(--text-small-regular-weight); font-size: var(--text-small-regular-size); line-height: var(--text-small-regular-line); letter-spacing: var(--text-small-regular-tracking); }
+.text-small-light { font-family: var(--font-family-base); font-weight: var(--text-small-light-weight); font-size: var(--text-small-light-size); line-height: var(--text-small-light-line); letter-spacing: var(--text-small-light-tracking); }
+.text-xsmall-bold { font-family: var(--font-family-base); font-weight: var(--text-xsmall-bold-weight); font-size: var(--text-xsmall-bold-size); line-height: var(--text-xsmall-bold-line); letter-spacing: var(--text-xsmall-bold-tracking); }
+.text-xsmall-semibold { font-family: var(--font-family-base); font-weight: var(--text-xsmall-semibold-weight); font-size: var(--text-xsmall-semibold-size); line-height: var(--text-xsmall-semibold-line); letter-spacing: var(--text-xsmall-semibold-tracking); }
+.text-xsmall-regular { font-family: var(--font-family-base); font-weight: var(--text-xsmall-regular-weight); font-size: var(--text-xsmall-regular-size); line-height: var(--text-xsmall-regular-line); letter-spacing: var(--text-xsmall-regular-tracking); }
+.text-xsmall-light { font-family: var(--font-family-base); font-weight: var(--text-xsmall-light-weight); font-size: var(--text-xsmall-light-size); line-height: var(--text-xsmall-light-line); letter-spacing: var(--text-xsmall-light-tracking); }
+.text-sub-bold { font-family: var(--font-family-base); font-weight: var(--text-sub-bold-weight); font-size: var(--text-sub-bold-size); line-height: var(--text-sub-bold-line); letter-spacing: var(--text-sub-bold-tracking); }
+.text-sub-semibold { font-family: var(--font-family-base); font-weight: var(--text-sub-semibold-weight); font-size: var(--text-sub-semibold-size); line-height: var(--text-sub-semibold-line); letter-spacing: var(--text-sub-semibold-tracking); }
+.text-sub-regular { font-family: var(--font-family-base); font-weight: var(--text-sub-regular-weight); font-size: var(--text-sub-regular-size); line-height: var(--text-sub-regular-line); letter-spacing: var(--text-sub-regular-tracking); }
+.text-sub-light { font-family: var(--font-family-base); font-weight: var(--text-sub-light-weight); font-size: var(--text-sub-light-size); line-height: var(--text-sub-light-line); letter-spacing: var(--text-sub-light-tracking); }
+.text-app-h1-bold { font-family: var(--font-family-base); font-weight: var(--text-app-h1-bold-weight); font-size: var(--text-app-h1-bold-size); line-height: var(--text-app-h1-bold-line); letter-spacing: var(--text-app-h1-bold-tracking); }
+.text-app-h2-bold { font-family: var(--font-family-base); font-weight: var(--text-app-h2-bold-weight); font-size: var(--text-app-h2-bold-size); line-height: var(--text-app-h2-bold-line); letter-spacing: var(--text-app-h2-bold-tracking); }
+.text-app-h3-semibold { font-family: var(--font-family-base); font-weight: var(--text-app-h3-semibold-weight); font-size: var(--text-app-h3-semibold-size); line-height: var(--text-app-h3-semibold-line); letter-spacing: var(--text-app-h3-semibold-tracking); }
+.text-app-body-semibold { font-family: var(--font-family-base); font-weight: var(--text-app-body-semibold-weight); font-size: var(--text-app-body-semibold-size); line-height: var(--text-app-body-semibold-line); letter-spacing: var(--text-app-body-semibold-tracking); }
+.text-app-body-regular { font-family: var(--font-family-base); font-weight: var(--text-app-body-regular-weight); font-size: var(--text-app-body-regular-size); line-height: var(--text-app-body-regular-line); letter-spacing: var(--text-app-body-regular-tracking); }
+.text-app-small-semibold { font-family: var(--font-family-base); font-weight: var(--text-app-small-semibold-weight); font-size: var(--text-app-small-semibold-size); line-height: var(--text-app-small-semibold-line); letter-spacing: var(--text-app-small-semibold-tracking); }
+.text-app-small-regular { font-family: var(--font-family-base); font-weight: var(--text-app-small-regular-weight); font-size: var(--text-app-small-regular-size); line-height: var(--text-app-small-regular-line); letter-spacing: var(--text-app-small-regular-tracking); }
+.text-app-small-bold { font-family: var(--font-family-base); font-weight: var(--text-app-small-bold-weight); font-size: var(--text-app-small-bold-size); line-height: var(--text-app-small-bold-line); letter-spacing: var(--text-app-small-bold-tracking); }
+.text-app-xsmall-semibold { font-family: var(--font-family-base); font-weight: var(--text-app-xsmall-semibold-weight); font-size: var(--text-app-xsmall-semibold-size); line-height: var(--text-app-xsmall-semibold-line); letter-spacing: var(--text-app-xsmall-semibold-tracking); }
+.text-app-xsmall-regular { font-family: var(--font-family-base); font-weight: var(--text-app-xsmall-regular-weight); font-size: var(--text-app-xsmall-regular-size); line-height: var(--text-app-xsmall-regular-line); letter-spacing: var(--text-app-xsmall-regular-tracking); }
+.text-section-title { font-family: var(--font-family-base); font-weight: var(--text-section-title-weight); font-size: var(--text-section-title-size); line-height: var(--text-section-title-line); letter-spacing: var(--text-section-title-tracking); }
+.text-detail-section-title { font-family: var(--font-family-base); font-weight: var(--text-detail-section-title-weight); font-size: var(--text-detail-section-title-size); line-height: var(--text-detail-section-title-line); letter-spacing: var(--text-detail-section-title-tracking); }
+.text-page-title { font-family: var(--font-family-base); font-weight: var(--text-page-title-weight); font-size: var(--text-page-title-size); line-height: var(--text-page-title-line); letter-spacing: var(--text-page-title-tracking); }
+.text-modal-title { font-family: var(--font-family-base); font-weight: var(--text-modal-title-weight); font-size: var(--text-modal-title-size); line-height: var(--text-modal-title-line); letter-spacing: var(--text-modal-title-tracking); }
+.text-menu-item { font-family: var(--font-family-base); font-weight: var(--text-menu-item-weight); font-size: var(--text-menu-item-size); line-height: var(--text-menu-item-line); letter-spacing: var(--text-menu-item-tracking); }
+.text-input-mobile { font-family: var(--font-family-base); font-weight: var(--text-input-mobile-weight); font-size: var(--text-input-mobile-size); line-height: var(--text-input-mobile-line); letter-spacing: var(--text-input-mobile-tracking); }
+.text-member-name { font-family: var(--font-family-base); font-weight: var(--text-member-name-weight); font-size: var(--text-member-name-size); line-height: var(--text-member-name-line); letter-spacing: var(--text-member-name-tracking); }
+.text-member-more { font-family: var(--font-family-base); font-weight: var(--text-member-more-weight); font-size: var(--text-member-more-size); line-height: var(--text-member-more-line); letter-spacing: var(--text-member-more-tracking); }
+.text-badge { font-family: var(--font-family-base); font-weight: var(--text-badge-weight); font-size: var(--text-badge-size); line-height: var(--text-badge-line); letter-spacing: var(--text-badge-tracking); }
+.text-nav-label { font-family: var(--font-family-base); font-weight: var(--text-nav-label-weight); font-size: var(--text-nav-label-size); line-height: var(--text-nav-label-line); letter-spacing: var(--text-nav-label-tracking); }
+.text-stat { font-family: var(--font-family-base); font-weight: var(--text-stat-weight); font-size: var(--text-stat-size); line-height: var(--text-stat-line); letter-spacing: var(--text-stat-tracking); }
+.text-hero-title { font-family: var(--font-family-base); font-weight: var(--text-hero-title-weight); font-size: var(--text-hero-title-size); line-height: var(--text-hero-title-line); letter-spacing: var(--text-hero-title-tracking); }

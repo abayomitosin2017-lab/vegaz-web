@@ -13,7 +13,7 @@ defineProps<{ items: EventExpectation[] }>()
 
 <template>
   <section class="event-expect" aria-labelledby="event-expect-title">
-    <h2 id="event-expect-title" class="event-title text-section-title">What to expect</h2>
+    <h2 id="event-expect-title" class="event-title text-detail-section-title">What to expect</h2>
     <ul class="event-expect__list">
       <li v-for="item in items" :key="item.title" class="event-expect__row">
         <span class="event-expect__photo">

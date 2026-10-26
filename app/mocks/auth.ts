@@ -20,6 +20,8 @@ export const mockExistingAccount: SessionUser = {
   avatarUrl: placeholderPhoto(3), // placeholder portrait; new sign-ups keep the letter avatar
   email: 'johnbade@gmail.com',
   phone: '08123456789', // demo number (Figma checkout frames)
+  gender: 'female',
+  // No birthday or bio yet, so the birthday prompt and an incomplete profile show (decision 26 Oct)
 }
 export const mockWrongCode = '000000'
 /** Usernames treated as taken (no "taken" state is designed yet) */

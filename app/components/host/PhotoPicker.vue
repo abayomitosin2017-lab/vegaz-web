@@ -159,7 +159,7 @@ function onKey(e: KeyboardEvent) {
             <img src="/images/host/icon-gallery-16.svg" alt="" width="16" height="16" />Cover
           </span>
           <button type="button" class="host-photos__remove" :aria-label="`Remove photo ${i + 1}`" @click="remove(i)">
-            <img src="/images/host/icon-close-14-light.svg" alt="" width="14" height="14" />
+            <img src="/images/host/icon-close-14-light.svg" alt="" width="12" height="12" />
           </button>
         </li>
         <li v-if="canAdd" class="host-photos__thumb">
@@ -319,7 +319,7 @@ function onKey(e: KeyboardEvent) {
 .host-photos__phone { display: none; }
 @media (max-width: 767px) {
   .host-photos { width: 100%; }
-  .host-photos__drop, .host-photos__cover { aspect-ratio: 325 / 402; }
+  .host-photos__drop, .host-photos__cover { aspect-ratio: 1; } /* square on phones (decision 26 Oct) */
   .host-photos__web { display: none; }
   .host-photos__phone { display: inline; }
   .host-photos__thumbs { overflow-x: auto; margin-right: calc(-1 * var(--spacing-lg)); padding-right: var(--spacing-lg); scrollbar-width: none; }

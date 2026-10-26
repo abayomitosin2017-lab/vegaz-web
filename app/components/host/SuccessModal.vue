@@ -50,7 +50,7 @@ const link = computed(() => (import.meta.client && props.eventId ? eventUrl(prop
             <img src="/images/host/icon-copy-16.svg" alt="" width="16" height="16" />Copy
           </button>
           <button type="button" class="host-success__pill host-success__pill--icon" aria-label="Show QR code" @click="toast = 'QR code is coming soon'">
-            <img src="/images/host/icon-qr-18.svg" alt="" width="18" height="18" />
+            <img src="/images/host/icon-qr-18.svg" alt="" width="16" height="16" />
           </button>
         </div>
       </div>

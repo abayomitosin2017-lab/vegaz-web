@@ -76,19 +76,44 @@
   --spacing-inline: 10px;
   --spacing-field: 14px;
   --spacing-section: 20px;
+  /* Airbnb steps the old scale lacked */
+  --spacing-28: 28px;
+  --spacing-5xl: 80px;
+  /* Airbnb listing sections: 48 above and below each block, 32 for the
+     small "highlights" block (measured at 768 and 1440) */
+  --spacing-section-block: 48px;
+  --spacing-section-block-tight: 32px;
+  /* Space between the header and the first content on every page (decision 26 Oct) */
+  --spacing-page-top: 24px;
+  /* Home hero band: 40 top and bottom (decision 26 Oct) */
+  --spacing-hero-block: 40px;
 
   /* Sizing */
   --sizing-control-compact: 40px;
   --sizing-control-touch: 44px;
   --sizing-control-standard: 48px;
   --sizing-control-field: 52px;
-  --sizing-icon-standard: 24px;
+  --sizing-icon-standard: 24px;   /* Airbnb: wishlist, profile, amenity icons */
+  --sizing-icon-small: 16px;      /* Airbnb: search, menu, share/save, chevrons */
+  --sizing-icon-xsmall: 12px;     /* Airbnb: carousel arrows, stars */
+  --sizing-icon-micro: 8px;       /* Airbnb: photo dots */
+  /* Round icon buttons (Airbnb) */
+  --sizing-icon-button-xs: 28px;  /* carousel prev / next */
+  --sizing-icon-button-sm: 32px;  /* wishlist heart on a photo */
+  --sizing-icon-button-md: 40px;  /* header profile / menu / globe */
+  --sizing-icon-button-lg: 48px;  /* search */
+  /* Logo: Airbnb header logo is 32 tall at every width it shows */
+  --sizing-logo-height: 32px;
+  /* Header bar (Airbnb compact header with inline search) */
+  --sizing-header-height: 80px;
 
   /* Radius */
   --radius-zero: 0;
   --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
+  --radius-card: 16px;   /* Airbnb */
+  --radius-20: 20px;     /* Airbnb */
   --radius-lg: 24px;
   --radius-xl: 32px;
   --radius-pill: 40px;
@@ -116,18 +141,35 @@
 
   /* Containers */
   --container-web-tablet-max: 960px;
-  --container-web-desktop-max: 1312px;
+  --container-web-desktop-max: 1344px; /* 1440 screen = 48 margins each side (Airbnb home) */
   --container-web-wide-max: 1600px;
-  --container-inset-mobile: 20px;
-  --container-inset-tablet: 32px;
-  --container-inset-desktop: 64px;
-  --container-inset-wide: 64px;
+  /* Page side margins, Airbnb home: 24 phone, 24 tablet, 48 desktop.
+     Airbnb's desktop starts at 1128, so the "desktop" inset stays 24 until
+     then (see the media query at the end of this file). */
+  --container-inset-mobile: 24px;
+  --container-inset-tablet: 24px;
+  --container-inset-desktop: 24px;
+  --container-inset-wide: 48px;
+  /* Detail pages (event page), Airbnb listing: 1120 max content, side
+     margins 24 phone, 40 tablet, 80 desktop (>= 1128) */
+  --container-detail-max: 1120px;
+  --container-detail-inset-mobile: 24px;
+  --container-detail-inset-tablet: 40px;
+  --container-detail-inset-desktop: 40px;
 
   /* Grid recipes (explicit per platform, not chosen by width in Figma) */
   --grid-web-mobile-columns: 4;
-  --grid-web-mobile-margin: 20px;
+  --grid-web-mobile-margin: 24px;
   --grid-web-mobile-gutter: 16px;
   --grid-web-desktop-columns: 12;
-  --grid-web-desktop-margin: 64px;
+  --grid-web-desktop-margin: 48px;
   --grid-web-desktop-gutter: 20px;
+}
+
+/* Airbnb desktop (>= 1128): wider page margins */
+@media (min-width: 1128px) {
+  :root {
+    --container-inset-desktop: 48px;
+    --container-detail-inset-desktop: 80px;
+  }
 }

@@ -148,20 +148,8 @@ defineExpose({ focusFirst })
   .ui-modal__card { padding: var(--spacing-lg); }
 }
 
-/* ---- Motion ---- */
-.ui-modal { --ui-modal-in: var(--duration-popup-in); --ui-modal-out: var(--duration-popup-out); }
-.ui-modal-enter-active,
-.ui-modal-enter-active .ui-modal__card {
-  transition: opacity var(--ui-modal-in) var(--ease-out-strong), transform var(--ui-modal-in) var(--ease-out-strong);
-}
-.ui-modal-leave-active,
-.ui-modal-leave-active .ui-modal__card {
-  transition: opacity var(--ui-modal-out) var(--ease-out-strong), transform var(--ui-modal-out) var(--ease-out-strong);
-}
-.ui-modal-enter-from,
-.ui-modal-leave-to { opacity: 0; }
-.ui-modal-enter-from .ui-modal__card,
-.ui-modal-leave-to .ui-modal__card { transform: scale(var(--scale-popup-from)); }
+/* ---- Motion: none (decision 26 Oct: modal animations glitched). Modals
+   and sheets appear and disappear instantly. ---- */
 
 /* Phones: bottom sheet / full screen */
 @media (max-width: 767px) {
@@ -184,18 +172,5 @@ defineExpose({ focusFirst })
     border-radius: 0;
     box-shadow: none;
   }
-  /* Sheets slide up (drawer curve); full-screen cards just fade */
-  .ui-modal--sheet { --ui-modal-in: var(--duration-sheet-in); --ui-modal-out: var(--duration-sheet-out); }
-  .ui-modal--sheet.ui-modal-enter-active .ui-modal__card { transition-timing-function: var(--ease-drawer); }
-  .ui-modal--sheet.ui-modal-enter-from .ui-modal__card,
-  .ui-modal--sheet.ui-modal-leave-to .ui-modal__card { transform: translateY(100%); }
-  .ui-modal--fullscreen.ui-modal-enter-from .ui-modal__card,
-  .ui-modal--fullscreen.ui-modal-leave-to .ui-modal__card { transform: none; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .ui-modal-enter-from .ui-modal__card,
-  .ui-modal-leave-to .ui-modal__card,
-  .ui-modal--sheet.ui-modal-enter-from .ui-modal__card,
-  .ui-modal--sheet.ui-modal-leave-to .ui-modal__card { transform: none; }
 }
 </style>

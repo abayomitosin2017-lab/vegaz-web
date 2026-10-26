@@ -1,0 +1,70 @@
+/*
+ * Profile screens (Activities, Edit Profile, birthday + gender prompts).
+ * Figma section "Activties and edit profile" (10834:28020) for phones and
+ * "Activities and edit profile — web" (10838:19056) for the web.
+ * Values are the Figma ones; colours come from the design tokens.
+ */
+
+/* ---- Field: label (Small regular #141316) 8 above a 52px box ---- */
+.profile-field { display: flex; flex-direction: column; gap: var(--spacing-xs); min-width: 0; }
+.profile-field__label { margin: 0; color: var(--color-text-field); }
+.profile-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--sizing-control-field);
+  padding: 0 var(--spacing-md);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--radius-md);
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-base);
+  font-weight: var(--text-app-small-regular-weight);
+  font-size: var(--text-app-small-regular-size);
+  line-height: var(--text-app-small-regular-line);
+  outline: none;
+  transition: border-color 150ms ease;
+}
+.profile-input::placeholder { color: var(--color-text-placeholder); opacity: 1; }
+.profile-input:hover { border-color: var(--color-border-strong); }
+.profile-input:focus-visible { border-color: var(--color-action-primary); }
+.profile-input[aria-invalid='true'] { border-color: var(--color-status-error); }
+/* Email is shown but can't be changed here (decision 26 Oct, not drawn) */
+.profile-input[readonly] { color: var(--color-text-muted); background: var(--color-background-secondary); cursor: default; }
+.profile-input[readonly]:hover { border-color: var(--color-border-default); }
+.profile-field__error { margin: 0; color: var(--color-status-error); }
+
+/* ---- Section heading: Headline 2 semibold 24/32 -0.5, #2C2C2C ---- */
+.profile-heading {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: var(--font-family-base);
+  font-weight: var(--text-modal-title-weight); font-size: var(--text-modal-title-size); line-height: var(--text-modal-title-line); letter-spacing: var(--text-modal-title-tracking);
+}
+.profile-rule { height: 0.5px; background: var(--color-border-default); border: 0; margin: 0; }
+
+/* ---- Phone top bar: 36px back circle + centred title (Body semibold) ---- */
+.profile-mbar { position: relative; display: flex; align-items: center; justify-content: center; min-height: 36px; }
+.profile-back {
+  display: inline-flex;
+  padding: var(--spacing-xs);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: rgba(241, 241, 241, 0.5); /* raw in Figma */
+  backdrop-filter: blur(2px);
+  cursor: pointer;
+}
+.profile-back:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: 2px; }
+.profile-mbar .profile-back { position: absolute; left: 0; top: 0; }
+.profile-mbar__title { margin: 0; color: var(--color-text-primary); }
+
+/* ---- Close X 16 ---- */
+.profile-close { display: inline-flex; padding: 0; border: 0; background: none; border-radius: var(--radius-pill); cursor: pointer; }
+.profile-close:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: 2px; }
+
+.profile-visually-hidden {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
+  clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+/* Inactive primary action: secondary look, still focusable (as elsewhere) */
+.profile-inactive.ui-button { cursor: default; }

@@ -99,7 +99,7 @@ defineExpose({ focus: () => root.value?.querySelector('input')?.focus() })
       @action="submit"
     >
       <template #action>
-        <img src="/images/icon-search.svg" alt="" width="20" height="20" />
+        <img src="/images/icon-search.svg" alt="" width="16" height="16" />
       </template>
     </UiInput>
 

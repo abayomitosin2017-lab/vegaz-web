@@ -170,8 +170,6 @@ const id = useId()
   color: var(--color-text-option);
 }
 .host-ticket-form__actions { display: flex; gap: var(--spacing-md); }
-.host-ticket-form__cancel.ui-button { width: 140px; }
-.host-ticket-form__submit.ui-button { width: 200px; }
 /* Phones (Figma mobile Create Ticket): the screen has the title; the button
    sits 40px above the bottom, 327 wide, over a white fade */
 .host-ticket-form--phone { padding-bottom: 112px; }

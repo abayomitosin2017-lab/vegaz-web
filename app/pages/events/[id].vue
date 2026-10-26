@@ -32,7 +32,8 @@
 import type { ChatPerson, ChatProfile } from '~/types/chat'
 import { getEvent } from '~/services/events'
 import { getTicketTypes } from '~/services/tickets'
-import { getProfile, isInEventChat, joinEventChat } from '~/services/chat'
+import { getProfile, introMessage, isInEventChat, joinEventChat, sendMessage } from '~/services/chat'
+import { saveBio } from '~/services/profile'
 import { ticketsHeld } from '~/services/tickets'
 import { priceRange } from '~/utils/money'
 
@@ -68,7 +69,7 @@ function buy() {
 }
 
 // ---- Join the community -> open its chat ----
-const { user } = useSession()
+const { user, setUser } = useSession()
 const { open: openAuth, isOpen: authOpen } = useAuthModal()
 const joining = ref(false)
 let joinAfterLogin = false
@@ -79,13 +80,49 @@ async function join() {
     openAuth()
     return
   }
+  // First time in this event's chat (hosts excluded): post a hello built from
+  // the bio; with no bio, ask for one first (decision 26 Oct)
+  const firstTime = !isHost.value && !(await isInEventChat(user.value.username, event.value.id))
+  if (firstTime && !user.value.bio?.trim()) {
+    bioOpen.value = true
+    return
+  }
+  await enterChat(firstTime)
+}
+async function enterChat(introduce: boolean) {
+  const u = user.value
+  if (!u || !event.value) return
   joining.value = true
   try {
-    const chatId = await joinEventChat(user.value.username, event.value.id)
+    const chatId = await joinEventChat(u.username, event.value.id)
+    if (introduce && u.bio?.trim()) {
+      const me: ChatPerson = { id: 'u-me', name: `${u.firstName} ${u.lastName}`, username: u.username, avatarUrl: u.avatarUrl }
+      const photo = u.photos?.[0] ?? u.avatarUrl // main profile photo; text only without one
+      await sendMessage(chatId, me, { text: introMessage(u.firstName, u.bio), photos: photo ? [photo] : undefined })
+    }
     await navigateTo({ path: '/chat', query: { chat: chatId } })
   } finally {
     joining.value = false
   }
+}
+
+// ---- "Introduce yourself" (no bio yet, first join) ----
+const bioOpen = ref(false)
+const bioSaving = ref(false)
+async function onBioSave(bio: string) {
+  if (!user.value) return
+  bioSaving.value = true
+  try {
+    setUser(await saveBio(user.value, bio))
+    bioOpen.value = false
+    await enterChat(true)
+  } finally {
+    bioSaving.value = false
+  }
+}
+function onBioSkip() {
+  bioOpen.value = false
+  enterChat(false)
 }
 // Finish joining once they've logged in or signed up
 watch(user, (u) => { if (u && joinAfterLogin) { joinAfterLogin = false; join() } })
@@ -137,8 +174,8 @@ function closeCreated() {
   <div v-if="event" :class="['event-page', { 'event-page--bar': count > 0 }]">
     <div class="event-page__top">
       <h1 class="event-page__title text-page-title">{{ event.title }}</h1>
-      <UiButton color="secondary" text-style="web" class="event-page__join" :disabled="joining" @click="join">
-        <template v-if="!inChat && !isHost" #icon><img src="/images/event/icon-plus-24.svg" alt="" width="24" height="24" /></template>
+      <UiButton size="small" color="secondary" class="event-page__join" :disabled="joining" @click="join">
+        <template v-if="!inChat && !isHost" #icon><img src="/images/event/icon-plus-24.svg" alt="" width="16" height="16" /></template>
         {{ inChat || isHost ? 'Open Chat' : 'Join Community - Free' }}
       </UiButton>
     </div>
@@ -156,7 +193,7 @@ function closeCreated() {
       </div>
 
       <section class="event-page__about" aria-labelledby="event-about-title">
-        <h2 id="event-about-title" class="event-page__section-title text-section-title">About Event</h2>
+        <h2 id="event-about-title" class="event-page__section-title text-detail-section-title">About Event</h2>
         <p class="event-page__about-text text-body-regular">{{ event.about }}</p>
       </section>
 
@@ -171,7 +208,7 @@ function closeCreated() {
       <EventAppBanner class="event-page__banner" />
     </div>
 
-    <EventTicketBar v-if="count > 0 && !isHost" class="event-page__bar" :total="total" :count="count" :tiers="picked.length" @buy="buy" />
+    <EventTicketBar v-if="count > 0 && !isHost" class="event-page__bar" :total="total" :count="count" :tiers="picked.length" :free="isFreeOnly(tickets ?? [], quantities)" @buy="buy" />
 
     <UiPhotoViewer
       :open="viewerIndex !== null"
@@ -199,6 +236,8 @@ function closeCreated() {
       @join-chat="join"
     />
 
+    <ProfileBioPrompt :open="bioOpen" :busy="bioSaving" @close="bioOpen = false" @save="onBioSave" @skip="onBioSkip" />
+
     <HostSuccessModal :open="createdOpen" :event-id="event.id" :title="event.title" @close="closeCreated" />
 
     <UiToast :message="toast" @done="toast = ''" />
@@ -206,7 +245,7 @@ function closeCreated() {
 
   <!-- Unknown event (not designed; proposed) -->
   <div v-else class="event-page event-page--missing">
-    <h1 class="text-section-title">This event couldn’t be found</h1>
+    <h1 class="text-page-title">This event couldn’t be found</h1>
     <p class="text-body-regular">It may have ended or been removed.</p>
     <UiButton text-style="web" @click="navigateTo('/events')">Explore events</UiButton>
   </div>
@@ -218,11 +257,12 @@ function closeCreated() {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2xl);
+  gap: var(--spacing-xl); /* phones: 32 between sections (Figma 10713:56670) */
   width: 100%;
-  max-width: calc(1140px + 2 * var(--container-inset-desktop));
+  /* Airbnb listing: 1120 content, margins 24 / 40 / 80 */
+  max-width: calc(var(--container-detail-max) + 2 * var(--container-detail-inset-desktop));
   margin-inline: auto;
-  padding: var(--spacing-3xl) var(--container-inset-mobile) var(--spacing-4xl);
+  padding: var(--spacing-page-top) var(--container-detail-inset-mobile) var(--spacing-4xl);
 }
 /* Room for the bottom ticket bar */
 .event-page--bar { padding-bottom: calc(var(--spacing-4xl) + 90px); }
@@ -232,12 +272,12 @@ function closeCreated() {
 .event-page__join {
   display: none;
   flex: none;
-  --ui-button-pad-x: var(--spacing-xl);
-  --ui-button-pad-y: var(--spacing-sm);
   --ui-button-border-color: var(--color-border-default);
 }
+/* Airbnb small pill ("Become a host"): 40 tall, 12 sides, 16px icon */
+.event-page__join :deep(.ui-button__icon) { width: var(--sizing-icon-small); height: var(--sizing-icon-small); }
 
-.event-page__body { display: flex; flex-direction: column; gap: var(--spacing-2xl); min-width: 0; }
+.event-page__body { display: flex; flex-direction: column; gap: var(--spacing-xl); min-width: 0; } /* phones: 32 (Figma) */
 .event-page__intro { display: flex; flex-direction: column; gap: var(--spacing-md); }
 .event-page__about { display: flex; flex-direction: column; gap: var(--spacing-md); }
 .event-page__section-title { margin: 0; color: var(--color-text-primary); }
@@ -250,8 +290,8 @@ function closeCreated() {
 @media (max-width: 767px) {
   .event-page__gallery { order: -1; }
   .event-page__top {
-    margin-top: calc(var(--spacing-lg) - var(--spacing-2xl));
-    margin-bottom: calc(var(--spacing-lg) - var(--spacing-2xl));
+    margin-top: calc(var(--spacing-lg) - var(--spacing-xl));
+    margin-bottom: calc(var(--spacing-lg) - var(--spacing-xl));
   }
 }
 
@@ -265,24 +305,7 @@ function closeCreated() {
   background: var(--color-photo-scrim);
 }
 .event-page__profile { width: 100%; height: 100%; }
-/* Motion (decision 22 Oct): the scrim fades, the panel slides in 16px from
-   the right. "Reduce motion": fade only. */
-.event-page-profile-enter-active,
-.event-page-profile-enter-active .event-page__profile {
-  transition: opacity var(--duration-popup-in) var(--ease-out-strong), transform var(--duration-popup-in) var(--ease-out-strong);
-}
-.event-page-profile-leave-active,
-.event-page-profile-leave-active .event-page__profile {
-  transition: opacity var(--duration-popup-out) var(--ease-out-strong), transform var(--duration-popup-out) var(--ease-out-strong);
-}
-.event-page-profile-enter-from,
-.event-page-profile-leave-to { opacity: 0; }
-.event-page-profile-enter-from .event-page__profile,
-.event-page-profile-leave-to .event-page__profile { transform: translateX(var(--distance-panel-in)); }
-@media (prefers-reduced-motion: reduce) {
-  .event-page-profile-enter-from .event-page__profile,
-  .event-page-profile-leave-to .event-page__profile { transform: none; }
-}
+/* No open / close animation (decision 26 Oct) */
 
 .event-page--missing { align-items: flex-start; gap: var(--spacing-md); min-height: 50vh; }
 .event-page--missing h1,
@@ -290,7 +313,9 @@ function closeCreated() {
 .event-page--missing p { color: var(--color-text-secondary); }
 
 @media (min-width: 768px) {
-  .event-page { padding-inline: var(--container-inset-tablet); }
+  .event-page { gap: var(--spacing-2xl); padding-inline: var(--container-detail-inset-tablet); }
+  /* Airbnb listing sections: 48 above and below each dividing line */
+  .event-page__body { gap: var(--spacing-section-block); }
   /* Proposed: desktop/tablet profile = side panel over the page */
   .event-page__profile {
     width: 375px;
@@ -304,17 +329,18 @@ function closeCreated() {
 /* ---- Desktop (>= 1024px): Figma Desktop 64 ---- */
 @media (min-width: 1024px) {
   .event-page {
-    padding: 62px var(--container-inset-desktop) 52px; /* Figma: 62px under the header, 52px above the footer */
-    max-width: calc(1140px + 2 * var(--container-inset-desktop));
+    padding: var(--spacing-page-top) var(--container-detail-inset-desktop) 52px;
+    max-width: calc(var(--container-detail-max) + 2 * var(--container-detail-inset-desktop));
   }
   .event-page--bar { padding-bottom: 52px; }
   .event-page__join { display: inline-flex; }
   .event-page__body {
     display: grid;
-    grid-template-columns: minmax(0, 601px) minmax(360px, 431px);
-    justify-content: space-between;
-    column-gap: var(--spacing-lg);
-    row-gap: var(--spacing-3xl);
+    /* Airbnb listing columns: 7/12 content, 1/12 gap, 4/12 booking card
+       (653 / 93 / 373 at 1120) */
+    grid-template-columns: minmax(0, 7fr) minmax(360px, 4fr);
+    column-gap: 8.333%;
+    row-gap: var(--spacing-section-block);
     align-items: start;
   }
   .event-page__body > * { grid-column: 1; }
@@ -322,7 +348,7 @@ function closeCreated() {
     grid-column: 2;
     grid-row: 1 / span 5; /* the 5 visible left-column sections */
     position: sticky;
-    top: calc(88px + var(--spacing-lg)); /* below the 88px sticky header */
+    top: calc(var(--sizing-header-height) + var(--spacing-lg)); /* below the sticky header */
   }
   .event-page__join-card,
   .event-page__line,

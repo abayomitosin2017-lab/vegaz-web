@@ -27,6 +27,7 @@ import type { TicketType } from '~/types/ticket'
 import { getMessages, getProfile, listChats, markRead, sendMessage } from '~/services/chat'
 import { getEvent } from '~/services/events'
 import { getTicketTypes } from '~/services/tickets'
+import { isFreeOnly } from '~/utils/ticketCta'
 
 definePageMeta({ footer: false, requiresAuth: true })
 useHead({ title: 'Chats · Vegaz' })
@@ -125,6 +126,14 @@ async function openProfile(person: ChatPerson) {
 // "Buy Ticket" in a chat header (no ticket yet): the buy flow opens on top
 // of the chat at Add Ticket with an empty cart (decision 22 Oct). Once bought,
 // the chat list reloads, so the header shows "Share Event".
+// RSVP instead of Buy Ticket when the chat's event only has free tickets (decision 26 Oct)
+const chatFree = ref(false)
+watch(() => selected.value?.eventId, async (id) => {
+  chatFree.value = false
+  if (!id) return
+  const list = await getTicketTypes(id)
+  if (selected.value?.eventId === id) chatFree.value = isFreeOnly(list)
+}, { immediate: true })
 const checkout = reactive({ open: false, event: null as EventDetails | null, tickets: [] as TicketType[], quantities: {} as Record<string, number> })
 async function buyTicket() {
   const eventId = selected.value?.eventId
@@ -152,6 +161,7 @@ function closeProfile() {
       @send="onSend"
       @profile="openProfile"
       @back="backToList"
+      :free="chatFree"
       @buy-ticket="buyTicket"
     />
     <ChatEmpty
@@ -177,7 +187,7 @@ function closeProfile() {
 
 <style scoped>
 .chat-page {
-  --chat-page-height: calc(100dvh - 88px); /* screen minus the 88px header */
+  --chat-page-height: calc(100dvh - var(--sizing-header-height)); /* screen minus the header */
   box-sizing: border-box;
   display: grid;
   grid-template-columns: minmax(240px, 342px) minmax(0, 1fr);
@@ -188,7 +198,7 @@ function closeProfile() {
   height: var(--chat-page-height);
   min-height: 480px;
   margin-inline: auto;
-  padding: var(--spacing-2xl) var(--container-inset-tablet) 43px; /* Figma: 43px bottom */
+  padding: var(--spacing-page-top) var(--container-inset-tablet) 43px; /* Figma: 43px bottom */
 }
 .chat-page > * { min-height: 0; }
 .chat-page--profile { grid-template-columns: minmax(0, 1fr) 327.6px; }

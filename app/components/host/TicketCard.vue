@@ -41,10 +41,10 @@ const description = computed(() => props.ticket.lines.map(l => l.description).fi
     </div>
     <div class="host-tcard__actions">
       <button type="button" class="host-icon-btn" :aria-label="`Edit ${ticket.name}`" @click="$emit('edit')">
-        <img src="/images/host/icon-pen-18.svg" alt="" width="18" height="18" />
+        <img src="/images/host/icon-pen-18.svg" alt="" width="16" height="16" />
       </button>
       <button type="button" class="host-icon-btn" :aria-label="`Delete ${ticket.name}`" @click="$emit('delete')">
-        <img src="/images/host/icon-delete-18.svg" alt="" width="18" height="18" />
+        <img src="/images/host/icon-delete-18.svg" alt="" width="16" height="16" />
       </button>
     </div>
   </article>

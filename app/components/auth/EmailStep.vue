@@ -64,7 +64,7 @@ function submit() {
   margin: 0 auto;
   color: var(--color-text-note);
   font-family: var(--font-family-base);
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--text-xsmall-regular-weight);
   /* Base size = x-Small so the paragraph's own line box does not add height */
   font-size: var(--text-xsmall-regular-size);
   line-height: var(--text-xsmall-regular-line);

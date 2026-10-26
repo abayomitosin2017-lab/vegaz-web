@@ -452,7 +452,7 @@ const mobileTitles = computed(() => ({
 .host-m__heading { margin: 0; color: var(--color-text-checkout); }
 .host-m__body--expect { gap: 23px; }
 .host-m__intro { display: flex; flex-direction: column; gap: var(--spacing-xs); }
-.host-m__h1 { margin: 0; color: var(--color-text-checkout); font-family: var(--font-family-base); font-weight: var(--font-weight-semibold); font-size: 24px; line-height: 32px; letter-spacing: -0.5px; }
+.host-m__h1 { margin: 0; color: var(--color-text-checkout); font-family: var(--font-family-base); font-weight: var(--text-modal-title-weight); font-size: var(--text-modal-title-size); line-height: var(--text-modal-title-line); letter-spacing: var(--text-modal-title-tracking); }
 .host-m__lead { margin: 0; color: var(--color-host-note); }
 /* "Proceed" 40px above the bottom, 327 wide (Ticket Details) */
 .host-m__float {

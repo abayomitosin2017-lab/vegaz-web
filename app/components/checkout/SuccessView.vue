@@ -30,7 +30,7 @@ const shown = computed(() => [0, 1, 2].map(i => props.photos[i] ?? props.photos[
     <div class="checkout-success__top">
       <img class="checkout-success__logo" src="/images/checkout/logo-light.svg" alt="Vegaz" width="75" height="32" />
       <button type="button" class="checkout-success__close" aria-label="Close" @click="emit('close')">
-        <img src="/images/checkout/icon-close-light-20.svg" alt="" width="20" height="20" />
+        <img src="/images/checkout/icon-close-light-20.svg" alt="" width="16" height="16" />
       </button>
     </div>
 

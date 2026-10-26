@@ -20,7 +20,7 @@ useHead({ title: 'All events · Vegaz' })
 <template>
   <div class="all-events">
     <NuxtLink to="/" class="all-events__back text-small-semibold">
-      <img src="/images/chat/icon-arrow-left-20.svg" alt="" width="20" height="20" />
+      <img src="/images/chat/icon-arrow-left-20.svg" alt="" width="16" height="16" />
       Back to Home
     </NuxtLink>
 
@@ -46,7 +46,7 @@ useHead({ title: 'All events · Vegaz' })
   width: 100%;
   max-width: calc(var(--container-web-desktop-max) + 2 * var(--container-inset-desktop));
   margin-inline: auto;
-  padding: var(--spacing-xl) var(--container-inset-mobile) 42px; /* as Home */
+  padding: var(--spacing-page-top) var(--container-inset-mobile) 42px;
 }
 .all-events__back {
   display: inline-flex;
@@ -77,7 +77,7 @@ useHead({ title: 'All events · Vegaz' })
 
 /* ---- Tablet (768-1023): 4 per row ---- */
 @media (min-width: 768px) {
-  .all-events { padding: 46px var(--container-inset-tablet) 141px; }
+  .all-events { padding: var(--spacing-page-top) var(--container-inset-tablet) 141px; }
   .all-events__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 /* ---- Desktop (>= 1024): 5 per row, as the Home rows ---- */

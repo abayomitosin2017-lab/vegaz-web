@@ -83,16 +83,16 @@ watch(() => route.fullPath, () => { mobileSearchOpen.value = false })
         <img class="site-header__logo" src="/images/logo-header.svg" alt="Vegaz" width="85" height="36" />
       </NuxtLink>
       <div v-if="showActions" class="site-header__icons">
-        <!-- Figma: Grey_6 round icon buttons, 12px padding, no border (48 x 48) -->
+        <!-- Airbnb header round buttons: 40 x 40; search icon 16, profile 24 -->
         <UiButton
           color="secondary"
           icon-only
           ref="mobileSearchButton"
           aria-label="Search for events"
-          class="site-header__icon-button"
+          class="site-header__icon-button site-header__icon-button--small-icon"
           @click="openMobileSearch"
         >
-          <template #icon><img src="/images/icon-search-24.svg" alt="" width="24" height="24" /></template>
+          <template #icon><img src="/images/icon-search-24.svg" alt="" width="16" height="16" /></template>
         </UiButton>
         <UiButton
           v-if="!user"
@@ -130,11 +130,11 @@ watch(() => route.fullPath, () => { mobileSearchOpen.value = false })
       <LayoutSearchBox class="site-header__search" />
 
       <div v-if="showActions" class="site-header__actions">
-        <!-- Figma instance uses 32px side padding on this ghost button -->
-        <UiButton fill="ghost" color="secondary" style="--ui-button-pad-x: var(--spacing-xl)" @click="emit('host')">
+        <!-- Airbnb "Become a host": 40 tall pill, 11 / 12 padding, 14/18 w500 -->
+        <UiButton size="small" fill="ghost" color="secondary" @click="emit('host')">
           Host an Event
         </UiButton>
-        <UiButton v-if="!user" fill="solid" color="secondary" data-login @click="emit('login')">Login or signup</UiButton>
+        <UiButton v-if="!user" size="small" fill="solid" color="secondary" data-login @click="emit('login')">Login or signup</UiButton>
         <UiDropdownMenu v-else :items="profileMenuItems" label="Account" @select="emit('menu', $event)">
           <template #trigger="{ props: trigger }">
             <button type="button" class="site-header__profile" :aria-label="accountLabel" data-account-trigger v-bind="trigger">
@@ -176,8 +176,11 @@ watch(() => route.fullPath, () => { mobileSearchOpen.value = false })
 
 /* ---- Mobile (< 768px): Figma 16px all round; the 1px bottom border sits
    inside the 80px frame, so bottom padding is 16 - 1 ---- */
+/* Airbnb: 80 tall bar (1px line included), page margin 24 */
 .site-header__bar--mobile {
-  padding: var(--spacing-md) var(--spacing-md) calc(var(--spacing-md) - var(--border-width-default));
+  box-sizing: border-box;
+  height: calc(var(--sizing-header-height) - var(--border-width-default));
+  padding: 0 var(--container-inset-mobile);
 }
 .site-header__icons {
   display: flex;
@@ -200,19 +203,26 @@ watch(() => route.fullPath, () => { mobileSearchOpen.value = false })
 }
 .site-header__search-cancel { flex: none; --ui-button-pad-x: var(--spacing-xs); }
 .site-header__icon-button {
-  --ui-button-pad-x: var(--spacing-sm);
+  --ui-button-min-height: var(--sizing-icon-button-md);
+  --ui-button-pad-y: var(--spacing-xs);
+  --ui-button-pad-x: var(--spacing-xs);
   --ui-button-border-color: transparent;
 }
+.site-header__icon-button--small-icon { --ui-button-pad-y: var(--spacing-sm); --ui-button-pad-x: var(--spacing-sm); }
+.site-header__icon-button--small-icon :deep(.ui-button__icon) { width: var(--sizing-icon-small); height: var(--sizing-icon-small); }
 .site-header__bar--desktop { display: none; }
 
 /* ---- Default variant (>= 768px): Figma 18px top/bottom, 64px sides,
-   1px border inside the 88px frame (bottom padding 18 - 1) ---- */
+   now Airbnb 80 tall ---- */
 @media (min-width: 768px) {
   .site-header__bar--mobile { display: none; }
   .site-header__bar--desktop {
     display: flex;
     gap: var(--spacing-md); /* keeps items apart when squeezed (not in Figma at 1440) */
-    padding: 18px var(--container-inset-tablet) calc(18px - var(--border-width-default));
+    /* Airbnb compact header: 80 tall (1px line included) */
+    box-sizing: border-box;
+    height: calc(var(--sizing-header-height) - var(--border-width-default));
+    padding: 0 var(--container-inset-tablet);
   }
 }
 @media (min-width: 1024px) {
@@ -224,8 +234,8 @@ watch(() => route.fullPath, () => { mobileSearchOpen.value = false })
 .site-header__brand {
   /* shrinks before the search field when squeezed (768-1439) */
   flex: 0 100 355px;
-  height: 36px;
-  min-width: 85px;
+  height: var(--sizing-logo-height);
+  min-width: 76px;
 }
 .site-header__bar--signed-in .site-header__brand { flex-basis: 374px; }
 .site-header__logo-link { display: inline-block; border-radius: var(--radius-xs); color: inherit; }
@@ -233,8 +243,8 @@ watch(() => route.fullPath, () => { mobileSearchOpen.value = false })
   outline: var(--focus-ring-width) solid var(--focus-ring-color);
   outline-offset: var(--focus-ring-offset);
 }
-/* Figma logo frame: 85 x 35.962 */
-.site-header__logo { width: 85px; height: 35.962px; }
+/* Airbnb logo height: 32 (Vegaz logo kept, 85 x 35.962 scaled to 32 tall) */
+.site-header__logo { display: block; width: auto; height: var(--sizing-logo-height); }
 
 .site-header__search { flex: 0 1 376px; min-width: 0; }
 

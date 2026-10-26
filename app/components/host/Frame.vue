@@ -74,10 +74,10 @@ function onContinue() {
   box-sizing: border-box;
   flex: 1 1 auto;
   min-width: 0;
-  padding: var(--spacing-3xl) var(--spacing-4xl);
+  padding: var(--spacing-page-top) var(--spacing-4xl) var(--spacing-3xl);
   overflow-y: auto;
 }
-.host-frame__form--side { padding: var(--spacing-3xl); }
+.host-frame__form--side { padding: var(--spacing-page-top) var(--spacing-3xl) var(--spacing-3xl); }
 .host-frame__content { box-sizing: border-box; min-height: 100%; display: flex; flex-direction: column; gap: var(--spacing-xl); }
 .host-frame__side {
   box-sizing: border-box;
@@ -102,9 +102,7 @@ function onContinue() {
   border-top: var(--border-width-default) solid var(--color-border-default);
   background: var(--color-background-primary);
 }
-.host-frame__back.ui-button { width: 140px; }
 .host-frame__right { display: flex; gap: var(--spacing-md); }
-.host-frame__skip.ui-button { width: 180px; }
 
 /* No tablet / phone design (decision: 1440 desktop only). PROPOSED, FLAG:
    1024-1279px  narrower rail (280) and side panel (320), 32px form padding

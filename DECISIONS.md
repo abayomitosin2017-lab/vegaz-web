@@ -492,3 +492,102 @@ Test: `motion.mjs` in the QA scripts (90 checks at 1440 / 800 / 393 and with red
 - No "Get the app" box or button any more. The subtext carries the instruction: "Your event is live. Share the link below to invite people. To manage settings and moderate your event, download the Vegaz app." (PROPOSED wording.) "Open Chat" on the success screen is replaced by "Go to event"; the host's Open Chat on the event page stays.
 - Phones, new event: Date & Time moves from Ticket Details to the Event details list (first row, with the Edit pill), opening the same date & time sheet as an edition, titled "Date & time" / "When is your event happening?" (PROPOSED copy). Ticket Details is now the same screen for new events and new editions ("Ticket Pricing" only). "Proceed to ticket setup" waits for the date and time. Desktop keeps the date on its "Date & tickets" step (desktop frames).
 - Details rows keep their label on one line; long values are cut with "…".
+
+## 26 Oct: Log out modal, Activities, Edit Profile, birthday and gender prompts
+
+**Log out (Figma 10834:26385).** Profile menu "Log out" now asks first: 375px white card (radius 24, padding 24 / 24 / 40), 16px X, 40px logout icon, "Already Leaving?" + "You are about to log out of your account and authentication will be required to log back in", red "Yes, Log out" and grey "No, take me back!". The same centred card on phones (the frame is a card). Focus starts on "No, take me back!" so a stray Enter doesn't log anyone out (PROPOSED). `components/auth/LogoutDialog.vue`.
+
+**Activities (Figma mobile 10834:28021; web frames in section 10838:19056, designed 26 Oct).** Profile menu "My Activities".
+- Web: 560px modal; "Activities" + X; All / Created / Joined pills; list grouped "Upcoming" and "Past". Long lists scroll inside the card. Phones: full screen with back circle and centred title, one list (upcoming first, then past), as drawn.
+- Row: 60px picture, title, "22 Apr, 14:30 Lagos" (date, 24-hour time, city), female / male counts with memojis, a chip ("5 Slots left", or "Ended" for past events, PROPOSED). The row opens the event page.
+- Data (decision 26 Oct): Created = events you host, including ones published in this session. Joined = events you hold a ticket for or whose chat you're in. Upcoming / Past by today's date, so the demo catalog (April–May 2026) shows as Past. FLAG: the gender counts and slots left are invented in `mocks/profile.ts` (the catalog has neither); the API should send them.
+- Empty tab (PROPOSED, web frames): "You haven't created an event yet" + "Host an Event", "You haven't joined an event yet" + "Explore Events".
+
+**Edit Profile (Figma mobile 10834:28185 / 28268; web frames 10838:19269 / 19399).** `/profile/edit`, from the profile menu.
+- Web: site header and footer; back circle + "Edit Profile"; left column 360 (progress, photos, tip), right column (Personal Info in two columns, Bio, "Save Changes" 240 on the right). 768–1023: narrower left column, fields in one column (not drawn). Phones: no site header or footer, one column, "Save Changes" in a bar fixed at the bottom, as drawn.
+- Rules (decision 26 Oct): all fields can change except Email (shown locked, grey, PROPOSED look). First name, last name and username are required; a taken username shows an error under the field (copy PROPOSED). "Save Changes" turns Primary once something changed and the form is valid; "Changes saved" toast (PROPOSED). Bio stops at 100 words ("N/100 words").
+- "Profile N% Complete" (decision 26 Oct): first name, last name, username, email, gender, birthday, bio and at least one photo, an equal share each; it updates as you type.
+- Photos: up to 3. Tap an empty tile to add, a filled one to replace; the first photo is the profile photo (header avatar). Drag the handle (or arrow keys on it) to reorder (PROPOSED: implied by the handle). OPEN ITEM: upload, size limits, removing a photo (not designed).
+- Birthday: the browser's own date picker behind the Figma field (quick to go back years, PROPOSED); no future dates. Gender: the system dropdown styled as the Figma select.
+- OPEN ITEM: changing the username in the demo hides the demo chats (they belong to "estiloo"); the API keeps them by account.
+
+**Birthday and gender prompts (Figma "birthday" / "gender" frames).** Decision 26 Oct: after a login on Home, if the profile has no birthday the birthday prompt opens, then the gender prompt if there's no gender. Closing skips them until the next login. They never open when the login was for something else (hosting, buying, joining a chat) or on another page. Phones: bottom sheets as drawn; web: 441px cards (same content). The cake picture is exported from Figma with its tilt, border and shadow. In the demo the account already has a gender, so only the birthday prompt appears.
+
+**Session user** gains gender, birthday, bio and photos (field names PROPOSED).
+
+**QA (26 Oct):** `qa-profile.mjs` (55 checks at 1440, 54 at 1024, 52 at 375 and 320) and `logout.mjs` (26 checks, desktop + phone).
+
+## 26 Oct — Airbnb sizing applied to the style system (phone, tablet, desktop)
+
+Measured on airbnb.com (home + a listing page) at 375, 768 and 1440 in a real browser. Only the font family stays Outfit; sizes, line heights, weights and letter spacing are Airbnb's. Token files: `typography.css` (regenerated), `primitives.css`.
+
+**What changed for a designer**
+- Text no longer grows on desktop. Airbnb uses one ramp at every width, so the old ≥1024 "bigger body text" block is gone.
+- Every text style has its own weight token (`--text-<style>-weight`). Airbnb's weights don't follow the names: headings and buttons are 500, section titles 600, small meta labels 700.
+- Token breakpoints: phone < 768, tablet 768–1127, desktop ≥ 1128 (Airbnb's desktop switch). Layout breakpoints (768 / 1024) are unchanged.
+
+**Type ramp (size / line, weight, tracking)**
+| Style | Airbnb source | Value |
+|---|---|---|
+| Display, App H1 (success title), hero | host card headline | 32/36, 700, -0.96 |
+| H1, page title (event title) | listing H1 | 26/30, 500 |
+| H2, App H2, modal titles, event-page section titles | listing H2 | 22/26, 500, -0.44 |
+| Home row titles (section-title) | home section title | 18/24 phone → 20/24 from 768, 600, -0.18 |
+| App H3 (JoinCard, quantity) | home title at ≥768 | 20/24, 600, -0.18 |
+| H3 bold / semibold | "Guests mention" / "Host details" | 18/24, 600 -0.18 / 500 |
+| Body regular | reviews | 16/24, 400 |
+| Body semibold/bold, button text | buttons, "Hosted by" | 16/20, 500 |
+| Small regular | page body | 14/20, 400 |
+| Small semibold, small buttons, menu rows | nav, Share/Save | 14/18, 500 |
+| Small bold | "Guest favorite" | 14/20, 600 |
+| x-Small regular / semibold / bold | card meta | 12/16, 400 / 500 / 700 |
+| Sub regular / semibold / bold | rating bars / stat labels / Check-in label | 10/12 400, 10/14 500, 10/12 700 |
+| Badge (Details row chip) | card badge | 11/13, 600 |
+| Stat (mobile ticket price) | big numbers | 26/30, 600, -0.52 |
+
+**Spacing, sizes**
+- Page margins: 24 phone, 24 tablet, 48 desktop (home). Content max 1344 so a 1440 screen gets exactly 48.
+- Event page = Airbnb listing: 1120 content, margins 24 / 40 / 80; columns 7/12 content, 1/12 gap, 4/12 tickets; 48 above and below each divider from 768.
+- New spacing steps: 28, 80, section-block 48, section-block-tight 32.
+- Header 80 tall at every width (Airbnb's compact header). Logo 32 tall everywhere (header and footer).
+- Buttons: standard 48 (14/24 padding, 16/20 w500), small 40 (11/12 padding, 14/18 w500); the old per-variant 32 side padding is gone. Header "Host an Event" / "Login or signup" are small (Airbnb "Become a host"). Header round buttons 40 (search icon 16, profile 24).
+- Icons: only 24 / 16 / 12 (+8 dots). Off-scale icons were snapped: 20 and 18 → 16, 14 → 12. New tokens `--sizing-icon-small/xsmall/micro`, round buttons `--sizing-icon-button-xs/sm/md/lg` (28/32/40/48).
+- New radii 16 (`--radius-card`) and 20. Button and card shapes stay Vegaz's (pills, 24 cards): shape isn't sizing.
+
+**Not measurable / kept (FLAG)**
+- Airbnb's phone listing page shows an "open the app" screen to browsers, so the phone event-page section spacing stays as before (40); phone type uses the same ramp (Airbnb's ramp is identical at 768 and 1440).
+- Airbnb's account menu didn't open for measuring; menu rows use their nav text style (14/18 w500).
+- Airbnb hides its logo on phones and shows only the symbol on tablet; we kept the Vegaz logo at every width, only its size changed.
+- Colours untouched (not part of the request).
+
+## 26 Oct — Hero, page top spacing, icon line weight
+
+- **Hero title** ("Meet people through meaningful experience"): H1 size in bold, 26/30 weight 700, at every width (`--text-hero-title-*`).
+- **Hero band**: 24 top and bottom padding at every width. The band starts right under the header.
+- **Phones**: "Explore Events" is hidden in the hero; only "Add your event" shows.
+- **Header → first content = 24 on every page** (new token `--spacing-page-top`): All events, event page (phone, tablet, desktop), chat (web), Edit Profile (web), and the hosting screens. The Edit Profile phone screen has its own top bar and is unchanged; the host "choose how to start" screen stays vertically centred.
+- **Host top bar logo**: now 32 tall like the main header.
+- **Icon line weight**: every line icon now draws a 1.5px line on screen at any size (24, 16 or 12), so icons look equally heavy. Done in the icon files with `stroke-width="1.5"` + `vector-effect="non-scaling-stroke"` (57 files). Solid icons are unchanged, as decided. Illustrations (empty states, banners, radio buttons, confetti) aren't icons and were left alone.
+- FLAG: the drag handles are drawn as dots, so their dots are now 1.5px, smaller than before.
+
+## 26 Oct — Hero size update
+- Hero title is now 40/48 bold at every width (`--text-hero-title-*`), replacing 26/30 bold.
+- Hero band padding is 40 top and bottom at every width (new token `--spacing-hero-block`). Other pages keep 24 under the header.
+
+## 26 Oct — Bolder headings, hero on phones, phone event page
+- **Headings one step bolder** than Airbnb's: weight 500 → 600 and 600 → 700 for every heading style (H1, H2, H3, page, section, modal and app titles). Body text, buttons and labels are unchanged. The quantity number in the hosting ticket form is not a heading, so it keeps 600.
+- **Hero title**: 32/40 bold on phones, 40/48 from 768. 16 between the title and the text at every width.
+- **Phone event page**: 32 between every section (Figma 10713:56670); the title still sits 24 under the photos. Tablet and desktop unchanged (48).
+- **"Not ready to buy a ticket?"** (Figma 10656:48775) is no longer a card: no shadow, no rounded corners, a 1px Grey_5 line above and below, 16 padding and 16 gap kept. Text stays on the current type system (decision).
+
+## 26 Oct — Photos square, button widths, RSVP, chat intro, no modal motion, phone gallery
+
+- **Phone "Create new event" photos**: the upload box and the cover photo are square (were 325:402).
+- **Buttons fit their text** (Airbnb): fixed widths removed (host Back / Skip / Next bar, ticket and "what to expect" forms, Edit Profile Save, host Exit, Activities CTA). Regular buttons 24 left/right, small 12. Buttons meant to fill a row (phone bars, cards, modals) stay full width. Hero buttons share the width of the longer one.
+- **"Join Community - Free"**: small pill (40 tall, 12 sides, 16px + icon), like Airbnb "Become a host".
+- **RSVP for free tickets**: the action reads "RSVP" when everything picked is free, or when the event only has free tickets; as soon as a paid ticket is picked it's "Buy Ticket (₦X)". Applies to the event tickets panel, the phone bottom bar, the event chat header, and the checkout (contact title "RSVP", cart button "RSVP", assign button "RSVP"). Free-only orders skip payment. Rule lives in `utils/ticketCta.ts`.
+- **Chat intro message**: the first time someone joins an event's chat (hosts excluded), Vegaz posts "Hi everyone, my name is {first name} and {bio}" from them, with their main profile photo (text only if none). The bio's first letter is lowered to read as one sentence (FLAG: a bio starting with a name is lowered too).
+  - No bio yet: an "Introduce yourself" modal opens first (PROPOSED, not in Figma): bio field (100 words), "Save and join" (saves the bio to the profile, joins, posts the hello) or "Skip for now" (joins without a hello; asked again next time). The copy says they need a bio so people can get to know them. X / Escape cancels the join. Text on the system ramp (modal title 22/26).
+  - OPEN ITEM (engineering): the hello should be posted by the backend on join, so it isn't lost if the page closes.
+- **No modal animation**: modals, sheets, the photo viewer, the event-page profile panel and the phone ticket screen now open and close instantly (the animations glitched).
+- **Phone event gallery**: the photo strip runs to both screen edges, so photos scrolled to the left are no longer cut off at the page margin. Tablet and desktop unchanged.

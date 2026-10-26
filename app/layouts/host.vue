@@ -47,8 +47,7 @@
 }
 .host-layout__logo-link { display: inline-flex; border-radius: var(--radius-xs); }
 .host-layout__logo-link:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
-.host-layout__logo-link img { width: 78px; height: 33px; }
-.host-layout__exit.ui-button { width: 96px; }
+.host-layout__logo-link img { display: block; width: auto; height: var(--sizing-logo-height); } /* Airbnb logo height 32 */
 .host-layout__main { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 
 /* Phones: the mobile Figma screens have no logo bar; each screen has its

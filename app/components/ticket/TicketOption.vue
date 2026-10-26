@@ -91,7 +91,7 @@ const isSoldOut = computed(() => props.ticket.availability === 'sold-out')
   overflow: hidden;
   color: var(--color-text-primary);
   font-family: var(--font-family-base);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--text-app-small-semibold-weight);
   font-size: var(--text-app-small-semibold-size);
   line-height: var(--text-app-small-semibold-line);
   letter-spacing: var(--text-app-small-semibold-tracking);
@@ -121,7 +121,7 @@ const isSoldOut = computed(() => props.ticket.availability === 'sold-out')
 .ticket-option__price {
   color: var(--color-text-primary);
   font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--text-app-h2-bold-weight);
   font-size: var(--text-app-h2-bold-size);
   line-height: var(--text-app-h2-bold-line);
   letter-spacing: var(--text-app-h2-bold-tracking);
@@ -136,7 +136,7 @@ const isSoldOut = computed(() => props.ticket.availability === 'sold-out')
   overflow-wrap: anywhere;
   color: var(--color-text-muted);
   font-family: var(--font-family-base);
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--text-app-xsmall-regular-weight);
   font-size: var(--text-app-xsmall-regular-size);
   line-height: var(--text-app-xsmall-regular-line);
   letter-spacing: var(--text-app-xsmall-regular-tracking);

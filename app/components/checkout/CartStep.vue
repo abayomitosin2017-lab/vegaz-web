@@ -20,7 +20,7 @@
 import type { TicketType } from '~/types/ticket'
 import { formatNaira } from '~/utils/money'
 
-const props = defineProps<{ titleId: string; tickets: TicketType[]; lines: string[]; total: number; count: number; canAdd: boolean }>()
+const props = defineProps<{ titleId: string; tickets: TicketType[]; lines: string[]; total: number; count: number; canAdd: boolean; free?: boolean }>()
 const quantities = defineModel<Record<string, number>>('quantities', { required: true })
 const emit = defineEmits<{ close: []; back: []; add: []; checkout: [] }>()
 
@@ -56,7 +56,7 @@ const max = (t: TicketType) => (t.availability === 'sold-out' ? 0 : t.maxQuantit
 
     <div class="checkout-actions">
       <UiButton color="secondary" @click="emit('back')">Back</UiButton>
-      <UiButton :color="count ? 'primary' : 'secondary'" :aria-disabled="!count ? 'true' : undefined" @click="count && emit('checkout')">Checkout</UiButton>
+      <UiButton :color="count ? 'primary' : 'secondary'" :aria-disabled="!count ? 'true' : undefined" @click="count && emit('checkout')">{{ free ? 'RSVP' : 'Checkout' }}</UiButton>
     </div>
   </div>
 </template>

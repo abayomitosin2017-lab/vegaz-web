@@ -29,7 +29,7 @@
   background: var(--color-background-primary);
   color: var(--color-text-option);
   font-family: var(--font-family-base);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--text-app-body-semibold-weight);
   font-size: var(--text-app-body-semibold-size);
   line-height: var(--text-app-body-semibold-line);
   outline: none;
@@ -63,7 +63,7 @@ textarea.host-input { resize: none; display: block; }
   background: transparent;
   color: var(--color-text-option);
   font-family: var(--font-family-base);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--text-app-body-semibold-weight);
   font-size: var(--text-app-body-semibold-size);
   line-height: var(--text-app-body-semibold-line);
   resize: none;
@@ -195,7 +195,7 @@ textarea.host-input { resize: none; display: block; }
   box-shadow: var(--shadow-dropdown);
   animation: host-pop-in var(--duration-popup-in) var(--ease-out-strong);
 }
-.host-pop__title { margin: 0; color: var(--color-text-strong); font-weight: var(--font-weight-bold); }
+.host-pop__title { margin: 0; color: var(--color-text-strong); font-weight: var(--text-h3-bold-weight); }
 @keyframes host-pop-in { from { opacity: 0; transform: translateY(-4px); } }
 @media (prefers-reduced-motion: reduce) { .host-pop { animation: none; } }
 

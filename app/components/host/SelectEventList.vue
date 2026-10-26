@@ -22,7 +22,7 @@ const shown = computed(() => {
 <template>
   <div class="host-select-event">
     <label class="host-select-event__search">
-      <img src="/images/host/icon-search-20.svg" alt="" width="20" height="20" />
+      <img src="/images/host/icon-search-20.svg" alt="" width="16" height="16" />
       <span class="host-visually-hidden">Search events</span>
       <input v-model="query" class="text-app-small-regular" type="search" placeholder="Search events" />
     </label>

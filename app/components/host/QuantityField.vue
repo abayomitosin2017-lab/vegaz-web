@@ -107,6 +107,6 @@ function onInput(e: Event) {
   .host-qty__stepper { gap: var(--spacing-xs); padding: var(--spacing-xs) var(--spacing-md); border: 0; border-radius: var(--radius-lg); background: var(--color-host-empty); }
   .host-qty__btn { padding: calc(var(--spacing-xs) - 0.5px); border: 0.5px solid rgba(75, 9, 159, 0.1); border-radius: var(--radius-pill); background: var(--color-action-primary); }
   .host-qty__btn:disabled { background: var(--color-border-strong); }
-  .host-qty__value { padding: calc(var(--spacing-field) - 1px) calc(var(--spacing-md) - 1px); font-size: 20px; line-height: 26px; font-weight: var(--font-weight-semibold); color: var(--color-text-checkout); }
+  .host-qty__value { padding: calc(var(--spacing-field) - 1px) calc(var(--spacing-md) - 1px); font-weight: var(--font-weight-semibold); font-size: var(--text-app-h3-semibold-size); line-height: var(--text-app-h3-semibold-line); letter-spacing: var(--text-app-h3-semibold-tracking); color: var(--color-text-checkout); }
 }
 </style>

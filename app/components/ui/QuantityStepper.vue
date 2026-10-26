@@ -126,7 +126,7 @@ function change(step: number) {
   background: var(--color-background-primary);
   color: var(--color-text-primary);
   font-family: var(--font-family-base);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--text-app-h3-semibold-weight);
   font-size: var(--text-app-h3-semibold-size);
   line-height: var(--text-app-h3-semibold-line);
   letter-spacing: var(--text-app-h3-semibold-tracking);

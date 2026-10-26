@@ -132,7 +132,7 @@ function onInput(e: Event) {
   background: var(--color-background-primary);
   color: var(--color-text-strong);
   font-family: var(--font-family-base);
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--text-app-small-regular-weight);
   font-size: var(--text-app-small-regular-size);
   line-height: var(--text-app-small-regular-line);
   letter-spacing: var(--text-app-small-regular-tracking);
@@ -156,7 +156,7 @@ function onInput(e: Event) {
 .ui-input--error,
 .ui-input--error:focus-within { border-color: var(--color-border-error); }
 
-.ui-input__icon { display: inline-flex; width: 20px; height: 20px; flex: none; }
+.ui-input__icon { display: inline-flex; width: var(--sizing-icon-small); height: var(--sizing-icon-small); flex: none; } /* Airbnb 16 */
 .ui-input__field {
   flex: 1;
   min-width: 0;

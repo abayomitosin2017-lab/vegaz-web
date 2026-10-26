@@ -81,8 +81,9 @@ if (import.meta.dev && props.iconOnly && !attrs['aria-label'] && !attrs['aria-la
   --btn-fg: var(--color-text-primary);
   --btn-bg-hover: var(--btn-bg);
   --btn-bg-active: var(--btn-bg);
+  /* Airbnb primary button: 48 tall, 14 / 24 padding, 16/20 w500 */
   --btn-pad-x: var(--spacing-lg);
-  --btn-pad-y: var(--spacing-sm);
+  --btn-pad-y: var(--spacing-field);
   --btn-min-height: var(--sizing-control-standard);
 
   box-sizing: border-box;
@@ -98,7 +99,7 @@ if (import.meta.dev && props.iconOnly && !attrs['aria-label'] && !attrs['aria-la
   background: var(--btn-bg);
   color: var(--btn-fg);
   font-family: var(--font-family-base);
-  font-weight: var(--ui-button-font-weight, var(--font-weight-semibold));
+  font-weight: var(--ui-button-font-weight, var(--text-app-body-semibold-weight));
   font-size: var(--text-app-body-semibold-size);
   line-height: var(--text-app-body-semibold-line);
   letter-spacing: var(--text-app-body-semibold-tracking);
@@ -117,19 +118,27 @@ if (import.meta.dev && props.iconOnly && !attrs['aria-label'] && !attrs['aria-la
 .ui-button__chevron { display: inline-flex; width: 18px; height: 9px; flex: none; }
 
 /* ---- size ---- */
+/* Airbnb pill button ("Become a host"): 40 tall, 11 / 12 padding, 14/18 w500 */
 .ui-button--small {
-  --btn-pad-x: var(--spacing-md);
-  --btn-pad-y: var(--spacing-xs);
+  --btn-pad-x: var(--spacing-sm);
+  --btn-pad-y: 11px;
   --btn-min-height: var(--sizing-control-compact);
   font-size: var(--text-app-small-semibold-size);
   line-height: var(--text-app-small-semibold-line);
   letter-spacing: var(--text-app-small-semibold-tracking);
+  font-weight: var(--ui-button-font-weight, var(--text-app-small-semibold-weight));
 }
 .ui-button--icon-only { --btn-pad-x: var(--spacing-md); }
+/* A 24px icon is taller than the 20 / 18 text line: trim the top and bottom
+   padding so the button keeps Airbnb's 48 / 40 height */
+.ui-button:has(.ui-button__icon) { --btn-pad-y: var(--spacing-sm); }
+.ui-button--small:has(.ui-button__icon) { --btn-pad-y: var(--spacing-xs); }
+.ui-button--small.ui-button--icon-only { --btn-pad-x: var(--spacing-xs); }
 .ui-button--standard.ui-button--text-web {
   font-size: var(--text-body-semibold-size);
   line-height: var(--text-body-semibold-line);
   letter-spacing: var(--text-body-semibold-tracking);
+  font-weight: var(--ui-button-font-weight, var(--text-body-semibold-weight));
 }
 
 /* ---- primary ---- */
@@ -147,11 +156,7 @@ if (import.meta.dev && props.iconOnly && !attrs['aria-label'] && !attrs['aria-la
 
 /* ---- secondary ---- */
 .ui-button--secondary { --btn-fg: var(--color-text-strong); }
-/* Standard side padding differs by variant in Figma, copied as designed:
-   primary solid/outline 24, primary ghost 32, secondary solid/outline 32, secondary ghost 24 */
-.ui-button--standard.ui-button--primary.ui-button--ghost:not(.ui-button--icon-only),
-.ui-button--standard.ui-button--secondary.ui-button--solid:not(.ui-button--icon-only),
-.ui-button--standard.ui-button--secondary.ui-button--outline:not(.ui-button--icon-only) { --btn-pad-x: var(--spacing-xl); }
+/* Airbnb: every button uses 24 side padding (the old per-variant 32 is gone) */
 /* Figma (updated 21 Oct): secondary solid = Action secondary (Grey_6) at both
    sizes; standard adds a 1px Grey_5 border, small has none */
 .ui-button--secondary.ui-button--solid.ui-button--standard {

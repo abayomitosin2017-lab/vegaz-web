@@ -100,8 +100,8 @@ onBeforeUnmount(onUp)
           <p v-if="description(t)" class="host-mcard__desc text-app-xsmall-regular">{{ description(t) }}</p>
         </div>
         <div class="host-mcard__actions">
-          <button type="button" class="host-mcard__btn" :aria-label="`Edit ${t.name}`" @click="$emit('edit', t)"><img src="/images/host/icon-pen-18.svg" alt="" width="18" height="18" /></button>
-          <button type="button" class="host-mcard__btn" :aria-label="`Delete ${t.name}`" @click="$emit('delete', t)"><img src="/images/host/icon-delete-18.svg" alt="" width="18" height="18" /></button>
+          <button type="button" class="host-mcard__btn" :aria-label="`Edit ${t.name}`" @click="$emit('edit', t)"><img src="/images/host/icon-pen-18.svg" alt="" width="16" height="16" /></button>
+          <button type="button" class="host-mcard__btn" :aria-label="`Delete ${t.name}`" @click="$emit('delete', t)"><img src="/images/host/icon-delete-18.svg" alt="" width="16" height="16" /></button>
         </div>
         <span class="host-mcard__line" aria-hidden="true" />
         <button
@@ -139,7 +139,7 @@ onBeforeUnmount(onUp)
 .host-mcard__main { flex: 1 0 0; min-width: 0; display: flex; flex-direction: column; gap: var(--spacing-xs); }
 .host-mcard__chips { display: flex; flex-wrap: wrap; gap: var(--spacing-xs); margin-bottom: var(--spacing-md); }
 .host-mcard__chip { display: inline-flex; align-items: center; gap: var(--spacing-xxs); max-width: 100%; padding: var(--spacing-xxs) var(--spacing-sm); border-radius: var(--radius-pill); background: var(--color-host-empty); color: var(--color-text-checkout); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.host-mcard__price { margin: 0; color: var(--color-text-checkout); font-family: var(--font-family-base); font-weight: var(--font-weight-bold); font-size: 24px; line-height: 28px; }
+.host-mcard__price { margin: 0; color: var(--color-text-checkout); font-family: var(--font-family-base); font-weight: var(--text-stat-weight); font-size: var(--text-stat-size); line-height: var(--text-stat-line); letter-spacing: var(--text-stat-tracking); }
 .host-mcard__desc { margin: 0; color: var(--color-text-muted); }
 .host-mcard__actions { flex: none; display: flex; gap: var(--spacing-xs); }
 .host-mcard__btn { display: inline-flex; padding: calc(var(--spacing-xs) - 0.5px); border: 0.5px solid var(--color-border-default); border-radius: var(--radius-pill); background: var(--color-host-empty); cursor: pointer; }

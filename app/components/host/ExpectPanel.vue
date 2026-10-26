@@ -32,10 +32,10 @@ defineEmits<{ edit: [item: DraftExpectation]; delete: [item: DraftExpectation] }
       </span>
       <span class="host-expect-item__actions">
         <button type="button" class="host-icon-btn" :aria-label="`Edit ${item.title}`" @click="$emit('edit', item)">
-          <img src="/images/host/icon-pen-18.svg" alt="" width="18" height="18" />
+          <img src="/images/host/icon-pen-18.svg" alt="" width="16" height="16" />
         </button>
         <button type="button" class="host-icon-btn" :aria-label="`Delete ${item.title}`" @click="$emit('delete', item)">
-          <img src="/images/host/icon-delete-18.svg" alt="" width="18" height="18" />
+          <img src="/images/host/icon-delete-18.svg" alt="" width="16" height="16" />
         </button>
       </span>
     </li>

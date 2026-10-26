@@ -66,8 +66,8 @@ defineExpose({ openNew })
           <span class="host-mitem__desc text-app-small-regular">{{ item.description }}</span>
         </span>
         <span class="host-mitem__actions">
-          <button type="button" class="host-mcard__btn" :aria-label="`Edit ${item.title}`" @click="openEdit(item)"><img src="/images/host/icon-pen-18.svg" alt="" width="18" height="18" /></button>
-          <button type="button" class="host-mcard__btn" :aria-label="`Delete ${item.title}`" @click="emit('delete', item)"><img src="/images/host/icon-delete-18.svg" alt="" width="18" height="18" /></button>
+          <button type="button" class="host-mcard__btn" :aria-label="`Edit ${item.title}`" @click="openEdit(item)"><img src="/images/host/icon-pen-18.svg" alt="" width="16" height="16" /></button>
+          <button type="button" class="host-mcard__btn" :aria-label="`Delete ${item.title}`" @click="emit('delete', item)"><img src="/images/host/icon-delete-18.svg" alt="" width="16" height="16" /></button>
         </span>
       </li>
     </TransitionGroup>
@@ -130,7 +130,7 @@ defineExpose({ openNew })
 
 .host-msheet { display: flex; flex-direction: column; gap: var(--spacing-xl); }
 .host-msheet__head { display: flex; align-items: center; justify-content: space-between; }
-.host-msheet__title { margin: 0; color: var(--color-text-checkout); font-family: var(--font-family-base); font-weight: var(--font-weight-semibold); font-size: 24px; line-height: 32px; letter-spacing: -0.5px; }
+.host-msheet__title { margin: 0; color: var(--color-text-checkout); font-family: var(--font-family-base); font-weight: var(--text-modal-title-weight); font-size: var(--text-modal-title-size); line-height: var(--text-modal-title-line); letter-spacing: var(--text-modal-title-tracking); }
 .host-msheet__body { display: flex; flex-direction: column; gap: var(--spacing-2xl); }
 .host-msheet__body > .ui-button { width: 100%; }
 .host-msheet__fields { display: flex; flex-direction: column; gap: var(--spacing-md); }

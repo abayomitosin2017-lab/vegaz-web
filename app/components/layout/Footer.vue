@@ -77,7 +77,7 @@ withDefaults(defineProps<{ showAppLinks?: boolean; showNavigationLinks?: boolean
   flex-direction: column;
   gap: var(--spacing-xl);
   width: 100%;
-  max-width: 1280px; /* Figma Container max width */
+  max-width: var(--container-web-desktop-max); /* lines up with the header (Airbnb 48 margins at 1440) */
   padding-inline: var(--container-inset-mobile);
 }
 .site-footer__container--top { gap: var(--spacing-3xl); }
@@ -158,8 +158,8 @@ withDefaults(defineProps<{ showAppLinks?: boolean; showNavigationLinks?: boolean
   padding-top: calc(var(--spacing-xl) - var(--border-width-default)); /* 1px border sits inside, as in Figma */
   border-top: var(--border-width-default) solid var(--color-footer-divider);
 }
-/* Figma logo frame: 99 x 41.885 */
-.site-footer__logo { width: 99px; height: 41.885px; }
+/* Airbnb logo height 32 (Vegaz footer logo scaled from 99 x 41.885) */
+.site-footer__logo { display: block; width: auto; height: var(--sizing-logo-height); }
 .site-footer__copyright { color: var(--color-footer-text-muted); white-space: nowrap; }
 
 .site-footer__link:focus-visible,

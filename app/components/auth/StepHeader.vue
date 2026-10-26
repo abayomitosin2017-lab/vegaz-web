@@ -10,7 +10,7 @@ const emit = defineEmits<{ close: [] }>()
       <img :src="icon" alt="" width="24" height="24" />
     </span>
     <button type="button" class="auth-head__close" aria-label="Close" @click="emit('close')">
-      <img src="/images/auth/icon-close.svg" alt="" width="20" height="20" />
+      <img src="/images/auth/icon-close.svg" alt="" width="16" height="16" />
     </button>
   </div>
 </template>
@@ -41,7 +41,7 @@ const emit = defineEmits<{ close: [] }>()
   background: transparent;
   cursor: pointer;
 }
-.auth-head__close img { width: 20px; height: 20px; }
+.auth-head__close img { width: var(--sizing-icon-small); height: var(--sizing-icon-small); } /* Airbnb 16 */
 .auth-head__close:focus-visible {
   outline: var(--focus-ring-width) solid var(--focus-ring-color);
   outline-offset: calc(-1 * var(--spacing-xxs));

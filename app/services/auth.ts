@@ -33,7 +33,7 @@ export async function checkUsername(username: string): Promise<{ available: bool
 /** Creates the account and signs the new user in. */
 export async function createAccount(profile: SignupProfile): Promise<SessionUser> {
   await wait()
-  return { firstName: profile.firstName, lastName: profile.lastName, username: profile.username, email: profile.email, phone: profile.phone }
+  return { firstName: profile.firstName, lastName: profile.lastName, username: profile.username, email: profile.email, phone: profile.phone, gender: profile.gender }
 }
 
 /** Signs an existing account in after the code is verified (login flow). */

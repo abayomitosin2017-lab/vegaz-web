@@ -9,7 +9,7 @@
  */
 import type { CheckoutContact } from '~/types/checkout'
 
-const props = defineProps<{ titleId: string; initial: CheckoutContact; busy?: boolean }>()
+const props = defineProps<{ titleId: string; initial: CheckoutContact; busy?: boolean; free?: boolean }>()
 const emit = defineEmits<{ close: []; submit: [value: CheckoutContact] }>()
 
 const form = reactive({ ...props.initial })
@@ -21,7 +21,7 @@ function submit() {
 
 <template>
   <form class="checkout-step" novalidate @submit.prevent="submit">
-    <CheckoutHeader :title-id="titleId" title="Buy Ticket" subtitle="Provide your contact information" @close="emit('close')" />
+    <CheckoutHeader :title-id="titleId" :title="free ? 'RSVP' : 'Buy Ticket'" subtitle="Provide your contact information" @close="emit('close')" />
     <div class="checkout-fields">
       <UiTextField v-model="form.email" fixed type="email" label="Email Address" placeholder="Enter email address" autocomplete="email" data-autofocus />
       <UiTextField v-model="form.phone" fixed type="tel" label="Phone Number" placeholder="Enter phone number" autocomplete="tel" />

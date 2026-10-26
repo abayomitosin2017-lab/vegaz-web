@@ -127,6 +127,4 @@ onMounted(fit)
 .host-expect-form__remove:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); }
 .host-expect-form__desc { overflow: hidden; min-height: var(--sizing-control-field); }
 .host-expect-form__actions { display: flex; gap: var(--spacing-md); }
-.host-expect-form__cancel.ui-button { width: 140px; }
-.host-expect-form__submit.ui-button { width: 200px; }
 </style>

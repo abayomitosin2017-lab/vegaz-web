@@ -148,7 +148,7 @@ const triggerProps = computed(() => ({
   background: transparent;
   color: var(--color-text-strong);
   font-family: var(--font-family-base);
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--text-menu-item-weight);
   font-size: var(--text-menu-item-size);
   line-height: var(--text-menu-item-line);
   letter-spacing: var(--text-menu-item-tracking);

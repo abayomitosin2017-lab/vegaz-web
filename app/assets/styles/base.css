@@ -28,3 +28,7 @@ a { text-decoration: none; }
   .img-zoom img { transition: transform var(--duration-image-zoom) var(--ease-out-strong); }
   .img-zoom:hover img { transform: scale(var(--scale-image-zoom)); }
 }
+
+/* Full-bleed strips (event photos) reach 100vw; never let them add a
+   sideways page scroll. `clip` keeps sticky headers working. */
+html, body { overflow-x: clip; }

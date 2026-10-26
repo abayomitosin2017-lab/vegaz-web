@@ -49,7 +49,7 @@ const visible = computed(() => {
       :placeholder="phone ? 'Search events' : 'Search chats'"
       aria-label="Search chats"
     >
-      <template #icon><img src="/images/chat/icon-search-20.svg" alt="" width="20" height="20" /></template>
+      <template #icon><img src="/images/chat/icon-search-20.svg" alt="" width="16" height="16" /></template>
     </UiInput>
 
     <ul v-if="visible.length" class="chat-list__rows">

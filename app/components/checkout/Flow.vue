@@ -61,6 +61,8 @@ const editing = ref<string | null>(null)
 const purchased = ref(false)
 
 const count = computed(() => props.tickets.reduce((n, t) => n + (quantities.value[t.id] ?? 0), 0))
+// Free-only order: RSVP wording, no payment step (decision 26 Oct)
+const free = computed(() => count.value > 0 && total.value === 0)
 const total = computed(() => props.tickets.reduce((sum, t) => sum + t.price * (quantities.value[t.id] ?? 0), 0))
 const notInCart = computed(() => props.tickets.filter(t => !lines.value.includes(t.id)))
 
@@ -219,7 +221,7 @@ watch(step, () => nextTick(() => modal.value?.focusFirst()))
     fallback-focus="[data-account-trigger]"
     @close="close"
   >
-    <CheckoutContactStep v-if="step === 'contact'" :title-id="titleId" :initial="contact" :busy="busy" @close="close" @submit="onContact" />
+    <CheckoutContactStep v-if="step === 'contact'" :title-id="titleId" :free="free" :initial="contact" :busy="busy" @close="close" @submit="onContact" />
     <CheckoutDetailsStep v-else-if="step === 'details'" :title-id="titleId" :initial="details" @close="close" @back="step = 'contact'" @submit="onDetails" />
     <CheckoutCartStep
       v-else-if="step === 'cart'"
@@ -228,6 +230,7 @@ watch(step, () => nextTick(() => modal.value?.focusFirst()))
       :tickets="tickets"
       :lines="lines"
       :total="total"
+      :free="free"
       :count="count"
       :can-add="notInCart.length > 0"
       @close="close"
@@ -243,6 +246,7 @@ watch(step, () => nextTick(() => modal.value?.focusFirst()))
       :tickets="tickets"
       :assignees="assignees"
       :count="count"
+      :free="free"
       @close="close"
       @back="step = 'cart'"
       @add="openAssignee(null)"

@@ -22,4 +22,12 @@ export interface SessionUser {
   /** Contact details, used to fill in the buy ticket flow (decision 22 Oct) */
   email?: string
   phone?: string
+  /** From onboarding or Edit Profile / the gender prompt */
+  gender?: Gender
+  /** "YYYY-MM-DD"; set in Edit Profile or the birthday prompt */
+  birthday?: string
+  /** Edit Profile "Bio" (up to 100 words) */
+  bio?: string
+  /** Edit Profile photos, up to 3; the first is the profile photo (avatarUrl) */
+  photos?: string[]
 }

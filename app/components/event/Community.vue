@@ -28,7 +28,7 @@ const others = computed(() => Math.max(0, props.count - props.members.length))
 <template>
   <section class="event-community" aria-labelledby="event-community-title">
     <div class="event-community__head">
-      <h2 id="event-community-title" class="event-title text-section-title">
+      <h2 id="event-community-title" class="event-title text-detail-section-title">
         Community <span class="event-community__count">({{ count.toLocaleString('en-GB') }})</span>
       </h2>
       <button type="button" class="event-community__invite text-small-semibold" @click="emit('invite')">Invite Friend</button>
@@ -151,7 +151,7 @@ const others = computed(() => Math.max(0, props.count - props.members.length))
   box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.08);
   background: var(--color-avatar-more);
   color: var(--color-avatar-more-text);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--text-member-more-weight);
   font-size: var(--text-member-more-size);
   line-height: var(--text-member-more-line);
   box-sizing: border-box;

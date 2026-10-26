@@ -53,7 +53,7 @@ const labels: Record<string, string> = {
   color: var(--color-text-strong);
   font-family: var(--font-family-base);
   font-size: var(--text-xsmall-semibold-size);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--text-xsmall-semibold-weight);
   text-transform: uppercase;
   letter-spacing: var(--text-label-tracking);
 }

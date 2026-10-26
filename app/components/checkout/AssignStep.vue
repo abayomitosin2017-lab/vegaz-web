@@ -17,7 +17,7 @@
 import type { TicketAssignee } from '~/types/checkout'
 import type { TicketType } from '~/types/ticket'
 
-const props = defineProps<{ titleId: string; eventTitle: string; tickets: TicketType[]; assignees: TicketAssignee[]; count: number }>()
+const props = defineProps<{ titleId: string; eventTitle: string; tickets: TicketType[]; assignees: TicketAssignee[]; count: number; free?: boolean }>()
 const emit = defineEmits<{ close: []; back: []; add: []; edit: [id: string]; proceed: [] }>()
 
 const assigned = computed(() => props.assignees.length)
@@ -63,7 +63,7 @@ const meta = (a: TicketAssignee) => [tierName(a.ticketId), ...(a.isBuyer ? ['You
 
     <div class="checkout-actions">
       <UiButton color="secondary" @click="emit('back')">Back</UiButton>
-      <UiButton :color="done ? 'primary' : 'secondary'" :aria-disabled="!done ? 'true' : undefined" @click="done && emit('proceed')">Proceed</UiButton>
+      <UiButton :color="done ? 'primary' : 'secondary'" :aria-disabled="!done ? 'true' : undefined" @click="done && emit('proceed')">{{ free ? 'RSVP' : 'Proceed' }}</UiButton>
     </div>
   </div>
 </template>

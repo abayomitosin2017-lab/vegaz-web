@@ -208,7 +208,7 @@ function onKeydown(e: KeyboardEvent) {
 /* Host, phones (Figma mobile Create Ticket 10754:71145): placeholder Body
    semibold; option descriptions x-Small 12/18 in #141316 */
 @media (max-width: 767px) {
-  .checkout-select--host .checkout-select__value { font-size: var(--text-app-body-semibold-size); line-height: var(--text-app-body-semibold-line); font-weight: var(--font-weight-semibold); }
+  .checkout-select--host .checkout-select__value { font-size: var(--text-app-body-semibold-size); line-height: var(--text-app-body-semibold-line); font-weight: var(--text-app-body-semibold-weight); }
   .checkout-select--host .checkout-select__desc { font-size: var(--text-app-xsmall-regular-size); line-height: var(--text-app-xsmall-regular-line); color: var(--color-text-checkout); }
 }
 

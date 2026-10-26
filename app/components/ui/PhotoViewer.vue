@@ -82,7 +82,7 @@ onBeforeUnmount(() => {
         <template v-if="count > 1">{{ index + 1 }} / {{ count }}</template>
       </p>
       <button ref="closeButton" type="button" class="ui-viewer__button ui-viewer__close" aria-label="Close photo" @click="emit('close')">
-        <img src="/images/chat/icon-close-20.svg" alt="" width="20" height="20" />
+        <img src="/images/chat/icon-close-20.svg" alt="" width="16" height="16" />
       </button>
 
       <figure class="ui-viewer__figure" @click.self="emit('close')">
@@ -105,24 +105,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-/* Motion (decision 22 Oct): the dark page fades, the photo grows from 97%.
-   "Reduce motion": fade only. */
-.ui-viewer-enter-active,
-.ui-viewer-enter-active .ui-viewer__figure {
-  transition: opacity var(--duration-popup-in) var(--ease-out-strong), transform var(--duration-popup-in) var(--ease-out-strong);
-}
-.ui-viewer-leave-active,
-.ui-viewer-leave-active .ui-viewer__figure {
-  transition: opacity var(--duration-popup-out) var(--ease-out-strong), transform var(--duration-popup-out) var(--ease-out-strong);
-}
-.ui-viewer-enter-from,
-.ui-viewer-leave-to { opacity: 0; }
-.ui-viewer-enter-from .ui-viewer__figure,
-.ui-viewer-leave-to .ui-viewer__figure { transform: scale(var(--scale-viewer-from)); }
-@media (prefers-reduced-motion: reduce) {
-  .ui-viewer-enter-from .ui-viewer__figure,
-  .ui-viewer-leave-to .ui-viewer__figure { transform: none; }
-}
+/* No open / close animation (decision 26 Oct: overlay animations glitched) */
 
 .ui-viewer {
   position: fixed;

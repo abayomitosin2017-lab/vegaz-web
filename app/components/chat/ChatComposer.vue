@@ -75,7 +75,7 @@ defineExpose({ focus: () => field.value?.focus() })
         <p class="chat-composer__quote">{{ replyTo.text }}</p>
       </div>
       <button type="button" class="chat-composer__icon-button" aria-label="Cancel reply" @click="emit('cancel-reply')">
-        <img src="/images/chat/icon-close-20.svg" alt="" width="20" height="20" />
+        <img src="/images/chat/icon-close-20.svg" alt="" width="16" height="16" />
       </button>
     </div>
 
@@ -83,7 +83,7 @@ defineExpose({ focus: () => field.value?.focus() })
       <li v-for="(url, i) in photos" :key="url" class="chat-composer__preview">
         <img :src="url" :alt="`Photo ${i + 1} to send`" />
         <button type="button" class="chat-composer__remove" :aria-label="`Remove photo ${i + 1}`" @click="removePhoto(i)">
-          <img src="/images/chat/icon-close-20.svg" alt="" width="20" height="20" />
+          <img src="/images/chat/icon-close-20.svg" alt="" width="16" height="16" />
         </button>
       </li>
     </ul>

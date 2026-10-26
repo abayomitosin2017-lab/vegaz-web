@@ -55,7 +55,7 @@ const copy = computed(() =>
   margin: 0;
   color: var(--color-text-heading-strong);
   font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--text-modal-title-weight);
   font-size: var(--text-modal-title-size);
   line-height: var(--text-modal-title-line);
   letter-spacing: var(--text-modal-title-tracking);

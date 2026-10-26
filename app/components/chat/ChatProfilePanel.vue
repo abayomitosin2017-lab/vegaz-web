@@ -44,8 +44,8 @@ function onKeydown(e: KeyboardEvent) {
     <div class="chat-profile__photo">
       <img v-if="profile.photoUrl" :src="profile.photoUrl" alt="" />
       <button ref="closeButton" type="button" :class="'chat-profile__close'" :aria-label="phone ? backLabel : 'Close profile'" @click="emit('close')">
-        <img class="chat-profile__close-x" src="/images/chat/icon-close-20.svg" alt="" width="20" height="20" />
-        <img class="chat-profile__close-back" src="/images/chat/icon-arrow-left-20.svg" alt="" width="20" height="20" />
+        <img class="chat-profile__close-x" src="/images/chat/icon-close-20.svg" alt="" width="16" height="16" />
+        <img class="chat-profile__close-back" src="/images/chat/icon-arrow-left-20.svg" alt="" width="16" height="16" />
       </button>
     </div>
 

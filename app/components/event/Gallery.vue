@@ -227,10 +227,10 @@ onBeforeUnmount(() => resize?.disconnect())
         </div>
       </div>
       <button v-if="canPrev" type="button" class="event-gallery__arrow event-gallery__arrow--prev" aria-label="Previous photos" @click="scrollBy(-1)">
-        <img src="/images/chat/icon-arrow-left-20.svg" alt="" width="20" height="20" />
+        <img src="/images/chat/icon-arrow-left-20.svg" alt="" width="16" height="16" />
       </button>
       <button v-if="canNext" type="button" class="event-gallery__arrow event-gallery__arrow--next" aria-label="More photos" @click="scrollBy(1)">
-        <img src="/images/chat/icon-arrow-left-20.svg" alt="" width="20" height="20" />
+        <img src="/images/chat/icon-arrow-left-20.svg" alt="" width="16" height="16" />
       </button>
     </div>
   </section>
@@ -319,6 +319,17 @@ onBeforeUnmount(() => resize?.disconnect())
   scroll-snap-type: x proximity;
   scrollbar-width: none;
 }
+/* Phones: the strip runs to both screen edges, so photos scrolled past the
+   left of the page stay visible instead of being cut off (decision 26 Oct);
+   the padding keeps the first and last photo lined up with the page.
+   Tablet and desktop unchanged. */
+@media (max-width: 767px) {
+  .event-gallery__strip {
+    margin-inline: calc(-1 * var(--container-detail-inset-mobile));
+    padding-inline: var(--container-detail-inset-mobile);
+    scroll-padding-inline: var(--container-detail-inset-mobile);
+  }
+}
 .event-gallery__strip::-webkit-scrollbar { display: none; }
 .event-gallery__group { flex: none; display: grid; gap: var(--gallery-gap); scroll-snap-align: start; }
 .event-gallery__group--lead { width: var(--gallery-lead); }
@@ -405,8 +416,5 @@ onBeforeUnmount(() => resize?.disconnect())
     pointer-events: none;
   }
   .event-gallery__arrow { display: none; }
-  /* Strip runs to the screen edge, like Figma */
-  .event-gallery__viewport { margin-right: calc(-1 * var(--container-inset-mobile)); }
-  .event-gallery__strip { padding-right: var(--container-inset-mobile); }
 }
 </style>

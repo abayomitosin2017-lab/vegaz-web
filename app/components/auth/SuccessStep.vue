@@ -48,13 +48,10 @@ const emit = defineEmits<{ explore: []; download: [] }>()
   margin: 0;
   color: var(--color-text-strong);
   font-family: var(--font-family-base);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--text-modal-title-weight);
   font-size: var(--text-modal-title-size);
   line-height: var(--text-modal-title-line);
   letter-spacing: var(--text-modal-title-tracking);
-}
-@media (min-width: 1024px) {
-  .auth-success__title { font-weight: var(--font-weight-bold); }
 }
 .auth-success__body { color: var(--color-text-muted); }
 </style>

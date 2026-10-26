@@ -123,7 +123,7 @@ const { menuOpen, menuAbove, offset, dragging, swipeIconOpacity, reply, handlers
         <p v-if="message.text" class="chat-msg__text text-small-regular">{{ message.text }}</p>
         <p :class="['chat-msg__meta', isPhoto ? 'text-sub-regular' : 'text-xsmall-regular']">
           <span>{{ time }}</span>
-          <img v-if="message.mine" class="chat-msg__tick" src="/images/chat/icon-tick-double-14.svg" alt="Sent" width="14" height="14" />
+          <img v-if="message.mine" class="chat-msg__tick" src="/images/chat/icon-tick-double-14.svg" alt="Sent" width="12" height="12" />
         </p>
       </div>
     </div>
@@ -231,7 +231,7 @@ const { menuOpen, menuAbove, offset, dragging, swipeIconOpacity, reply, handlers
   white-space: nowrap;
 }
 .chat-msg--mine .chat-msg__meta { color: var(--color-chat-time-mine); }
-.chat-msg__tick { flex: none; width: 14px; height: 14px; }
+.chat-msg__tick { flex: none; width: var(--sizing-icon-xsmall); height: var(--sizing-icon-xsmall); } /* Airbnb 12 */
 
 /* Photos */
 .chat-msg__photos {
@@ -351,7 +351,7 @@ const { menuOpen, menuAbove, offset, dragging, swipeIconOpacity, reply, handlers
   background: transparent;
   color: var(--color-text-strong);
   font-family: var(--font-family-base);
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--text-menu-item-weight);
   font-size: var(--text-menu-item-size);
   line-height: var(--text-menu-item-line);
   letter-spacing: var(--text-menu-item-tracking);

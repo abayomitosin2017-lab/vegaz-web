@@ -22,12 +22,15 @@
  */
 import type { TicketType } from '~/types/ticket'
 import { formatNaira } from '~/utils/money'
+import { isFreeOnly, RSVP_LABEL } from '~/utils/ticketCta'
 
 const props = defineProps<{ tickets: TicketType[]; total: number; count: number; holding?: boolean; host?: boolean; busy?: boolean }>()
 const quantities = defineModel<Record<string, number>>('quantities', { required: true })
 const emit = defineEmits<{ buy: []; share: []; chat: [] }>()
 
-const buyLabel = computed(() => (props.count ? `Buy Ticket (${formatNaira(props.total)})` : 'Buy Ticket'))
+// Free-only selection (or an event with only free tickets): RSVP (decision 26 Oct)
+const free = computed(() => isFreeOnly(props.tickets, quantities.value))
+const buyLabel = computed(() => (free.value ? RSVP_LABEL : props.count ? `Buy Ticket (${formatNaira(props.total)})` : 'Buy Ticket'))
 </script>
 
 <template>

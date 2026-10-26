@@ -31,7 +31,7 @@ import { formatDayLabel, isSameDay } from '~/utils/chatFormat'
 
 const NuxtLink = resolveComponent('NuxtLink')
 
-const props = defineProps<{ chat: ChatSummary; messages: ChatMessage[]; sending?: boolean }>()
+const props = defineProps<{ chat: ChatSummary; messages: ChatMessage[]; sending?: boolean; free?: boolean }>()
 const emit = defineEmits<{ send: [draft: NewMessage]; profile: [person: ChatPerson]; back: []; 'buy-ticket': [] }>()
 
 const replyTo = ref<ReplyQuote | null>(null)
@@ -112,7 +112,7 @@ function onSend(draft: NewMessage) {
   <section class="chat-conv" :aria-label="`${chat.title} chat`">
     <header class="chat-conv__head">
       <button type="button" class="chat-conv__back" aria-label="Back to chats" @click="emit('back')">
-        <img src="/images/chat/icon-arrow-left-20.svg" alt="" width="20" height="20" />
+        <img src="/images/chat/icon-arrow-left-20.svg" alt="" width="16" height="16" />
       </button>
       <!-- Photo + title open the event page (decision 22 Oct) -->
       <component
@@ -139,7 +139,7 @@ function onSend(draft: NewMessage) {
         <template #icon><img src="/images/chat/icon-share-24.svg" alt="" width="24" height="24" /></template>
         <span class="chat-conv__share-label">Share Event</span>
       </UiButton>
-      <UiButton v-else size="small" class="chat-conv__ticket" @click="emit('buy-ticket')">Buy Ticket</UiButton>
+      <UiButton v-else size="small" class="chat-conv__ticket" @click="emit('buy-ticket')">{{ free ? 'RSVP' : 'Buy Ticket' }}</UiButton>
     </header>
 
     <div class="chat-conv__body">
@@ -307,7 +307,7 @@ function onSend(draft: NewMessage) {
   box-shadow: var(--shadow-chat-pill);
   color: var(--color-text-note);
   font-family: var(--font-family-base);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--text-app-xsmall-semibold-weight);
   font-size: var(--text-app-xsmall-semibold-size);
   line-height: var(--text-app-xsmall-semibold-line);
   white-space: nowrap;

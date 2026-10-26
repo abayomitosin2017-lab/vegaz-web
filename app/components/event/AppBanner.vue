@@ -22,8 +22,8 @@ function download() {
       Download App
       <span class="app-banner__marks" aria-hidden="true">
         <span class="app-banner__divider" />
-        <img src="/images/event/icon-apple-18.svg" alt="" width="18" height="18" />
-        <img src="/images/event/icon-playstore-18.svg" alt="" width="18" height="18" />
+        <img src="/images/event/icon-apple-18.svg" alt="" width="16" height="16" />
+        <img src="/images/event/icon-playstore-18.svg" alt="" width="16" height="16" />
       </span>
     </button>
   </section>
@@ -42,10 +42,10 @@ function download() {
 .app-banner__title {
   margin: 0;
   color: var(--color-text-on-inverse);
-  font-size: var(--text-section-title-size);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--text-section-title-line);
-  letter-spacing: var(--text-section-title-tracking);
+  font-size: var(--text-detail-section-title-size);
+  font-weight: var(--text-detail-section-title-weight);
+  line-height: var(--text-detail-section-title-line);
+  letter-spacing: var(--text-detail-section-title-tracking);
 }
 .app-banner__button {
   display: inline-flex;

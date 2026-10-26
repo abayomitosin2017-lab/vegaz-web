@@ -51,11 +51,8 @@ watch(() => root.value, el => {
   background: var(--color-background-primary);
 }
 .host-mscreen__head { display: flex; align-items: center; justify-content: space-between; margin: 0 2px 38px; }
-.host-mscreen__title { margin: 0; color: var(--color-host-row-label); font-family: var(--font-family-base); font-weight: var(--font-weight-semibold); font-size: 24px; line-height: 32px; letter-spacing: -0.5px; }
+.host-mscreen__title { margin: 0; color: var(--color-host-row-label); font-family: var(--font-family-base); font-weight: var(--text-modal-title-weight); font-size: var(--text-modal-title-size); line-height: var(--text-modal-title-line); letter-spacing: var(--text-modal-title-tracking); }
 .host-mscreen__close { display: inline-flex; padding: 0; border: 0; background: none; cursor: pointer; border-radius: var(--radius-pill); }
 .host-mscreen__close:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); }
-.host-mscreen-enter-active { transition: opacity var(--duration-sheet-in) ease, transform var(--duration-sheet-in) var(--ease-drawer); }
-.host-mscreen-leave-active { transition: opacity var(--duration-sheet-out) ease, transform var(--duration-sheet-out) ease; }
-.host-mscreen-enter-from, .host-mscreen-leave-to { opacity: 0; transform: translateY(24px); }
-@media (prefers-reduced-motion: reduce) { .host-mscreen-enter-active, .host-mscreen-leave-active { transition: opacity 120ms ease; } .host-mscreen-enter-from, .host-mscreen-leave-to { transform: none; } }
+/* No open / close animation (decision 26 Oct) */
 </style>
