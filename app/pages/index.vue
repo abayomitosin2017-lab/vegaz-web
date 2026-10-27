@@ -8,7 +8,9 @@
  */
 import { getHomeEvents } from '~/services/events'
 
-const { data: events } = await useAsyncData('home-events', getHomeEvents)
+// Lazy: the page shows at once with card placeholders until the events arrive (decision 27 Oct)
+const { data: events, status } = useLazyAsyncData('home-events', getHomeEvents)
+const loading = computed(() => !events.value && status.value !== 'error')
 const { open: openAuth } = useAuthModal()
 const { user } = useSession()
 </script>
@@ -18,12 +20,12 @@ const { user } = useSession()
     <!-- Hero only for visitors who are not signed in (decision 27 Oct) -->
     <HomeHero v-if="!user" @join="openAuth()" />
 
-    <div v-if="events" :class="['home__content', { 'home__content--no-hero': user }]">
-      <EventSection title="Happening this week" :events="events.happeningThisWeek" card-size="small" />
-      <EventSection title="Hot events right now" :events="events.hotRightNow" card-size="medium" class="home__medium-row" />
-      <EventSection title="Upcoming events" :events="events.upcoming" card-size="medium" class="home__medium-row" />
+    <div v-if="events || loading" :class="['home__content', { 'home__content--no-hero': user }]">
+      <EventSection title="Happening this week" :events="events?.happeningThisWeek ?? []" :loading="loading" card-size="small" />
+      <EventSection title="Hot events right now" :events="events?.hotRightNow ?? []" :loading="loading" card-size="medium" class="home__medium-row" />
+      <EventSection title="Upcoming events" :events="events?.upcoming ?? []" :loading="loading" card-size="medium" class="home__medium-row" />
       <HomePromoBanners />
-      <EventSection title="Explore all events" :events="events.exploreAll" card-size="small">
+      <EventSection title="Explore all events" :events="events?.exploreAll ?? []" :loading="loading" card-size="small">
         <template #action>
           <UiButton color="secondary" text-style="web" @click="navigateTo('/events')">Explore all</UiButton>
         </template>

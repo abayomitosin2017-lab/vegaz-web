@@ -52,7 +52,17 @@ const visible = computed(() => {
       <template #icon><img src="/images/chat/icon-search-20.svg" alt="" width="16" height="16" /></template>
     </UiInput>
 
-    <ul v-if="visible.length" class="chat-list__rows">
+    <!-- Loading (decision 27 Oct): row placeholders -->
+    <ul v-if="loading && !chats.length" class="chat-list__rows" aria-busy="true" aria-label="Loading chats">
+      <li v-for="n in 6" :key="n" class="chat-list__item chat-list__sk">
+        <UiSkeleton class="chat-list__sk-photo" width="var(--sizing-control-standard)" height="var(--sizing-control-standard)" radius="var(--radius-md)" />
+        <span class="chat-list__sk-text">
+          <UiSkeleton :width="n % 2 ? '60%' : '48%'" height="18px" />
+          <UiSkeleton :width="n % 3 ? '85%' : '70%'" height="14px" />
+        </span>
+      </li>
+    </ul>
+    <ul v-else-if="visible.length" class="chat-list__rows">
       <li v-for="chat in visible" :key="chat.id" class="chat-list__item">
         <button
           type="button"
@@ -132,6 +142,8 @@ const visible = computed(() => {
   border-top: var(--border-width-default) solid var(--color-chat-divider);
 }
 
+.chat-list__sk { display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm) var(--spacing-md); }
+.chat-list__sk-text { flex: 1; display: flex; flex-direction: column; gap: var(--spacing-xs); min-width: 0; }
 .chat-row {
   position: relative;
   isolation: isolate;

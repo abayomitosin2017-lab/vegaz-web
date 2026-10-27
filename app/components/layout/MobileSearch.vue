@@ -33,6 +33,7 @@ let lastRequest = 0
 function search(q: string) {
   clearTimeout(timer)
   if (!q.trim()) { results.value = []; searched.value = false; return }
+  searched.value = false
   timer = setTimeout(async () => {
     const request = ++lastRequest
     const found = await searchEvents(q)
@@ -92,7 +93,8 @@ function submit() {
 
       <div class="m-search__body">
         <p v-if="!typing" class="m-search__label text-small-semibold">Suggested events</p>
-        <ul v-if="list.length" class="m-search__list" :aria-label="typing ? 'Matching events' : 'Suggested events'">
+        <UiSkeletonList v-if="typing ? !searched : !suggested.length" class="m-search__sk" :rows="typing ? 3 : 5" :label="typing ? 'Searching events' : 'Loading suggested events'" />
+        <ul v-else-if="list.length" class="m-search__list" :aria-label="typing ? 'Matching events' : 'Suggested events'">
           <li v-for="e in list" :key="e.id">
             <button type="button" class="m-search__row" @click="choose(e)">
               <span class="m-search__photo"><img v-if="e.imageUrl" :src="e.imageUrl" alt="" /></span>
@@ -138,6 +140,7 @@ function submit() {
 .m-search__field :deep(.ui-input__field)::-webkit-search-cancel-button { display: none; }
 .m-search__body { display: flex; flex-direction: column; gap: var(--spacing-xs); padding: var(--spacing-md) var(--container-inset-mobile) calc(var(--spacing-2xl) + env(safe-area-inset-bottom, 0px)); }
 .m-search__label { margin: 0; color: var(--color-text-secondary); }
+.m-search__sk { padding-block: var(--spacing-xs); }
 .m-search__list { display: flex; flex-direction: column; margin: 0 calc(-1 * var(--spacing-xs)); padding: 0; list-style: none; }
 .m-search__row {
   display: flex;

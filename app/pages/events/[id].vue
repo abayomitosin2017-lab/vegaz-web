@@ -33,6 +33,8 @@
  *   (10) people. The "Not ready to buy a ticket?" block stays.
  * - Host of this event: "Unlock your host tools in the app" modal on each
  *   visit (HostAppModal, decision 27 Oct).
+ * - While the event loads: placeholders in the page layout (title, photos,
+ *   details, tickets, About; decision 27 Oct).
  * Copy: "About Hangout" -> "About Event" (Hangouts -> Events rule).
  */
 import type { ChatPerson, ChatProfile } from '~/types/chat'
@@ -47,10 +49,12 @@ import { COMMUNITY_MIN } from '~/config/event'
 const route = useRoute()
 const id = computed(() => String(route.params.id))
 
-const { data: event } = await useAsyncData(`event-${id.value}`, () => getEvent(id.value), { watch: [id] })
-const { data: tickets } = await useAsyncData(`tickets-${id.value}`, () => getTicketTypes(id.value), { watch: [id], default: () => [] })
+// Lazy: the page shows at once with placeholders until the event arrives (decision 27 Oct)
+const { data: event, status: eventStatus } = useLazyAsyncData(`event-${id.value}`, () => getEvent(id.value), { watch: [id] })
+const { data: tickets } = useLazyAsyncData(`tickets-${id.value}`, () => getTicketTypes(id.value), { watch: [id], default: () => [] })
+const eventLoading = computed(() => !event.value && (eventStatus.value === 'pending' || eventStatus.value === 'idle'))
 
-useHead(() => ({ title: event.value ? `${event.value.title} · Vegaz` : 'Event not found · Vegaz' }))
+useHead(() => ({ title: event.value ? `${event.value.title} · Vegaz` : eventLoading.value ? 'Vegaz' : 'Event not found · Vegaz' }))
 
 // ---- Sections shown (empty ones hide, decision 27 Oct) ----
 const showAbout = computed(() => !!event.value?.about?.trim())
@@ -316,6 +320,28 @@ const appPromptOpen = computed(() => isHost.value && !createdOpen.value && !appP
     <UiToast :message="toast" @done="toast = ''" />
   </div>
 
+  <!-- Loading (decision 27 Oct): placeholders in the page's own layout -->
+  <div v-else-if="eventLoading" class="event-page event-page--loading" aria-busy="true" aria-label="Loading event">
+    <div class="event-page__top"><UiSkeleton class="event-page__sk-title" height="40px" radius="var(--radius-md)" /></div>
+    <UiSkeleton class="event-page__gallery event-page__sk-gallery" height="auto" radius="var(--radius-lg)" />
+    <div class="event-page__body" style="--left-rows: 3">
+      <div class="event-page__intro">
+        <div v-for="n in 3" :key="n" class="event-page__sk-row">
+          <UiSkeleton width="24px" height="24px" radius="var(--radius-full)" />
+          <UiSkeleton :width="n === 1 ? '70%' : n === 2 ? '45%' : '35%'" height="20px" />
+        </div>
+        <UiSkeleton width="100%" height="64px" radius="var(--radius-pill)" />
+      </div>
+      <div class="event-page__tickets">
+        <UiSkeleton v-for="n in 2" :key="n" height="148px" radius="var(--radius-xl)" class="event-page__sk-ticket" />
+      </div>
+      <div class="event-page__about">
+        <UiSkeleton width="40%" height="26px" />
+        <UiSkeleton height="16px" /><UiSkeleton height="16px" /><UiSkeleton width="60%" height="16px" />
+      </div>
+    </div>
+  </div>
+
   <!-- Unknown event (not designed; proposed) -->
   <div v-else class="event-page event-page--missing">
     <h1 class="text-page-title">This event couldn’t be found</h1>
@@ -377,6 +403,11 @@ const appPromptOpen = computed(() => isHost.value && !createdOpen.value && !appP
 .event-page__profile { width: 100%; height: 100%; }
 /* No open / close animation (decision 26 Oct) */
 
+.event-page__sk-title { width: min(420px, 70%); }
+.event-page__sk-gallery { width: 100%; height: 240px; }
+.event-page__sk-row { display: flex; align-items: center; gap: var(--spacing-md); min-height: 28px; }
+.event-page__sk-ticket + .event-page__sk-ticket { margin-top: var(--spacing-md); }
+@media (min-width: 768px) { .event-page__sk-gallery { height: 354px; } }
 .event-page--missing { align-items: flex-start; gap: var(--spacing-md); min-height: 50vh; }
 .event-page--missing h1,
 .event-page--missing p { margin: 0; }

@@ -129,7 +129,7 @@ async function onSent() { await dock.refresh() }
           </label>
         </div>
         <div class="dock-list__rows">
-          <p v-if="!loaded" class="dock-list__note">Loading chats…</p>
+          <UiSkeletonList v-if="!loaded" class="dock-list__sk" :rows="5" label="Loading chats" />
           <div v-else-if="!chats.length" class="dock-list__empty">
             <span class="dock-list__empty-icon"><img src="/images/dock/icon-chat-dots-32.svg" alt="" width="32" height="32" /></span>
             <p class="dock-title dock-title--16">No chats yet</p>
@@ -163,6 +163,7 @@ async function onSent() { await dock.refresh() }
 .dock__col > * { pointer-events: auto; }
 .dock-list { height: 560px; max-height: calc(100dvh - 120px); }
 .dock-list__search { flex: none; padding: var(--spacing-xs) var(--spacing-md); }
+.dock-list__sk { padding: var(--spacing-xs) var(--spacing-md); }
 .dock-list__field { display: flex; align-items: center; gap: var(--spacing-xs); height: 40px; padding: 0 var(--spacing-md) 0 var(--spacing-sm); border-radius: var(--radius-pill); background: var(--color-background-secondary); }
 .dock-list__field:focus-within { outline: var(--focus-ring-width) solid var(--focus-ring-color); }
 .dock-list__field input { flex: 1 1 auto; min-width: 0; border: 0; outline: none; background: none; color: var(--color-text-strong); font-family: var(--font-family-base); font-size: var(--text-small-regular-size); line-height: var(--text-small-regular-line); }

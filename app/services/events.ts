@@ -18,6 +18,7 @@ const wait = (ms = 150) => new Promise(resolve => setTimeout(resolve, ms))
 const summary = ({ id, title, location, dateLabel, category, imageUrl }: EventDetails): EventSummary => ({ id, title, location, dateLabel, category, imageUrl })
 
 export async function getHomeEvents(): Promise<HomeEvents> {
+  await wait() // like a real request (the page shows placeholders meanwhile)
   const home = structuredClone(homeEventsMock)
   // Events hosted in this session show first in "Upcoming" and "Explore all"
   // (demo, decision 23 Oct). OPEN ITEM: how new events reach Home.

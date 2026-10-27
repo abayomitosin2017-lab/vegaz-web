@@ -92,7 +92,11 @@ defineExpose({ focus: () => field.value?.focus(), receive })
     </header>
 
     <div ref="scroller" class="dock-conv__body" tabindex="0" aria-label="Messages" aria-live="polite">
-      <p v-if="loading" class="dock-conv__note">Loading messages…</p>
+      <div v-if="loading" class="dock-conv__sk" role="status" aria-label="Loading messages">
+        <div v-for="n in 4" :key="n" :class="['dock-conv__sk-row', { 'dock-conv__sk-row--mine': n % 3 === 0 }]">
+          <UiSkeleton :width="['64%', '50%', '42%', '58%'][n - 1]" height="38px" radius="var(--radius-md)" />
+        </div>
+      </div>
       <template v-else>
         <template v-for="it in items" :key="it.key">
           <p v-if="it.type === 'day'" class="dock-conv__day"><span>{{ it.label }}</span></p>
@@ -126,6 +130,9 @@ defineExpose({ focus: () => field.value?.focus(), receive })
 .dock-conv__pic img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .dock-conv__title { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; }
 .dock-conv__sub { color: var(--color-text-muted); font-family: var(--font-family-base); font-size: var(--text-xsmall-regular-size); line-height: var(--text-xsmall-regular-line); }
+.dock-conv__sk { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+.dock-conv__sk-row { display: flex; }
+.dock-conv__sk-row--mine { justify-content: flex-end; }
 .dock-conv__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: var(--spacing-xs); padding: var(--spacing-md); background: var(--color-background-secondary); }
 .dock-conv__body:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: -2px; }
 .dock-conv__body > :first-child { margin-top: auto; } /* short chats sit at the bottom */

@@ -40,6 +40,7 @@ const router = useRouter()
 const chats = ref<ChatSummary[]>([])
 const loadingChats = ref(true)
 const messages = ref<ChatMessage[]>([])
+const loadingMessages = ref(false)
 const sending = ref(false)
 const profile = ref<ChatProfile | null>(null)
 const profilePanel = ref<{ focus: () => void } | null>(null)
@@ -87,7 +88,8 @@ watch(
     profile.value = null
     messages.value = []
     if (!id) return
-    messages.value = await getMessages(id)
+    loadingMessages.value = true
+    try { messages.value = await getMessages(id) } finally { loadingMessages.value = false }
     await markRead(id)
     const chat = chats.value.find(c => c.id === id)
     if (chat) chat.unreadCount = 0
@@ -157,6 +159,7 @@ function closeProfile() {
       v-if="selected"
       :chat="selected"
       :messages="messages"
+      :loading="loadingMessages"
       :sending="sending"
       @send="onSend"
       @profile="openProfile"

@@ -26,7 +26,7 @@ const shown = computed(() => {
       <span class="host-visually-hidden">Search events</span>
       <input v-model="query" class="text-app-small-regular" type="search" placeholder="Search events" />
     </label>
-    <p v-if="loading" class="host-select-event__empty text-app-small-regular">Loading your events…</p>
+    <UiSkeletonList v-if="loading" :rows="4" :photo="56" gap="var(--spacing-md)" label="Loading your events" />
     <p v-else-if="!shown.length" class="host-select-event__empty text-app-small-regular">No events match “{{ query }}”.</p>
     <div v-else class="host-select-event__grid" role="radiogroup" aria-label="Your events">
       <label v-for="e in shown" :key="e.id" :class="['host-select-event__item', { 'host-select-event__item--on': picked === e.id }]">

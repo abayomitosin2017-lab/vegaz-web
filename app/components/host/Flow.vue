@@ -441,7 +441,7 @@ const mobileTitles = computed(() => ({
     @close="deleting = null"
     @confirm="confirmDelete"
   />
-  <HostLeaveDialog :open="leaveOpen" @stay="leaveOpen = false" @leave="confirmLeave" />
+  <HostLeaveDialog :open="leaveOpen" :title="title" :edition="mode === 'edition'" @stay="leaveOpen = false" @leave="confirmLeave" />
 </template>
 
 <style scoped>

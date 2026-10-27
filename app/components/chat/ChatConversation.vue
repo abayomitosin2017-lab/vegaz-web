@@ -31,7 +31,7 @@ import { formatDayLabel, isSameDay } from '~/utils/chatFormat'
 
 const NuxtLink = resolveComponent('NuxtLink')
 
-const props = defineProps<{ chat: ChatSummary; messages: ChatMessage[]; sending?: boolean; free?: boolean }>()
+const props = defineProps<{ chat: ChatSummary; messages: ChatMessage[]; sending?: boolean; free?: boolean; /** Messages still loading: bubble placeholders (decision 27 Oct) */ loading?: boolean }>()
 const emit = defineEmits<{ send: [draft: NewMessage]; profile: [person: ChatPerson]; back: []; 'buy-ticket': [] }>()
 
 const replyTo = ref<ReplyQuote | null>(null)
@@ -145,7 +145,13 @@ function onSend(draft: NewMessage) {
            the header line and behind the message box, which stays pinned 24px
            above the bottom (as in Figma Desktop - 56). No cut-off edges. -->
       <div ref="scroller" class="chat-conv__scroll" @scroll.passive="onScroll">
-      <div class="chat-conv__messages" role="log" aria-live="polite" :aria-label="`Messages in ${chat.title}`">
+      <div class="chat-conv__messages" role="log" aria-live="polite" :aria-label="`Messages in ${chat.title}`" :aria-busy="loading ? 'true' : undefined">
+        <template v-if="loading && !messages.length">
+          <div v-for="n in 5" :key="n" :class="['chat-conv__sk', { 'chat-conv__sk--mine': n % 3 === 0 }]" aria-hidden="true">
+            <UiSkeleton v-if="n % 3 !== 0" width="32px" height="32px" radius="var(--radius-full)" />
+            <UiSkeleton :width="['62%', '48%', '40%', '70%', '54%'][n - 1]" :height="n === 4 ? '64px' : '44px'" radius="var(--radius-lg)" />
+          </div>
+        </template>
         <template v-for="item in items" :key="item.key">
           <div v-if="item.type === 'day'" class="chat-conv__day">
             <span class="chat-conv__day-pill text-sub-regular">{{ item.label }}</span>
@@ -251,6 +257,8 @@ function onSend(draft: NewMessage) {
   padding: var(--spacing-lg);
   overflow-y: auto;
 }
+.chat-conv__sk { display: flex; align-items: flex-end; gap: var(--spacing-xs); }
+.chat-conv__sk--mine { justify-content: flex-end; }
 .chat-conv__messages {
   display: flex;
   flex: 1 0 auto; /* pushes the message box to the bottom when there are few messages */

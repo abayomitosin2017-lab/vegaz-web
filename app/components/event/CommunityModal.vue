@@ -66,6 +66,7 @@ onBeforeUnmount(() => observer?.disconnect())
         </button>
       </div>
       <div class="community-modal__scroll">
+        <UiSkeletonList v-if="loading && !members.length" :rows="6" round gap="var(--spacing-md)" label="Loading community" />
         <ul class="community-modal__list" aria-label="Community members">
           <li v-for="m in members" :key="m.person.id">
             <button type="button" class="community-modal__row" @click="emit('open', m.person)">
@@ -75,7 +76,7 @@ onBeforeUnmount(() => observer?.disconnect())
           </li>
         </ul>
         <div ref="end" class="community-modal__end" aria-hidden="true" />
-        <p v-if="loading" class="community-modal__loading text-small-regular" role="status">Loading…</p>
+        <UiSkeletonList v-if="loading && members.length" class="community-modal__more" :rows="2" round gap="var(--spacing-md)" label="Loading more people" />
       </div>
     </div>
   </UiModal>
@@ -123,7 +124,7 @@ onBeforeUnmount(() => observer?.disconnect())
   white-space: nowrap;
 }
 .community-modal__end { height: 1px; }
-.community-modal__loading { margin: 0; padding: var(--spacing-xs) 0; color: var(--color-text-muted); text-align: center; }
+.community-modal__more { padding-top: var(--spacing-md); }
 @media (max-width: 767px) {
   .community-modal__scroll { max-height: 60vh; }
 }

@@ -10,6 +10,7 @@
  *   - Page padding matches Home
  * With "?q=" (phone search, decision 27 Oct): "Results for “…” (N)" and the
  *   matching events; a short message when nothing matches.
+ * While loading: 10 card placeholders (decision 27 Oct).
  * OPEN ITEMS: order, paging/infinite scroll, filters (by category or date).
  */
 import { getAllEvents, searchEvents } from '~/services/events'
@@ -17,7 +18,9 @@ import { getAllEvents, searchEvents } from '~/services/events'
 // "?q=" (phone search, decision 27 Oct): the events matching the search
 const route = useRoute()
 const q = computed(() => String(route.query.q ?? '').trim())
-const { data: events } = await useAsyncData('all-events', () => (q.value ? searchEvents(q.value, 100) : getAllEvents()), { default: () => [], watch: [q] })
+// Lazy: placeholders show while the events load (decision 27 Oct)
+const { data: events, status } = useLazyAsyncData('all-events', () => (q.value ? searchEvents(q.value, 100) : getAllEvents()), { default: () => [], watch: [q] })
+const loading = computed(() => status.value === 'pending' || status.value === 'idle')
 
 useHead(() => ({ title: q.value ? `“${q.value}” · Vegaz` : 'All events · Vegaz' }))
 </script>
@@ -27,12 +30,15 @@ useHead(() => ({ title: q.value ? `“${q.value}” · Vegaz` : 'All events · V
     <UiBackButton to="/" label="Back to Home" class="all-events__back" />
 
     <h1 class="all-events__title text-page-title">
-      <template v-if="q">Results for “{{ q }}”</template><template v-else>All events</template> <span class="all-events__count">({{ events.length }})</span>
+      <template v-if="q">Results for “{{ q }}”</template><template v-else>All events</template> <span v-if="!loading" class="all-events__count">({{ events.length }})</span>
     </h1>
-    <p v-if="q && !events.length" class="all-events__empty text-body-regular">No events found. Try another name, place or category.</p>
+    <p v-if="q && !loading && !events.length" class="all-events__empty text-body-regular">No events found. Try another name, place or category.</p>
 
-    <ul class="all-events__grid">
-      <li v-for="e in events" :key="e.id">
+    <ul class="all-events__grid" :aria-busy="loading ? 'true' : undefined">
+      <template v-if="loading">
+        <li v-for="n in 10" :key="n"><EventCardSkeleton /></li>
+      </template>
+      <li v-for="e in events" v-else :key="e.id">
         <EventCard :event="e" size="small" morph-source="all" />
       </li>
     </ul>

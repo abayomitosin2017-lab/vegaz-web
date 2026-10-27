@@ -9,24 +9,28 @@
  * Below 768px (HOME/DEFAULT/MOBILE): the row scrolls sideways; cards keep a
  *   fixed width (small 160px, medium 205px, rounded from Figma's 160.57 and
  *   205.33). The #action slot sits below the cards, left-aligned.
+ * `loading`: the same row with card placeholders (decision 27 Oct).
  */
 import type { EventSummary } from '~/types/event'
 
 withDefaults(
-  defineProps<{ title: string; events: EventSummary[]; cardSize?: 'small' | 'medium' }>(),
-  { cardSize: 'small' },
+  defineProps<{ title: string; events: EventSummary[]; cardSize?: 'small' | 'medium'; /** Show card placeholders while the events load */ loading?: boolean }>(),
+  { cardSize: 'small', loading: false },
 )
 const headingId = useId()
 </script>
 
 <template>
-  <section :class="['event-section', `event-section--${cardSize}`]" :aria-labelledby="headingId">
+  <section :class="['event-section', `event-section--${cardSize}`]" :aria-labelledby="headingId" :aria-busy="loading ? 'true' : undefined">
     <h2 :id="headingId" class="event-section__title text-h3-semibold">{{ title }}</h2>
     <div v-if="$slots.action" class="event-section__action">
       <slot name="action" />
     </div>
     <div class="event-section__row">
-      <EventCard v-for="event in events" :key="event.id" :event="event" :size="cardSize" :morph-source="title" class="event-section__card" />
+      <template v-if="loading">
+        <EventCardSkeleton v-for="n in (cardSize === 'small' ? 5 : 6)" :key="n" :size="cardSize" class="event-section__card" />
+      </template>
+      <EventCard v-for="event in events" v-else :key="event.id" :event="event" :size="cardSize" :morph-source="title" class="event-section__card" />
     </div>
   </section>
 </template>

@@ -27,6 +27,7 @@ const emit = defineEmits<{ chosen: [] }>()
 const query = useState('header-search-query', () => '')
 const results = ref<EventSummary[]>([])
 const open = ref(false)
+const searching = ref(false)
 const active = ref(-1)
 const listId = useId()
 const root = ref<HTMLElement | null>(null)
@@ -36,12 +37,15 @@ let lastRequest = 0
 watch(query, (q) => {
   clearTimeout(timer)
   active.value = -1
-  if (!q.trim()) { results.value = []; open.value = false; return }
+  if (!q.trim()) { results.value = []; open.value = false; searching.value = false; return }
+  searching.value = true
+  open.value = true // placeholders while searching (decision 27 Oct)
   timer = setTimeout(async () => {
     const request = ++lastRequest
     const found = await searchEvents(q)
     if (request !== lastRequest) return // an older search finished late
     results.value = found
+    searching.value = false
     open.value = true
   }, 120)
 })
@@ -104,7 +108,8 @@ defineExpose({ focus: () => root.value?.querySelector('input')?.focus() })
     </UiInput>
 
     <div v-show="open" class="search-box__panel">
-      <ul v-if="results.length" :id="listId" class="search-box__list" role="listbox" aria-label="Matching events">
+      <UiSkeletonList v-if="searching && !results.length" class="search-box__sk" :rows="3" label="Searching events" />
+      <ul v-else-if="results.length" :id="listId" class="search-box__list" role="listbox" aria-label="Matching events">
         <li
           v-for="(e, i) in results"
           :id="`${listId}-${i}`"
@@ -144,6 +149,7 @@ defineExpose({ focus: () => root.value?.querySelector('input')?.focus() })
   overflow: hidden;
 }
 .search-box__list { margin: 0; padding: 0; list-style: none; }
+.search-box__sk { padding: var(--spacing-xs) var(--spacing-md); }
 .search-box__option {
   display: flex;
   align-items: center;
