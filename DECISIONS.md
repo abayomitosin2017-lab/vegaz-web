@@ -861,3 +861,8 @@ All of these use one look, `UiStateMessage`: a 64 round Grey_6 circle with a 32 
   - Meta tags in nuxt.config.
   - OPEN ITEM (engineering): service worker / offline caching (not needed to install on Chrome Android today, but needed for offline use).
 - **Code:** `usePwaInstall` (rules and install prompt), `PwaBanner`, `PwaSheet`, `PwaAppIcon`. In development, `__vegaz.pwaNudge()` in the console shows the banner.
+- **Update 27 Oct (replaces "when" and the 14-day wait above):**
+  - The banner appears every time someone lands on Home (phones, not already installed).
+  - It then stays on every page until they close it (X, or "Not now" / "Got it" on iPhone) or add Vegaz. On Android, cancelling the browser's pop-up also closes it.
+  - Closing it hides it for this visit only; it comes back the next time they open Vegaz and land on Home.
+  - No longer tied to joining or buying; no 14-day wait.

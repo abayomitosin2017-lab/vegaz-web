@@ -97,9 +97,7 @@ function watchStock() {
 onMounted(watchStock)
 watch(id, watchStock)
 onBeforeUnmount(() => stopStock?.())
-const { nudge: pwaNudge } = usePwaInstall()
 function onPurchased() {
-  pwaNudge() // bought a ticket / RSVP'd (decision 27 Oct)
   refreshStatus()
   refreshTickets() // fewer left now
 }
@@ -158,7 +156,6 @@ async function enterChat(intro?: string) {
   joining.value = true
   try {
     const chatId = await joinEventChat(u.username, event.value.id)
-    pwaNudge() // joined a community: offer "Add to Home Screen" (phones, decision 27 Oct)
     if (intro?.trim()) {
       const me: ChatPerson = { id: 'u-me', name: `${u.firstName} ${u.lastName}`, username: u.username, avatarUrl: u.avatarUrl }
       const photo = u.photos?.[0] ?? u.avatarUrl // main profile photo; text only without one

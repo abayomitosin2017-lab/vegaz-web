@@ -22,6 +22,9 @@ const rows = computed(() => ({
 }))
 const empty = computed(() => !!events.value && Object.values(rows.value).every(list => !list.length))
 const { startHosting } = useHostEntry()
+// Phones: "Install Vegaz" banner every time they land on Home (decision 27 Oct)
+const pwa = usePwaInstall()
+onMounted(() => pwa.nudge())
 const { open: openAuth } = useAuthModal()
 const { user } = useSession()
 </script>

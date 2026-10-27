@@ -1,8 +1,8 @@
 <script setup lang="ts">
 /**
  * PwaBanner: "Install Vegaz on your device" (Figma Banner · Add to Home
- * Screen, 10924:400). Phones only, after a meaningful action
- * (usePwaInstall). A white card 16 from the sides, 12 above the bottom bar
+ * Screen, 10924:400). Phones only; shows when they land on Home and stays on
+ * every page until they close it or add Vegaz (usePwaInstall). A white card 16 from the sides, 12 above the bottom bar
  * (or the event ticket bar): 1px Grey_5, radius 16, Dp3 shadow, 12 / 8 / 12 /
  * 12 padding, 12 apart: 39 app icon, title (14/20 semibold Grey_1) and line
  * (12/18 Grey_2), 32 close X.

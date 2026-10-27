@@ -11,7 +11,7 @@
  *   12/18 Grey_2, and a 148 x 76 picture of what to tap (screenshots from
  *   Figma);
  *   "Got it" (Primary, full width) and text-only "Not now".
- * Both buttons and the X hide the nudge for 14 days (usePwaInstall).
+ * Both buttons and the X close it and the banner for this visit (usePwaInstall).
  */
 const pwa = usePwaInstall()
 const id = useId()
