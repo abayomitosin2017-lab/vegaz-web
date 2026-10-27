@@ -3,6 +3,7 @@ import { homeEventsMock } from '~/mocks/events'
 import { catalog, eventById } from '~/mocks/eventCatalog'
 import { createdEventIds } from '~/mocks/hosting'
 import { communityOf } from '~/mocks/community'
+import { mockRequest } from './mockRequest'
 
 /**
  * Events data service (MOCK). Components never import mocks directly; they
@@ -13,7 +14,7 @@ import { communityOf } from '~/mocks/community'
  * ("this week", "hot", "upcoming", "explore all"); how search matches events
  * (this mock matches title, place and category).
  */
-const wait = (ms = 150) => new Promise(resolve => setTimeout(resolve, ms))
+const wait = (ms = 150) => mockRequest(ms)
 
 const summary = ({ id, title, location, dateLabel, category, imageUrl }: EventDetails): EventSummary => ({ id, title, location, dateLabel, category, imageUrl })
 

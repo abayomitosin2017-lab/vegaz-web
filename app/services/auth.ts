@@ -1,5 +1,6 @@
 import type { AuthFlow, SessionUser, SignupProfile } from '~/types/auth'
 import { mockExistingAccount, mockExistingEmails, mockLatencyMs, mockTakenUsernames, mockWrongCode } from '~/mocks/auth'
+import { mockRequest } from './mockRequest'
 
 /**
  * Auth service (MOCK). Components call only these functions; replace the
@@ -7,7 +8,7 @@ import { mockExistingAccount, mockExistingEmails, mockLatencyMs, mockTakenUserna
  * OPEN ITEMS (engineering): endpoints, how the code is sent and verified,
  * session handling, username rules, phone format, what "18 years old" checks.
  */
-const wait = (ms = mockLatencyMs) => new Promise(resolve => setTimeout(resolve, ms))
+const wait = (ms = mockLatencyMs) => mockRequest(ms)
 
 /** Decides login vs signup for an email. */
 export async function startWithEmail(email: string): Promise<{ flow: AuthFlow }> {

@@ -25,4 +25,11 @@ export interface TicketType {
    * OPEN ITEM: which rule applies is a backend decision.
    */
   maxQuantity?: number
+  /**
+   * Tickets of this type still for sale; undefined = no limit shown.
+   * At 5 or fewer the card counts down ("3 tickets left"); at 0 it's Sold
+   * out (utils/ticketStock.ts). OPEN ITEM (engineering): the API sends this,
+   * and pushes changes (or the page polls) so the countdown stays live.
+   */
+  remaining?: number
 }

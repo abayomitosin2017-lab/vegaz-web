@@ -5,6 +5,7 @@ import { mockActivityStats, mockProfileLatencyMs } from '~/mocks/profile'
 import { listChats } from './chat'
 import { ticketsHeld } from './tickets'
 import { checkUsername } from './auth'
+import { mockRequest } from './mockRequest'
 
 /**
  * Profile service (MOCK): Activities and Edit Profile. Components call only
@@ -13,7 +14,7 @@ import { checkUsername } from './auth'
  * OPEN ITEMS (engineering): endpoints; photo upload (the demo keeps picked
  * photos as in-browser links); username rules; who sees the bio.
  */
-const wait = (ms = mockProfileLatencyMs) => new Promise(resolve => setTimeout(resolve, ms))
+const wait = (ms = mockProfileLatencyMs) => mockRequest(ms)
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -46,7 +47,7 @@ export async function listActivities(user: SessionUser, now = new Date()): Promi
     const counted = event.members.map(m => m.gender)
     const female = stats?.female ?? counted.filter(g => g === 'female').length
     const male = stats?.male ?? counted.filter(g => g === 'male').length
-    const limits = tickets.map(t => t.maxQuantity)
+    const limits = tickets.map(t => t.remaining ?? t.maxQuantity)
     const slots = stats ? stats.slotsLeft
       : limits.length && limits.every(n => typeof n === 'number') ? Math.max(0, limits.reduce<number>((a, n) => a + (n ?? 0), 0) - Math.max(0, event.communityCount - 1))
       : null

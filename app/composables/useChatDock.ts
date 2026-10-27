@@ -18,6 +18,8 @@ export function useChatDock() {
   const state = useState('chat-dock', () => ({ listOpen: false, chatId: null as string | null, chatMinimized: false }))
   const chats = useState<ChatSummary[]>('chat-dock-chats', () => [])
   const loaded = useState('chat-dock-loaded', () => false)
+  /** The chat list couldn't load (shows Try again, decision 27 Oct) */
+  const failed = useState('chat-dock-failed', () => false)
   const toast = useState<DockToast | null>('chat-dock-toast', () => null)
   /** Extra space under the dock (the phone / tablet ticket bar on event pages) */
   const bottomOffset = useState('chat-dock-offset', () => 0)
@@ -27,8 +29,13 @@ export function useChatDock() {
 
   async function refresh() {
     if (!user.value) { chats.value = []; loaded.value = false; return }
-    chats.value = await listChats(user.value.username, user.value.email)
-    loaded.value = true
+    try {
+      chats.value = await listChats(user.value.username, user.value.email)
+      loaded.value = true
+      failed.value = false
+    } catch {
+      if (!loaded.value) failed.value = true // keep showing what we had
+    }
   }
   function toggleList() { state.value.listOpen = !state.value.listOpen }
   function minimizeList() { state.value.listOpen = false }
@@ -39,7 +46,7 @@ export function useChatDock() {
     await read(chatId)
   }
   async function read(chatId: string) {
-    await markRead(chatId)
+    try { await markRead(chatId) } catch { return } // tried again next time
     const c = chats.value.find(x => x.id === chatId)
     if (c) c.unreadCount = 0
   }
@@ -48,5 +55,5 @@ export function useChatDock() {
   function restoreChat() { if (state.value.chatId) open(state.value.chatId) }
   function reset() { state.value = { listOpen: false, chatId: null, chatMinimized: false }; toast.value = null; chats.value = []; loaded.value = false }
 
-  return { state, chats, loaded, toast, unread, openChat, bottomOffset, refresh, toggleList, minimizeList, open, read, closeChat, minimizeChat, restoreChat, reset }
+  return { state, chats, loaded, failed, toast, unread, openChat, bottomOffset, refresh, toggleList, minimizeList, open, read, closeChat, minimizeChat, restoreChat, reset }
 }

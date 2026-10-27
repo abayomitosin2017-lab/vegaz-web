@@ -2,6 +2,7 @@ import type { CheckoutOrder } from '~/types/checkout'
 import type { SessionUser } from '~/types/auth'
 import { mockExistingAccount, mockExistingEmails, mockLatencyMs } from '~/mocks/auth'
 import { recordTickets, ticketsHeld } from './tickets'
+import { mockRequest } from './mockRequest'
 
 /**
  * Buy ticket service (MOCK). Components call only these functions; replace
@@ -17,7 +18,7 @@ import { recordTickets, ticketsHeld } from './tickets'
  * - Emailing tickets to the buyer and every assignee.
  * - Signing the buyer in after paying (decision 22 Oct: they end up logged in).
  */
-const wait = (ms = mockLatencyMs) => new Promise(resolve => setTimeout(resolve, ms))
+const wait = (ms = mockLatencyMs) => mockRequest(ms)
 
 /** Does this email already belong to a Vegaz account? (and whose, to label the buyer's ticket) */
 export async function findAccount(email: string): Promise<{ exists: boolean; firstName?: string; lastName?: string }> {

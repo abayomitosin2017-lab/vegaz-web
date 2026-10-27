@@ -54,6 +54,8 @@ export interface ChatPostMessage extends MessageBase {
   /** One or more photos (Figma shows 1 and 3; 2, 4 and 5+ follow the same style) */
   photos?: string[]
   replyTo?: ReplyQuote
+  /** Local only: couldn't be sent; the bubble offers Try again (decision 27 Oct) */
+  failed?: boolean
 }
 
 /** A notice in the timeline, e.g. "Asherkine just joined" */

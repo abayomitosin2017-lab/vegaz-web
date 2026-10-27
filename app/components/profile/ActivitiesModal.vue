@@ -71,9 +71,7 @@ function onCta() {
         <ProfileActivityTabs v-model="filter" :controls="`${id}-p`" />
 
         <div :id="`${id}-p`" class="profile-act__panel" role="tabpanel" :aria-labelledby="`${id}-t`" :aria-busy="items === null && !failed ? 'true' : undefined">
-          <p v-if="failed" class="profile-act__note text-app-small-regular" role="alert">
-            We couldn't load your activities. <button type="button" class="profile-act__retry" @click="load">Try again</button>
-          </p>
+          <UiErrorState v-if="failed" what="your activities" compact @retry="load" />
           <UiSkeletonList v-else-if="items === null" class="profile-act__sk" :rows="4" :photo="60" gap="var(--spacing-md)" label="Loading your activities" />
 
           <div v-else-if="!shown.length" class="profile-act__empty">

@@ -3,6 +3,7 @@ import './styles.css'
 import type { ChatMessage, ChatPerson, ChatPostMessage, ChatSummary } from '~/types/chat'
 import { getMessages, sendMessage } from '~/services/chat'
 import { formatDayLabel, isSameDay } from '~/utils/chatFormat'
+import { checkPhotos } from '~/utils/photoRules'
 /**
  * Dock conversation window (Figma screens 4, 5 and tablet 8). 360 × 520,
  * radius 12 on top, Grey_5 line, Dp2.
@@ -13,6 +14,10 @@ import { formatDayLabel, isSameDay } from '~/utils/chatFormat'
  * Message box: 44 pill, Grey_5 line (Primary while typing), "Say
  * something…", add photo, send (Primary once there is something to send).
  * Enter sends. Escape minimizes (handled by the dock).
+ * Problems (decision 27 Oct, PROPOSED): messages that can't load show
+ * "Something went wrong / Try again" in the panel; a message that can't be
+ * sent stays in the box with a red "Not sent…" line above it; photo problems
+ * (over 5, not a photo, over 10 MB) show the same red line.
  */
 const props = defineProps<{ chat: ChatSummary; back?: boolean }>()
 const emit = defineEmits<{ back: []; minimize: []; close: []; full: []; sent: [] }>()
@@ -21,6 +26,8 @@ const me = computed<ChatPerson | null>(() => user.value ? { id: 'u-me', name: `$
 
 const messages = ref<ChatMessage[]>([])
 const loading = ref(true)
+const failed = ref(false)
+const problem = ref('')
 const scroller = ref<HTMLElement | null>(null)
 const field = ref<HTMLInputElement | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -44,7 +51,8 @@ const items = computed<Item[]>(() => {
 function toBottom() { nextTick(() => { if (scroller.value) scroller.value.scrollTop = scroller.value.scrollHeight }) }
 async function load() {
   loading.value = true
-  messages.value = await getMessages(props.chat.id)
+  failed.value = false
+  try { messages.value = await getMessages(props.chat.id) } catch { failed.value = true }
   loading.value = false
   toBottom()
 }
@@ -55,6 +63,7 @@ function receive(m: ChatPostMessage) { if (m.chatId === props.chat.id) { message
 async function send() {
   if (!canSend.value || sending.value || !me.value) return
   sending.value = true
+  problem.value = ''
   try {
     const m = await sendMessage(props.chat.id, me.value, { text: text.value, photos: photos.value.length ? [...photos.value] : undefined })
     messages.value.push(m)
@@ -62,6 +71,8 @@ async function send() {
     photos.value = []
     toBottom()
     emit('sent')
+  } catch {
+    problem.value = 'Not sent. Check your connection and try again.' // the message stays in the box
   } finally {
     sending.value = false
     nextTick(() => field.value?.focus())
@@ -70,8 +81,9 @@ async function send() {
 function onKeydown(e: KeyboardEvent) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }
 function onFile(e: Event) {
   const el = e.target as HTMLInputElement
-  for (const f of Array.from(el.files ?? [])) if (f.type.startsWith('image/')) photos.value.push(URL.createObjectURL(f))
-  photos.value = photos.value.slice(0, 5)
+  const { ok, problem: text } = checkPhotos(Array.from(el.files ?? []), 5 - photos.value.length, 5)
+  photos.value.push(...ok.map(f => URL.createObjectURL(f)))
+  problem.value = text
   el.value = ''
 }
 defineExpose({ focus: () => field.value?.focus(), receive })
@@ -97,6 +109,7 @@ defineExpose({ focus: () => field.value?.focus(), receive })
           <UiSkeleton :width="['64%', '50%', '42%', '58%'][n - 1]" height="38px" radius="var(--radius-md)" />
         </div>
       </div>
+      <UiErrorState v-else-if="failed" what="messages" compact @retry="load" />
       <template v-else>
         <template v-for="it in items" :key="it.key">
           <p v-if="it.type === 'day'" class="dock-conv__day"><span>{{ it.label }}</span></p>
@@ -107,6 +120,7 @@ defineExpose({ focus: () => field.value?.focus(), receive })
     </div>
 
     <form class="dock-conv__composer" @submit.prevent="send">
+      <UiInlineAlert v-if="problem" :text="problem" />
       <ul v-if="photos.length" class="dock-conv__previews" aria-label="Photos to send">
         <li v-for="(u, i) in photos" :key="u"><img :src="u" :alt="`Photo ${i + 1} to send`" /><button type="button" class="dock-conv__remove" :aria-label="`Remove photo ${i + 1}`" @click="photos.splice(i, 1)"><img src="/images/host/icon-close-16.svg" alt="" width="12" height="12" /></button></li>
       </ul>

@@ -95,7 +95,7 @@ export const catalog: CatalogEntry[] = [
     startsAt: '2026-04-18T16:00:00+01:00', dateLabel: '4:00PM, 18 Apr 2026',
     host: 'ifeoma', others: ['kemi', 'bisi', 'ada'], communityCount: 18,
     about: 'Make your own beaded earrings while you sip and meet new people. The fee covers materials and supplies, drinks, games and networking.',
-  }, [tier('seat', 'WORKSHOP SEAT', 15000, 'Materials & supplies, drinks, games & networking', { availability: 'low', availabilityLabel: '4 tickets left', maxQuantity: 4 })]),
+  }, [tier('seat', 'WORKSHOP SEAT', 15000, 'Materials & supplies, drinks, games & networking', { remaining: 4 })]),
   entry({
     id: 'paint-and-sip', title: 'Paint & Sip', category: 'Wellness', flier: '/images/events/flier-paint-sip.jpg',
     photos: ['/images/event-photos/paint-1.jpg', '/images/event-photos/paint-2.jpg'],
@@ -114,8 +114,8 @@ export const catalog: CatalogEntry[] = [
   }, [
     tier('shared', 'SHARED TENT', 23000, 'Shared tent, without mat'),
     tier('shared-mat', 'SHARED TENT + MAT', 25000, 'Shared tent, with mat'),
-    tier('private', 'PRIVATE TENT', 27000, 'Private tent, without mat', { availability: 'low', availabilityLabel: '3 tickets left', maxQuantity: 3 }),
-    tier('private-mat', 'PRIVATE TENT + MAT', 29000, 'Private tent, with mat', { availability: 'sold-out', availabilityLabel: 'Sold out' }),
+    tier('private', 'PRIVATE TENT', 27000, 'Private tent, without mat', { remaining: 3 }),
+    tier('private-mat', 'PRIVATE TENT + MAT', 29000, 'Private tent, with mat', { remaining: 0 }),
   ]),
   entry({
     id: 'marathon-movie-night', title: 'Marathon Movie Night 5.0', category: 'Games', flier: '/images/events/flier-movie-night.jpg',
@@ -227,7 +227,7 @@ export const catalog: CatalogEntry[] = [
     host: 'tobi', others: ['oreban', 'ada', 'femi', 'vivian'], communityCount: 230,
     about: 'Games, performances and a rave on the rooftop.',
   }, [
-    tier('early', 'EARLY BIRD', 10000, 'Early bird price', { availability: 'low', availabilityLabel: '5 tickets left', maxQuantity: 5 }),
+    tier('early', 'EARLY BIRD', 10000, 'Early bird price', { remaining: 5 }),
     tier('gate', 'AT THE GATE', 15000, 'Pay at the gate', { availability: 'sold-out', availabilityLabel: 'Pay at gate' }),
   ]),
   entry({

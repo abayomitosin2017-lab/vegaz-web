@@ -34,19 +34,35 @@ function search(q: string) {
   clearTimeout(timer)
   if (!q.trim()) { results.value = []; searched.value = false; return }
   searched.value = false
-  timer = setTimeout(async () => {
-    const request = ++lastRequest
+  timer = setTimeout(() => run(q), 120)
+}
+// Couldn't search / load suggestions: Try again (decision 27 Oct)
+const failed = ref(false)
+async function run(q: string) {
+  const request = ++lastRequest
+  searched.value = false
+  failed.value = false
+  try {
     const found = await searchEvents(q)
     if (request !== lastRequest) return
     results.value = found
-    searched.value = true
-  }, 120)
+  } catch {
+    if (request !== lastRequest) return
+    results.value = []
+    failed.value = true
+  }
+  searched.value = true
 }
+async function loadSuggested() {
+  failed.value = false
+  try { suggested.value = (await getHomeEvents()).happeningThisWeek.slice(0, 6) } catch { failed.value = true }
+}
+function retry() { if (typing.value) run(query.value); else loadSuggested() }
 watch(query, search)
 watch(() => props.open, async (o) => {
   if (!o) return
   search(query.value)
-  if (!suggested.value.length) suggested.value = (await getHomeEvents()).happeningThisWeek.slice(0, 6)
+  if (!suggested.value.length) await loadSuggested()
 }, { immediate: true })
 onBeforeUnmount(() => clearTimeout(timer))
 
@@ -93,7 +109,8 @@ function submit() {
 
       <div class="m-search__body">
         <p v-if="!typing" class="m-search__label text-small-semibold">Suggested events</p>
-        <UiSkeletonList v-if="typing ? !searched : !suggested.length" class="m-search__sk" :rows="typing ? 3 : 5" :label="typing ? 'Searching events' : 'Loading suggested events'" />
+        <UiErrorState v-if="failed" what="events" compact @retry="retry" />
+        <UiSkeletonList v-else-if="typing ? !searched : !suggested.length" class="m-search__sk" :rows="typing ? 3 : 5" :label="typing ? 'Searching events' : 'Loading suggested events'" />
         <ul v-else-if="list.length" class="m-search__list" :aria-label="typing ? 'Matching events' : 'Suggested events'">
           <li v-for="e in list" :key="e.id">
             <button type="button" class="m-search__row" @click="choose(e)">

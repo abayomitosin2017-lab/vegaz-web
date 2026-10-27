@@ -28,6 +28,8 @@ const query = useState('header-search-query', () => '')
 const results = ref<EventSummary[]>([])
 const open = ref(false)
 const searching = ref(false)
+// Couldn't search (offline / server): Try again in the dropdown (decision 27 Oct)
+const failed = ref(false)
 const active = ref(-1)
 const listId = useId()
 const root = ref<HTMLElement | null>(null)
@@ -40,15 +42,24 @@ watch(query, (q) => {
   if (!q.trim()) { results.value = []; open.value = false; searching.value = false; return }
   searching.value = true
   open.value = true // placeholders while searching (decision 27 Oct)
-  timer = setTimeout(async () => {
-    const request = ++lastRequest
+  timer = setTimeout(() => run(q), 120)
+})
+async function run(q: string) {
+  const request = ++lastRequest
+  searching.value = true
+  failed.value = false
+  try {
     const found = await searchEvents(q)
     if (request !== lastRequest) return // an older search finished late
     results.value = found
-    searching.value = false
-    open.value = true
-  }, 120)
-})
+  } catch {
+    if (request !== lastRequest) return
+    results.value = []
+    failed.value = true
+  }
+  searching.value = false
+  open.value = true
+}
 
 function choose(e: EventSummary) {
   open.value = false
@@ -108,7 +119,8 @@ defineExpose({ focus: () => root.value?.querySelector('input')?.focus() })
     </UiInput>
 
     <div v-show="open" class="search-box__panel">
-      <UiSkeletonList v-if="searching && !results.length" class="search-box__sk" :rows="3" label="Searching events" />
+      <UiErrorState v-if="failed && !searching" what="events" compact @retry="run(query)" />
+      <UiSkeletonList v-else-if="searching && !results.length" class="search-box__sk" :rows="3" label="Searching events" />
       <ul v-else-if="results.length" :id="listId" class="search-box__list" role="listbox" aria-label="Matching events">
         <li
           v-for="(e, i) in results"

@@ -82,6 +82,8 @@ async function save() {
     Object.assign(form, fromUser())
     saved.value = JSON.stringify(fromUser())
     toast.value = 'Changes saved'
+  } catch {
+    toast.value = 'Couldn’t save your changes. Check your connection and try again.' // decision 27 Oct
   } finally { busy.value = false }
 }
 function back() {

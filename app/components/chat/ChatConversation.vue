@@ -31,8 +31,8 @@ import { formatDayLabel, isSameDay } from '~/utils/chatFormat'
 
 const NuxtLink = resolveComponent('NuxtLink')
 
-const props = defineProps<{ chat: ChatSummary; messages: ChatMessage[]; sending?: boolean; free?: boolean; /** Messages still loading: bubble placeholders (decision 27 Oct) */ loading?: boolean }>()
-const emit = defineEmits<{ send: [draft: NewMessage]; profile: [person: ChatPerson]; back: []; 'buy-ticket': [] }>()
+const props = defineProps<{ chat: ChatSummary; messages: ChatMessage[]; sending?: boolean; free?: boolean; /** Messages still loading: bubble placeholders (decision 27 Oct) */ loading?: boolean; /** Messages couldn't load: Try again (decision 27 Oct) */ failed?: boolean }>()
+const emit = defineEmits<{ send: [draft: NewMessage]; profile: [person: ChatPerson]; back: []; 'buy-ticket': []; 'retry-load': []; 'retry-send': [message: ChatPostMessage] }>()
 
 const replyTo = ref<ReplyQuote | null>(null)
 const scroller = ref<HTMLElement | null>(null)
@@ -146,7 +146,8 @@ function onSend(draft: NewMessage) {
            above the bottom (as in Figma Desktop - 56). No cut-off edges. -->
       <div ref="scroller" class="chat-conv__scroll" @scroll.passive="onScroll">
       <div class="chat-conv__messages" role="log" aria-live="polite" :aria-label="`Messages in ${chat.title}`" :aria-busy="loading ? 'true' : undefined">
-        <template v-if="loading && !messages.length">
+        <UiErrorState v-if="failed && !messages.length" class="chat-conv__failed" what="messages" compact @retry="emit('retry-load')" />
+        <template v-else-if="loading && !messages.length">
           <div v-for="n in 5" :key="n" :class="['chat-conv__sk', { 'chat-conv__sk--mine': n % 3 === 0 }]" aria-hidden="true">
             <UiSkeleton v-if="n % 3 !== 0" width="32px" height="32px" radius="var(--radius-full)" />
             <UiSkeleton :width="['62%', '48%', '40%', '70%', '54%'][n - 1]" :height="n === 4 ? '64px' : '44px'" radius="var(--radius-lg)" />
@@ -159,7 +160,7 @@ function onSend(draft: NewMessage) {
           <div v-else-if="item.message.kind === 'system'" class="chat-conv__notice">
             <span class="chat-conv__notice-pill">{{ item.message.text }}</span>
           </div>
-          <ChatMessage v-else :message="item.message" @profile="emit('profile', $event)" @reply="startReply" @open-photo="openPhoto" />
+          <ChatMessage v-else :message="item.message" @profile="emit('profile', $event)" @reply="startReply" @open-photo="openPhoto" @retry="emit('retry-send', $event)" />
         </template>
       </div>
 

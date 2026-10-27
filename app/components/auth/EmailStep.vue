@@ -1,8 +1,14 @@
 <script setup lang="ts">
-/** Step 1 (signup and login): "What's your Email Address" (Figma 9870:58477 / 60915). */
+/**
+ * Step 1 (signup and login): "What's your Email Address" (Figma 9870:58477 / 60915).
+ * `expired` (session expired, decision 27 Oct; NOT IN FIGMA, PROPOSED copy):
+ * "You've been signed out" + "For your security, please log in again.
+ * You'll carry on right where you left off.", email filled in.
+ * `error`: a red line under the field (couldn't reach the server).
+ */
 import './styles.css'
 
-const props = defineProps<{ titleId: string; busy?: boolean; initialEmail?: string }>()
+const props = defineProps<{ titleId: string; busy?: boolean; initialEmail?: string; expired?: boolean; error?: string }>()
 const emit = defineEmits<{ close: []; submit: [email: string] }>()
 
 const email = ref(props.initialEmail ?? '')
@@ -18,8 +24,8 @@ function submit() {
     <div class="auth-email__top auth-stack">
       <AuthStepHeader icon="/images/auth/icon-mail.svg" @close="emit('close')" />
       <div class="auth-email__intro auth-stack">
-        <h2 :id="titleId" class="auth-title">What’s your Email Address</h2>
-        <p class="auth-copy text-small-regular">Please enter your email address</p>
+        <h2 :id="titleId" class="auth-title">{{ expired ? 'You’ve been signed out' : 'What’s your Email Address' }}</h2>
+        <p class="auth-copy text-small-regular">{{ expired ? 'For your security, please log in again. You’ll carry on right where you left off.' : 'Please enter your email address' }}</p>
       </div>
       <UiTextField
         v-model="email"
@@ -29,6 +35,7 @@ function submit() {
         autocomplete="email"
         data-autofocus
       />
+      <UiInlineAlert v-if="error" :text="error" />
     </div>
 
     <!-- Built exactly as Figma, which mixes two sizes in this sentence: most of it is

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { checkPhotos } from '~/utils/photoRules'
 import './styles.css'
 import type { DraftExpectation } from '~/types/hosting'
 /**
@@ -35,10 +36,13 @@ function save() {
   items.value = editing.value ? items.value.map(x => (x.id === item.id ? item : x)) : [...items.value, item]
   close()
 }
+// Not a photo / over 10 MB: a red line under the picture row (decision 27 Oct)
+const photoProblem = ref('')
 function onFile(e: Event) {
   const el = e.target as HTMLInputElement
-  const f = el.files?.[0]
-  if (f && f.type.startsWith('image/')) imageUrl.value = URL.createObjectURL(f)
+  const { ok, problem } = checkPhotos([...(el.files ?? [])].slice(0, 1), 1, 1)
+  photoProblem.value = problem
+  if (ok[0]) imageUrl.value = URL.createObjectURL(ok[0])
   el.value = ''
 }
 const descEl = ref<HTMLTextAreaElement | null>(null)
@@ -98,6 +102,7 @@ defineExpose({ openNew })
               <input :id="`${id}-ti`" v-model="title" class="host-input" type="text" maxlength="40" placeholder="e.g loads of fun" data-autofocus />
             </div>
           </div>
+          <UiInlineAlert v-if="photoProblem" :text="photoProblem" />
           <div class="host-field">
             <label :for="`${id}-d`" class="host-field__label text-app-small-semibold">Description</label>
             <textarea :id="`${id}-d`" v-model="description" ref="descEl" class="host-input host-msheet__desc" rows="1" maxlength="120" placeholder="e.g a delightful experience that brings joy and laughter." />

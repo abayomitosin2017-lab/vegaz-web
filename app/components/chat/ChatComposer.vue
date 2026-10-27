@@ -16,8 +16,12 @@
  *
  * Enter sends; Escape cancels the reply. The camera opens the file picker:
  * several photos can be chosen at once, and the camera can be used again to
- * add more, up to MAX_PHOTOS per message (decision 21 Oct; limit proposed).
+ * add more, up to MAX_PHOTOS per message (decision 21 Oct; limit approved 27 Oct).
+ * Problems (decision 27 Oct, PROPOSED): picking more than 10, a file that
+ * isn't a photo or is over 10 MB shows one red line above the field
+ * (utils/photoRules.ts); it goes away after 6 seconds or on the next pick.
  */
+import { checkPhotos } from '~/utils/photoRules'
 import type { NewMessage, ReplyQuote } from '~/types/chat'
 
 const props = defineProps<{ replyTo?: ReplyQuote | null; busy?: boolean }>()
@@ -39,13 +43,21 @@ const full = computed(() => photos.value.length >= MAX_PHOTOS)
 function pickPhoto() {
   fileInput.value?.click()
 }
+const problem = ref('')
+let problemTimer: ReturnType<typeof setTimeout> | undefined
+function showProblem(text: string) {
+  clearTimeout(problemTimer)
+  problem.value = text
+  if (text) problemTimer = setTimeout(() => { problem.value = '' }, 6000)
+}
+onBeforeUnmount(() => clearTimeout(problemTimer))
 function onFile(e: Event) {
   const input = e.target as HTMLInputElement
-  const files = [...(input.files ?? [])].filter(f => f.type.startsWith('image/'))
+  const files = [...(input.files ?? [])]
   input.value = ''
-  const room = MAX_PHOTOS - photos.value.length
-  photos.value.push(...files.slice(0, room).map(f => URL.createObjectURL(f)))
-  // OPEN ITEM: message for picking more than MAX_PHOTOS (extra ones are skipped)
+  const { ok, problem: text } = checkPhotos(files, MAX_PHOTOS - photos.value.length, MAX_PHOTOS)
+  photos.value.push(...ok.map(f => URL.createObjectURL(f)))
+  showProblem(text)
   field.value?.focus()
 }
 function removePhoto(i: number) {
@@ -88,6 +100,8 @@ defineExpose({ focus: () => field.value?.focus() })
       </li>
     </ul>
 
+    <UiInlineAlert v-if="problem" class="chat-composer__problem" :text="problem" />
+
     <div class="chat-composer__row">
       <div class="chat-composer__field">
         <input
@@ -113,6 +127,7 @@ defineExpose({ focus: () => field.value?.focus() })
 </template>
 
 <style scoped>
+.chat-composer__problem { padding-inline: var(--spacing-xs); }
 .chat-composer {
   display: flex;
   flex-direction: column;

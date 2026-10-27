@@ -7,7 +7,11 @@
  *   reminder            -> availability 'low': red badge with clock icon
  *                          ("5 ticket left"), "+" stops at maxQuantity
  *   sold ou(t)          -> availability 'sold-out': grey "Sold out" badge,
- *                          stepper empty and unusable
+ *                          price struck through (Grey_1), price and
+ *                          description at 60%, no stepper (Figma Ticket
+ *                          6698:6496 "sold out", decision 27 Oct)
+ * The chip text and limits come from `remaining` (utils/ticketStock.ts):
+ * the red chip counts down from "5 tickets left".
  *
  * Layout: a grey header strip with the ticket name, overlapped by a white
  * card (25px overlap) with price, description (max 2 lines, then "...") and
@@ -37,11 +41,13 @@ const isSoldOut = computed(() => props.ticket.availability === 'sold-out')
 
     <div class="ticket-option__body">
       <div class="ticket-option__info">
-        <p class="ticket-option__price">{{ ticket.priceLabel }}</p>
+        <p class="ticket-option__price">
+          <span v-if="isSoldOut" class="visually-hidden">Sold out, was </span>{{ ticket.priceLabel }}
+        </p>
         <p class="ticket-option__description">{{ ticket.description }}</p>
       </div>
       <UiQuantityStepper
-        v-if="!preview"
+        v-if="!preview && !isSoldOut"
         v-model="quantity"
         :max="ticket.maxQuantity"
         :unavailable="isSoldOut"
@@ -127,6 +133,8 @@ const isSoldOut = computed(() => props.ticket.availability === 'sold-out')
   letter-spacing: var(--text-app-h2-bold-tracking);
   white-space: nowrap;
 }
+.ticket-option--sold-out .ticket-option__info { opacity: 0.6; }
+.ticket-option--sold-out .ticket-option__price { color: var(--color-text-strong); text-decoration: line-through; text-decoration-thickness: from-font; }
 .ticket-option__description {
   display: -webkit-box;
   -webkit-box-orient: vertical;

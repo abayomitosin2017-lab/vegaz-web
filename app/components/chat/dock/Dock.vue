@@ -18,7 +18,7 @@ import { onIncomingMessage } from '~/services/chat'
  * No open / close animation (decision 26 Oct).
  */
 const dock = useChatDock()
-const { state, chats, loaded, toast, unread, openChat, bottomOffset } = dock
+const { state, chats, loaded, failed, toast, unread, openChat, bottomOffset } = dock
 const { user } = useSession()
 const tablet = useMediaQuery('(max-width: 1023px)')
 const query = ref('')
@@ -129,7 +129,8 @@ async function onSent() { await dock.refresh() }
           </label>
         </div>
         <div class="dock-list__rows">
-          <UiSkeletonList v-if="!loaded" class="dock-list__sk" :rows="5" label="Loading chats" />
+          <UiErrorState v-if="failed && !loaded" what="your chats" compact @retry="dock.refresh()" />
+          <UiSkeletonList v-else-if="!loaded" class="dock-list__sk" :rows="5" label="Loading chats" />
           <div v-else-if="!chats.length" class="dock-list__empty">
             <span class="dock-list__empty-icon"><img src="/images/dock/icon-chat-dots-32.svg" alt="" width="32" height="32" /></span>
             <p class="dock-title dock-title--16">No chats yet</p>

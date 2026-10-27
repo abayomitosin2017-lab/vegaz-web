@@ -23,17 +23,22 @@ const id = useId()
 const members = ref<EventMember[]>([])
 const total = ref(0)
 const loading = ref(false)
+// Couldn't load (decision 27 Oct): Try again in the list
+const failed = ref(false)
 const done = computed(() => members.value.length >= total.value && total.value > 0)
 const end = ref<HTMLElement | null>(null)
 let observer: IntersectionObserver | null = null
 
 async function loadMore() {
-  if (loading.value || done.value) return
+  if (loading.value || done.value || failed.value) return
   loading.value = true
+  failed.value = false
   try {
     const page = await getCommunityMembers(props.eventId, members.value.length)
     members.value.push(...page.members)
     total.value = page.total
+  } catch {
+    failed.value = true
   } finally {
     loading.value = false
   }
@@ -76,6 +81,7 @@ onBeforeUnmount(() => observer?.disconnect())
           </li>
         </ul>
         <div ref="end" class="community-modal__end" aria-hidden="true" />
+        <UiErrorState v-if="failed" :what="members.length ? 'more people' : 'the community'" compact @retry="loadMore" />
         <UiSkeletonList v-if="loading && members.length" class="community-modal__more" :rows="2" round gap="var(--spacing-md)" label="Loading more people" />
       </div>
     </div>

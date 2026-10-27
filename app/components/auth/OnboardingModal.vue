@@ -21,8 +21,10 @@ import { createAccount, sendCode, signIn, startWithEmail } from '~/services/auth
 
 type Step = 'email' | 'code' | 'names' | 'gender' | 'success'
 
-const { isOpen, close } = useAuthModal()
-const { setUser } = useSession()
+const { isOpen, close, reason, email: presetEmail } = useAuthModal()
+const { setUser, expired, logout } = useSession()
+// Couldn't reach us (offline / server): a red line under the email (decision 27 Oct)
+const problem = ref('')
 
 const step = ref<Step>('email')
 const flow = ref<AuthFlow>('signup')
@@ -44,8 +46,12 @@ function reset() {
   gender.value = undefined
 }
 function closeModal() {
+  // Session expired and they chose not to log back in: sign out, go Home
+  const signOutNow = expired.value
   close()
   reset()
+  problem.value = ''
+  if (signOutNow) { logout(); navigateTo('/') }
 }
 
 const modal = ref<{ focusFirst: () => void } | null>(null)
@@ -56,18 +62,25 @@ watch(step, async () => {
 
 async function onEmail(value: string) {
   busy.value = true
-  const res = await startWithEmail(value)
-  await sendCode(value)
-  busy.value = false
-  email.value = value
-  flow.value = res.flow
-  step.value = 'code'
+  problem.value = ''
+  try {
+    const res = await startWithEmail(value)
+    await sendCode(value)
+    email.value = value
+    flow.value = res.flow
+    step.value = 'code'
+  } catch {
+    problem.value = 'We couldn’t reach Vegaz. Check your connection and try again.'
+  } finally {
+    busy.value = false
+  }
 }
 
 async function onVerified() {
   if (flow.value === 'login') {
-    setUser(await signIn(email.value))
-    closeModal()
+    setUser(await signIn(email.value)) // also clears "expired": they carry on where they were
+    close()
+    reset()
   } else step.value = 'names'
 }
 
@@ -100,7 +113,7 @@ function back() {
 
 <template>
   <UiModal ref="modal" :open="isOpen" :width="widths[step]" :labelledby="titleId" fallback-focus="[data-account-trigger]" :dismissible="!busy" @close="closeModal">
-    <AuthEmailStep v-if="step === 'email'" :title-id="titleId" :busy="busy" :initial-email="email" @close="closeModal" @submit="onEmail" />
+    <AuthEmailStep v-if="step === 'email'" :title-id="titleId" :busy="busy" :initial-email="email || presetEmail" :expired="reason === 'expired'" :error="problem" @close="closeModal" @submit="onEmail" />
     <AuthCodeStep v-else-if="step === 'code'" :title-id="titleId" :email="email" @close="closeModal" @back="back" @verified="onVerified" />
     <AuthNamesStep v-else-if="step === 'names'" :title-id="titleId" :initial="names" @close="closeModal" @back="back" @submit="onNames" />
     <AuthGenderStep

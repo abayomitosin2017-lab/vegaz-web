@@ -3,6 +3,7 @@ import { mockChatOwnerUsername, mockChats, mockIncoming, mockMessages, mockProfi
 import { eventById } from '~/mocks/eventCatalog'
 import { mockLatencyMs } from '~/mocks/auth'
 import { ticketsHeld } from './tickets'
+import { mockRequest } from './mockRequest'
 
 /**
  * Chat service (MOCK). Components call only these functions; replace the
@@ -12,7 +13,7 @@ import { ticketsHeld } from './tickets'
  * tick), unread counts, who can see a profile.
  * The mock keeps everything in memory for this browser tab.
  */
-const wait = (ms = mockLatencyMs) => new Promise(resolve => setTimeout(resolve, ms))
+const wait = (ms = mockLatencyMs) => mockRequest(ms)
 
 const chats = structuredClone(mockChats)
 const messages = structuredClone(mockMessages)

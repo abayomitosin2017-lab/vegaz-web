@@ -10,7 +10,8 @@ import type { HostedEventOption } from '~/types/hosting'
  * 24px radio on the right. The newer item look is used for every row
  * (decision 23 Oct). MOCK list: services/hosting.ts.
  */
-const props = defineProps<{ events: HostedEventOption[]; loading?: boolean }>()
+const props = defineProps<{ events: HostedEventOption[]; loading?: boolean; /** Couldn't load: Try again (decision 27 Oct) */ failed?: boolean }>()
+const emit = defineEmits<{ retry: [] }>()
 const picked = defineModel<string | null>({ default: null })
 const query = ref('')
 const shown = computed(() => {
@@ -26,7 +27,8 @@ const shown = computed(() => {
       <span class="host-visually-hidden">Search events</span>
       <input v-model="query" class="text-app-small-regular" type="search" placeholder="Search events" />
     </label>
-    <UiSkeletonList v-if="loading" :rows="4" :photo="56" gap="var(--spacing-md)" label="Loading your events" />
+    <UiErrorState v-if="failed" what="your events" compact @retry="emit('retry')" />
+    <UiSkeletonList v-else-if="loading" :rows="4" :photo="56" gap="var(--spacing-md)" label="Loading your events" />
     <p v-else-if="!shown.length" class="host-select-event__empty text-app-small-regular">No events match “{{ query }}”.</p>
     <div v-else class="host-select-event__grid" role="radiogroup" aria-label="Your events">
       <label v-for="e in shown" :key="e.id" :class="['host-select-event__item', { 'host-select-event__item--on': picked === e.id }]">

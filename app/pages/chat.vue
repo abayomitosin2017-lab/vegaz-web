@@ -21,7 +21,7 @@
  * Signed out: goes back to the home page and opens Login or signup.
  * The open chat is kept in the address (?chat=house-party).
  */
-import type { ChatMessage, ChatPerson, ChatProfile, ChatSummary, NewMessage } from '~/types/chat'
+import type { ChatMessage, ChatPerson, ChatPostMessage, ChatProfile, ChatSummary, NewMessage } from '~/types/chat'
 import type { EventDetails } from '~/types/event'
 import type { TicketType } from '~/types/ticket'
 import { getMessages, getProfile, listChats, markRead, sendMessage } from '~/services/chat'
@@ -39,6 +39,9 @@ const router = useRouter()
 
 const chats = ref<ChatSummary[]>([])
 const loadingChats = ref(true)
+// Couldn't load: Try again in place (decision 27 Oct)
+const chatsFailed = ref(false)
+const messagesFailed = ref(false)
 const messages = ref<ChatMessage[]>([])
 const loadingMessages = ref(false)
 const sending = ref(false)
@@ -60,8 +63,10 @@ const selected = computed(() => chats.value.find(c => c.id === selectedId.value)
 async function loadChats() {
   if (!user.value) return
   loadingChats.value = true
-  chats.value = await listChats(user.value.username, user.value.email)
-  loadingChats.value = false
+  chatsFailed.value = false
+  try { chats.value = await listChats(user.value.username, user.value.email) }
+  catch { if (!chats.value.length) chatsFailed.value = true }
+  finally { loadingChats.value = false }
 }
 
 watch(
@@ -82,17 +87,23 @@ watch(
   { immediate: true },
 )
 
+async function loadMessages(id: string) {
+  loadingMessages.value = true
+  messagesFailed.value = false
+  try { messages.value = await getMessages(id) }
+  catch { messagesFailed.value = true; return }
+  finally { loadingMessages.value = false }
+  try { await markRead(id) } catch { return }
+  const chat = chats.value.find(c => c.id === id)
+  if (chat) chat.unreadCount = 0
+}
 watch(
   selectedId,
-  async (id) => {
+  (id) => {
     profile.value = null
     messages.value = []
-    if (!id) return
-    loadingMessages.value = true
-    try { messages.value = await getMessages(id) } finally { loadingMessages.value = false }
-    await markRead(id)
-    const chat = chats.value.find(c => c.id === id)
-    if (chat) chat.unreadCount = 0
+    messagesFailed.value = false
+    if (id) loadMessages(id)
   },
   { immediate: true },
 )
@@ -110,13 +121,24 @@ onBeforeUnmount(() => { hideHeaderOnPhone.value = false })
 async function onSend(draft: NewMessage) {
   if (!selected.value || !me.value) return
   sending.value = true
+  const chatId = selected.value.id
   try {
-    const message = await sendMessage(selected.value.id, me.value, toRaw(draft))
+    const message = await sendMessage(chatId, me.value, toRaw(draft))
     messages.value.push(message)
     chats.value = await listChats(user.value!.username, user.value!.email)
+  } catch {
+    // Not sent (decision 27 Oct): the message shows with "Not sent · Try again"
+    if (selected.value?.id === chatId) {
+      messages.value.push({ kind: 'post', id: `local-${Date.now()}`, chatId, createdAt: new Date().toISOString(), sender: me.value, mine: true, ...toRaw(draft), failed: true })
+    }
   } finally {
-    sending.value = false // OPEN ITEM: failed-send state is not designed
+    sending.value = false
   }
+}
+/** Try again on a message that wasn't sent */
+function retrySend(message: ChatPostMessage) {
+  messages.value = messages.value.filter(m => m.id !== message.id)
+  onSend({ text: message.text, photos: message.photos, replyTo: message.replyTo })
 }
 
 async function openProfile(person: ChatPerson) {
@@ -153,14 +175,17 @@ function closeProfile() {
 
 <template>
   <div v-if="user" :class="['chat-page', { 'chat-page--open': selected, 'chat-page--profile': profile }]">
-    <ChatList class="chat-page__list" :chats="chats" :selected-id="selectedId" :loading="loadingChats" @select="select" />
+    <ChatList class="chat-page__list" :chats="chats" :selected-id="selectedId" :loading="loadingChats" :failed="chatsFailed" @select="select" @retry="loadChats" />
 
     <ChatConversation
       v-if="selected"
       :chat="selected"
       :messages="messages"
       :loading="loadingMessages"
+      :failed="messagesFailed"
       :sending="sending"
+      @retry-load="selected && loadMessages(selected.id)"
+      @retry-send="retrySend"
       @send="onSend"
       @profile="openProfile"
       @back="backToList"

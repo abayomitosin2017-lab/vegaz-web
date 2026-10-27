@@ -778,3 +778,50 @@ Measured on airbnb.com (home + a listing page) at 375, 768 and 1440 in a real br
 - The sticky bar (event name and buttons, shown once the name scrolls up behind the site header) now shows at every width, desktop included.
 - Desktop (1024px and up): the two buttons are exactly the ones in the title row ("Join Community - Free" / "Open Chat", then "Share Event"). They're the same 40-tall text pills, in the same spot on screen, 8 apart. The name uses the page title's size (26/30 semibold, same as before scrolling; was 18/24), left aligned with the page content (1120 wide, 40 sides). The bar is the site header's height (80) with its bottom line.
 - Phones and tablets are unchanged: small button, then the Share icon.
+
+## 27 Oct: Design review of everything not in Figma (Tosin)
+Every item listed as "NOT IN FIGMA / PROPOSED" in this log was reviewed in one pass (list of 37, sent 27 Oct). Approved items are final for engineering; they still need adding to Figma so it stays the source of truth.
+- **Approved as built:**
+  - interaction styles (hover, pressed, focus, disabled), inactive buttons at 60%, icon hover, toast, loading placeholders, motion;
+  - desktop search results, phone search screen, long names ending in "…";
+  - All events page; promo banner dots and animation;
+  - event not found page, sticky header (phones and desktop), phone ticket bar, phone Share icon, gallery arrows and photo viewer, desktop profile side panel, Community "View all";
+  - Paystack placeholder step, "Edit user", unassigned tickets note, field rules;
+  - chat replies, press-and-hold menu, photo grids and 10-photo limit, list preview text, chat intro copy;
+  - Create event: when Continue/Proceed turns on, 1024–1279 layout, phone Date & Time, success copy, "Leave without publishing?", "Unlock your host tools in the app";
+  - My Activities chips and empty tabs; Edit Profile locked email, username error, photo reorder;
+  - Terms and Privacy page layout (the legal text is still a draft for legal review).
+- **Changed:** the "M" gender dot uses Figma's blue #6891FF (an exception to the blue → Primary rule); the "F" dot stays pink.
+- **To design and build next:** something went wrong + Try again, offline, message failed to send, photo upload errors, empty states (Home, All events), sold out + "N tickets left" countdown from 5, session expired, a general 404 page, the chat 10-photo limit message. (Payment failed is not in this round.)
+
+## 27 Oct: Missing states designed and built (NOT IN FIGMA, PROPOSED unless noted)
+All of these use one look, `UiStateMessage`: a 64 round Grey_6 circle with a 32 line icon, the title (18/24 semibold Grey_1), a short line (14/20 Grey_2) and a small secondary button. A compact version (no icon) is used in small spaces. Problems next to a field use `UiInlineAlert`: a red 16 "!" and red text.
+- **Sold out and "N tickets left"** (Figma Ticket 6698:6496), per ticket type:
+  - At 5 or fewer left, the red chip with the clock counts down live: "5 tickets left" … "1 ticket left". We use proper plurals; Figma says "5 ticket left".
+  - "+" stops at what's left.
+  - At 0: grey "Sold out" chip, price struck through in Grey_1, price and description at 60%, and no quantity control.
+  - If someone else buys while you're picking, your pick is lowered to what's left, or removed when it sells out, with a short message.
+  - Data: `remaining` on each ticket type (utils/ticketStock.ts).
+  - DEMO: on the event page, every 20 seconds "someone else" buys one ticket of a type that's down to 5 or fewer, so the countdown can be seen. OPEN ITEM: a live update (push or polling) from the API.
+- **Something went wrong + Try again** (approved style: in place; header and footer stay):
+  - Shown on Home, All events, the event page (no longer wrongly says "not found"), the chat list and messages, both searches, the community list, My Activities, the chat pop-up and the edition event picker.
+  - Copy: "Something went wrong" / "We couldn't load <events>. Please try again."
+  - When offline it switches to "You're offline" / "Check your internet connection and try again." (wifi-off icon).
+- **Offline banner:**
+  - A dark bar under the header that pushes the page down: "You're offline. Some things won't load until you reconnect." On phones, just "You're offline".
+  - Back online: a green dot and "You're back online" for 3 seconds.
+- **Message not sent:** the bubble stays in the chat with a red "!" and "Not sent · Try again"; tapping it sends again. In the chat pop-up, the message stays in the box with a red line above it.
+- **Photo problems** (chat, chat pop-up, event photos, profile photos, What to expect pictures), as one red line:
+  - "“x.pdf” isn't a photo. Use JPG, PNG, WebP or HEIC.";
+  - "“x.jpg” is over 10 MB. Choose a smaller photo.";
+  - "You can add up to 10 photos. We added the first N." (chat limit 10, pop-up 5, event 5, profile 3).
+  - Rules in utils/photoRules.ts; limits to confirm with engineering.
+- **Profile photos:** a 24 round X on each photo removes it; the next one moves up to become the profile photo.
+- **Couldn't save:** a toast on Edit Profile; a toast on Publish in Create event, where everything stays as typed. The log-in email step shows "We couldn't reach Vegaz. Check your connection and try again."
+- **Empty states:** Home and All events with no events: calendar icon, "No events yet", "New events are added all the time. Check back soon, or host your own.", "Add your Event". Home rows with no events hide on their own.
+- **Session expired** (approved: log-in pop-up, keep progress):
+  - "You've been signed out" / "For your security, please log in again. You'll carry on right where you left off.", with their email filled in.
+  - After logging in, the page is exactly as they left it (forms, cart, chat draft). Closing the pop-up signs them out and goes to Home.
+  - Engineering: call `useSession().expire()` when a request answers 401. In development: `__vegaz.expireSession()` in the browser console.
+- **404 page** (wrong links): map pin with an X, "Page not found", "The link may be broken, or the page may have moved.", "Go to Home" + text-only "Explore events". Other crashes: "Something went wrong" + "Try again" / "Go to Home".
+- **Testing hook:** the mock services now fail when the device is offline (services/mockRequest.ts), so these states can be seen by turning off wifi. Delete with the mocks.

@@ -6,6 +6,7 @@ import { createdEventIds, hostCategories, hostedEventIds, placesMock, ticketKind
 import { catalog, eventById } from '~/mocks/eventCatalog'
 import { guestPrice } from '~/utils/fees'
 import { formatNaira } from '~/utils/money'
+import { mockRequest } from './mockRequest'
 
 /**
  * Host an event: data service (MOCK, memory only).
@@ -20,7 +21,7 @@ import { formatNaira } from '~/utils/money'
  * and crop; who reviews an event before it is live; how a new edition is
  * linked to its event (chat room, members, edition number).
  */
-const wait = (ms = 250) => new Promise(resolve => setTimeout(resolve, ms))
+const wait = (ms = 250) => mockRequest(ms)
 
 export function getCategories(): string[] {
   return [...hostCategories]

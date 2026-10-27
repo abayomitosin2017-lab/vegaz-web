@@ -11,9 +11,13 @@ import './styles.css'
  * photo to replace it, your first photo is your main profile photo").
  * Drag the handle (or use the arrow keys on it) to change the order
  * (PROPOSED: the drag is implied by the handle, not specified).
- * OPEN ITEM (engineering): upload, size limits, crop; removing a photo is
- * not designed.
+ * Remove (decision 27 Oct, PROPOSED): a 24 round button with an X at the
+ * top right of each filled tile; the next photo moves up (the first is the
+ * profile photo). Problems (not a photo, over 10 MB) show one red line under
+ * the tiles (utils/photoRules.ts).
+ * OPEN ITEM (engineering): upload and crop.
  */
+import { checkPhotos } from '~/utils/photoRules'
 const photos = defineModel<string[]>({ required: true })
 const MAX = 3
 const file = ref<HTMLInputElement | null>(null)
@@ -22,6 +26,14 @@ const root = ref<HTMLElement | null>(null)
 const tileEls = () => [...(root.value?.querySelectorAll<HTMLElement>('.profile-photos__tile') ?? [])]
 let target = 0
 const live = ref('')
+const problem = ref('')
+function removePhoto(i: number) {
+  const next = [...photos.value]
+  next.splice(i, 1)
+  photos.value = next
+  problem.value = ''
+  live.value = `Photo ${i + 1} removed${i === 0 && next.length ? '. The next photo is now your main profile photo' : ''}`
+}
 
 function pick(index: number) {
   target = Math.min(index, photos.value.length)
@@ -29,9 +41,12 @@ function pick(index: number) {
 }
 function onFile(e: Event) {
   const el = e.target as HTMLInputElement
-  const f = el.files?.[0]
+  const files = [...(el.files ?? [])].slice(0, 1)
   el.value = ''
-  if (!f || !f.type.startsWith('image/')) return
+  const { ok, problem: text } = checkPhotos(files, 1, MAX)
+  problem.value = text
+  const f = ok[0]
+  if (!f) return
   const url = URL.createObjectURL(f)
   const next = [...photos.value]
   if (target < next.length) next[target] = url
@@ -82,6 +97,7 @@ onBeforeUnmount(onUp)
 </script>
 
 <template>
+  <div class="profile-photos-wrap">
   <div ref="root" class="profile-photos" role="group" aria-label="Profile photos">
     <input ref="file" class="profile-visually-hidden" type="file" accept="image/*" tabindex="-1" aria-hidden="true" @change="onFile" />
     <div v-for="n in MAX" :key="photos[n - 1] ?? `empty-${n}`" :class="['profile-photos__tile', { 'profile-photos__tile--filled': photos[n - 1] }]">
@@ -97,6 +113,9 @@ onBeforeUnmount(onUp)
           @pointerdown="onDown(n - 1, $event)"
           @keydown="onHandleKey(n - 1, $event)"
         ><img src="/images/profile/icon-drag-12.svg" alt="" width="12" height="12" /></button>
+        <button type="button" class="profile-photos__remove" :aria-label="`Remove photo ${n}`" @click="removePhoto(n - 1)">
+          <img src="/images/host/icon-close-14-light.svg" alt="" width="12" height="12" />
+        </button>
       </template>
       <button v-else type="button" class="profile-photos__btn profile-photos__add" @click="pick(n - 1)">
         <span class="profile-photos__circle"><img src="/images/profile/icon-image-add-24.svg" alt="" width="24" height="24" /></span>
@@ -104,6 +123,8 @@ onBeforeUnmount(onUp)
       </button>
     </div>
     <p class="profile-visually-hidden" aria-live="polite">{{ live }}</p>
+  </div>
+  <UiInlineAlert v-if="problem" class="profile-photos__problem" :text="problem" />
   </div>
 </template>
 
@@ -138,6 +159,24 @@ onBeforeUnmount(onUp)
   cursor: grab;
   touch-action: none;
 }
+.profile-photos-wrap { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+.profile-photos__remove {
+  position: absolute;
+  top: var(--spacing-xs);
+  right: var(--spacing-xs);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-host-thumb-remove);
+  backdrop-filter: blur(2px);
+  cursor: pointer;
+}
+.profile-photos__remove:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: 2px; }
 .profile-photos__drag:active { cursor: grabbing; }
 .profile-photos__drag:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: 2px; }
 </style>

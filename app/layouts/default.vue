@@ -56,6 +56,7 @@ const showBottomNav = computed(() => isPhone.value
 <template>
   <div :class="['layout', { 'layout--bottom-nav': showBottomNav }]">
     <LayoutHeader :class="{ 'layout__header--hide-phone': hideHeaderOnPhone }" :user="user" @login="openAuth" @menu="onMenu" @host="startHosting" />
+    <ClientOnly><LayoutOfflineBanner /></ClientOnly>
     <main id="main" class="layout__main">
       <slot />
     </main>

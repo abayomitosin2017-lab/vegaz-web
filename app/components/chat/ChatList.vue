@@ -24,8 +24,8 @@
 import type { ChatSummary } from '~/types/chat'
 import { formatCount, formatListTime } from '~/utils/chatFormat'
 
-const props = defineProps<{ chats: ChatSummary[]; selectedId?: string | null; loading?: boolean }>()
-const emit = defineEmits<{ select: [id: string] }>()
+const props = defineProps<{ chats: ChatSummary[]; selectedId?: string | null; loading?: boolean; /** Couldn't load: Try again (decision 27 Oct) */ failed?: boolean }>()
+const emit = defineEmits<{ select: [id: string]; retry: [] }>()
 
 const phone = usePhoneLayout()
 const query = ref('')
@@ -53,7 +53,8 @@ const visible = computed(() => {
     </UiInput>
 
     <!-- Loading (decision 27 Oct): row placeholders -->
-    <ul v-if="loading && !chats.length" class="chat-list__rows" aria-busy="true" aria-label="Loading chats">
+    <UiErrorState v-if="failed && !chats.length" class="chat-list__failed" what="your chats" compact @retry="emit('retry')" />
+    <ul v-else-if="loading && !chats.length" class="chat-list__rows" aria-busy="true" aria-label="Loading chats">
       <li v-for="n in 6" :key="n" class="chat-list__item chat-list__sk">
         <UiSkeleton class="chat-list__sk-photo" width="var(--sizing-control-standard)" height="var(--sizing-control-standard)" radius="var(--radius-md)" />
         <span class="chat-list__sk-text">

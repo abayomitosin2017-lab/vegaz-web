@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { checkPhotos } from '~/utils/photoRules'
 import './styles.css'
 import type { DraftPhoto } from '~/types/hosting'
 /**
@@ -36,13 +37,15 @@ const canAdd = computed(() => photos.value.length < MAX)
 
 function pick() { input.value?.click() }
 
+// Not a photo / over 10 MB / more than 5: one red line under the photos (decision 27 Oct)
+const problem = ref('')
 function addFiles(list: FileList | File[] | null) {
   if (!list) return
-  const files = [...list].filter(f => f.type.startsWith('image/'))
-  const room = MAX - photos.value.length
-  const added = files.slice(0, room).map(f => ({ id: crypto.randomUUID(), url: URL.createObjectURL(f), focusX: 50, focusY: 50 }))
+  const { ok, problem: text } = checkPhotos([...list], MAX - photos.value.length, MAX)
+  const added = ok.map(f => ({ id: crypto.randomUUID(), url: URL.createObjectURL(f), focusX: 50, focusY: 50 }))
   photos.value = [...photos.value, ...added]
-  message.value = files.length > room ? `You can add up to ${MAX} photos.` : `${added.length} photo${added.length === 1 ? '' : 's'} added.`
+  problem.value = text
+  if (added.length) message.value = `${added.length} photo${added.length === 1 ? '' : 's'} added.`
 }
 function onInput(e: Event) {
   const el = e.target as HTMLInputElement
@@ -177,6 +180,7 @@ function onKey(e: KeyboardEvent) {
         </li>
       </ul>
     </template>
+    <UiInlineAlert v-if="problem" class="host-photos__problem" :text="problem" />
     <p class="host-visually-hidden" aria-live="polite">{{ message }}</p>
   </div>
 </template>
@@ -293,6 +297,7 @@ function onKey(e: KeyboardEvent) {
   color: var(--color-text-primary);
   pointer-events: none;
 }
+.host-photos__problem { margin-top: var(--spacing-xs); }
 .host-photos__remove {
   position: absolute;
   left: 53px;

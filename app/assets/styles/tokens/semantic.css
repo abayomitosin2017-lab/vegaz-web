@@ -117,9 +117,7 @@
   --color-text-on-inverse: #fffdf6;       /* banner heading */
   --color-host-badge: var(--base-positive); /* green "Host" pill under an avatar */
   --color-gender-female: #ff68c3;         /* "F" dot on a community avatar */
-  /* FLAG: Figma's "M" dot is blue #6891FF; the blue -> Primary rule (decision)
-     makes it purple. Confirm with design. */
-  --color-gender-male: var(--base-primary);
+  --color-gender-male: #6891ff;           /* "M" dot: Figma blue (approved 27 Oct, an exception to the blue -> Primary rule) */
   --color-avatar-more: var(--gray-100);   /* "+5 Others" circle */
   --color-avatar-more-text: var(--gray-600);
   --shadow-host-tag: 0 4px 24px rgba(0, 0, 0, 0.05);

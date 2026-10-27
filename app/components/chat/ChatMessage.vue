@@ -39,7 +39,7 @@ import type { ChatPerson, ChatPostMessage } from '~/types/chat'
 import { formatClock } from '~/utils/chatFormat'
 
 const props = defineProps<{ message: ChatPostMessage }>()
-const emit = defineEmits<{ profile: [person: ChatPerson]; reply: [message: ChatPostMessage]; 'open-photo': [message: ChatPostMessage, index: number] }>()
+const emit = defineEmits<{ profile: [person: ChatPerson]; reply: [message: ChatPostMessage]; 'open-photo': [message: ChatPostMessage, index: number]; retry: [message: ChatPostMessage] }>()
 
 const photos = computed(() => props.message.photos ?? [])
 const isPhoto = computed(() => photos.value.length > 0)
@@ -121,7 +121,12 @@ const { menuOpen, menuAbove, offset, dragging, swipeIconOpacity, reply, handlers
 
       <div class="chat-msg__body">
         <p v-if="message.text" class="chat-msg__text text-small-regular">{{ message.text }}</p>
-        <p :class="['chat-msg__meta', isPhoto ? 'text-sub-regular' : 'text-xsmall-regular']">
+        <!-- Not sent (decision 27 Oct, PROPOSED): red "!" + "Not sent · Try again" instead of the time -->
+        <button v-if="message.failed" type="button" class="chat-msg__failed text-xsmall-semibold" @click="emit('retry', message)">
+          <img src="/images/states/icon-danger-16.svg" alt="" width="14" height="14" />
+          <span>Not sent · Try again</span>
+        </button>
+        <p v-else :class="['chat-msg__meta', isPhoto ? 'text-sub-regular' : 'text-xsmall-regular']">
           <span>{{ time }}</span>
           <img v-if="message.mine" class="chat-msg__tick" src="/images/chat/icon-tick-double-14.svg" alt="Sent" width="12" height="12" />
         </p>
@@ -163,6 +168,18 @@ const { menuOpen, menuAbove, offset, dragging, swipeIconOpacity, reply, handlers
 </template>
 
 <style scoped>
+.chat-msg__failed {
+  display: inline-flex;
+  align-self: flex-end;
+  align-items: center;
+  gap: var(--spacing-xxs);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+.chat-msg__failed:focus-visible { outline: var(--focus-ring-width) solid currentColor; outline-offset: 2px; border-radius: var(--radius-xs, 4px); }
 .chat-msg {
   position: relative;
   display: flex;

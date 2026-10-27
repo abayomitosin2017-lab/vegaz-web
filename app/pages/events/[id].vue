@@ -39,7 +39,7 @@
  */
 import type { ChatPerson, ChatProfile } from '~/types/chat'
 import { getEvent } from '~/services/events'
-import { getTicketTypes } from '~/services/tickets'
+import { getTicketTypes, watchTicketStock } from '~/services/tickets'
 import { getProfile, isInEventChat, joinEventChat, sendMessage } from '~/services/chat'
 import { saveBio } from '~/services/profile'
 import { ticketsHeld } from '~/services/tickets'
@@ -50,11 +50,13 @@ const route = useRoute()
 const id = computed(() => String(route.params.id))
 
 // Lazy: the page shows at once with placeholders until the event arrives (decision 27 Oct)
-const { data: event, status: eventStatus } = useLazyAsyncData(`event-${id.value}`, () => getEvent(id.value), { watch: [id] })
-const { data: tickets } = useLazyAsyncData(`tickets-${id.value}`, () => getTicketTypes(id.value), { watch: [id], default: () => [] })
+const { data: event, status: eventStatus, refresh: refreshEvent } = useLazyAsyncData(`event-${id.value}`, () => getEvent(id.value), { watch: [id] })
+const { data: tickets, refresh: refreshTickets } = useLazyAsyncData(`tickets-${id.value}`, () => getTicketTypes(id.value), { watch: [id], default: () => [] })
+// Couldn't load (network / server), not the same as "not found" (decision 27 Oct)
+const eventFailed = computed(() => !event.value && eventStatus.value === 'error')
 const eventLoading = computed(() => !event.value && (eventStatus.value === 'pending' || eventStatus.value === 'idle'))
 
-useHead(() => ({ title: event.value ? `${event.value.title} · Vegaz` : eventLoading.value ? 'Vegaz' : 'Event not found · Vegaz' }))
+useHead(() => ({ title: event.value ? `${event.value.title} · Vegaz` : eventLoading.value || eventFailed.value ? 'Vegaz' : 'Event not found · Vegaz' }))
 
 // ---- Sections shown (empty ones hide, decision 27 Oct) ----
 const showAbout = computed(() => !!event.value?.about?.trim())
@@ -69,7 +71,36 @@ const calendarEvent = computed(() => event.value && ({ title: event.value.title,
 
 // ---- Tickets ----
 const quantities = ref<Record<string, number>>({})
-watch(tickets, (list) => { quantities.value = Object.fromEntries((list ?? []).map(t => [t.id, 0])) }, { immediate: true })
+// A new event starts with nothing picked. When what's left changes (someone
+// else bought, decision 27 Oct), picks are kept but never more than what's
+// left; a short message says when a pick was cut or sold out.
+watch(id, () => { quantities.value = {} })
+watch(tickets, (list) => {
+  const prev = quantities.value
+  const next: Record<string, number> = {}
+  const notes: string[] = []
+  for (const t of list ?? []) {
+    const had = prev[t.id] ?? 0
+    const max = t.availability === 'sold-out' ? 0 : (t.maxQuantity ?? Number.POSITIVE_INFINITY)
+    next[t.id] = Math.min(had, max)
+    if (had > next[t.id]!) notes.push(next[t.id] ? `Only ${next[t.id]} ${t.name} left, so we changed your pick` : `${t.name} just sold out, so we removed it`)
+  }
+  quantities.value = next
+  if (notes.length) showToast(notes.join('. '))
+}, { immediate: true })
+// Live "N tickets left" (mock demo; engineering: push or polling)
+let stopStock: (() => void) | undefined
+function watchStock() {
+  stopStock?.()
+  stopStock = watchTicketStock(id.value, (list) => { tickets.value = list })
+}
+onMounted(watchStock)
+watch(id, watchStock)
+onBeforeUnmount(() => stopStock?.())
+function onPurchased() {
+  refreshStatus()
+  refreshTickets() // fewer left now
+}
 const picked = computed(() => (tickets.value ?? []).filter(t => (quantities.value[t.id] ?? 0) > 0))
 const count = computed(() => picked.value.reduce((n, t) => n + (quantities.value[t.id] ?? 0), 0))
 const total = computed(() => picked.value.reduce((sum, t) => sum + t.price * (quantities.value[t.id] ?? 0), 0))
@@ -162,6 +193,7 @@ watch(authOpen, (open) => { if (!open && !user.value) joinAfterLogin = false })
 
 // ---- Share / copy ----
 const { toast, share, copy } = useShareLink()
+function showToast(text: string) { toast.value = text }
 function invite() {
   if (event.value) share({ url: eventUrl(event.value.id), title: event.value.title, text: `Join me at ${event.value.title} on Vegaz` })
 }
@@ -307,7 +339,7 @@ const appPromptOpen = computed(() => isHost.value && !createdOpen.value && !appP
       :event="event"
       :tickets="tickets ?? []"
       @close="checkoutOpen = false"
-      @purchased="refreshStatus"
+      @purchased="onPurchased"
       @join-chat="join"
     />
 
@@ -343,6 +375,9 @@ const appPromptOpen = computed(() => isHost.value && !createdOpen.value && !appP
   </div>
 
   <!-- Unknown event (not designed; proposed) -->
+  <div v-else-if="eventFailed" class="event-page event-page--failed">
+    <UiErrorState what="this event" :level="1" @retry="refreshEvent(); refreshTickets()" />
+  </div>
   <div v-else class="event-page event-page--missing">
     <h1 class="text-page-title">This event couldn’t be found</h1>
     <p class="text-body-regular">It may have ended or been removed.</p>
@@ -408,6 +443,7 @@ const appPromptOpen = computed(() => isHost.value && !createdOpen.value && !appP
 .event-page__sk-row { display: flex; align-items: center; gap: var(--spacing-md); min-height: 28px; }
 .event-page__sk-ticket + .event-page__sk-ticket { margin-top: var(--spacing-md); }
 @media (min-width: 768px) { .event-page__sk-gallery { height: 354px; } }
+.event-page--failed { justify-content: center; min-height: 50vh; }
 .event-page--missing { align-items: flex-start; gap: var(--spacing-md); min-height: 50vh; }
 .event-page--missing h1,
 .event-page--missing p { margin: 0; }

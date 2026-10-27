@@ -19,8 +19,10 @@ import { getAllEvents, searchEvents } from '~/services/events'
 const route = useRoute()
 const q = computed(() => String(route.query.q ?? '').trim())
 // Lazy: placeholders show while the events load (decision 27 Oct)
-const { data: events, status } = useLazyAsyncData('all-events', () => (q.value ? searchEvents(q.value, 100) : getAllEvents()), { default: () => [], watch: [q] })
+const { data: events, status, refresh } = useLazyAsyncData('all-events', () => (q.value ? searchEvents(q.value, 100) : getAllEvents()), { default: () => [], watch: [q] })
 const loading = computed(() => status.value === 'pending' || status.value === 'idle')
+const failed = computed(() => status.value === 'error')
+const { startHosting } = useHostEntry()
 
 useHead(() => ({ title: q.value ? `“${q.value}” · Vegaz` : 'All events · Vegaz' }))
 </script>
@@ -30,11 +32,23 @@ useHead(() => ({ title: q.value ? `“${q.value}” · Vegaz` : 'All events · V
     <UiBackButton to="/" label="Back to Home" class="all-events__back" />
 
     <h1 class="all-events__title text-page-title">
-      <template v-if="q">Results for “{{ q }}”</template><template v-else>All events</template> <span v-if="!loading" class="all-events__count">({{ events.length }})</span>
+      <template v-if="q">Results for “{{ q }}”</template><template v-else>All events</template> <span v-if="!loading && !failed" class="all-events__count">({{ events.length }})</span>
     </h1>
-    <p v-if="q && !loading && !events.length" class="all-events__empty text-body-regular">No events found. Try another name, place or category.</p>
+    <UiErrorState v-if="failed" class="all-events__state" what="events" :level="2" @retry="refresh()" />
+    <p v-else-if="q && !loading && !events.length" class="all-events__empty text-body-regular">No events found. Try another name, place or category.</p>
+    <!-- No events at all (decision 27 Oct; NOT IN FIGMA, PROPOSED) -->
+    <UiStateMessage
+      v-else-if="!loading && !events.length"
+      class="all-events__state"
+      icon="/images/states/icon-calendar-search-32.svg"
+      title="No events yet"
+      text="New events are added all the time. Check back soon, or host your own."
+      action-label="Add your Event"
+      :level="2"
+      @action="startHosting()"
+    />
 
-    <ul class="all-events__grid" :aria-busy="loading ? 'true' : undefined">
+    <ul v-if="!failed" class="all-events__grid" :aria-busy="loading ? 'true' : undefined">
       <template v-if="loading">
         <li v-for="n in 10" :key="n"><EventCardSkeleton /></li>
       </template>

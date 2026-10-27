@@ -78,9 +78,13 @@ const participantLabel: Record<Participants, string> = { all: 'All Gender', fema
 // ---- edition: the host's events ----
 const hostEvents = ref<HostedEventOption[]>([])
 const loadingEvents = ref(props.mode === 'edition')
-onMounted(async () => {
-  if (props.mode === 'edition') { hostEvents.value = await listHostEvents(); loadingEvents.value = false }
-})
+const eventsFailed = ref(false)
+async function loadHostEvents() {
+  loadingEvents.value = true
+  eventsFailed.value = false
+  try { hostEvents.value = await listHostEvents() } catch { eventsFailed.value = true } finally { loadingEvents.value = false }
+}
+onMounted(() => { if (props.mode === 'edition') loadHostEvents() })
 const editionNumber = computed(() => (editionOf.value ? nextEditionNumber(editionOf.value) : '1.0'))
 
 // ---- dialogs ----
@@ -159,8 +163,10 @@ function back() {
 async function publish(skipExpect = false) {
   if (!user.value || busy.value) return
   busy.value = true
-  leaving = true // publishing: no "leave?" question
-  const id = await createEvent({
+  saveError.value = ''
+  let id: string
+  try {
+  id = await createEvent({
     title: title.value,
     description: description.value,
     photos: photos.value,
@@ -174,9 +180,17 @@ async function publish(skipExpect = false) {
     expectations: skipExpect ? [] : expectations.value,
     editionOf: editionOf.value ?? undefined,
   }, user.value)
+  } catch {
+    // Couldn't publish (decision 27 Oct): everything stays as typed
+    busy.value = false
+    saveError.value = 'Couldn’t publish your event. Check your connection and try again.'
+    return
+  }
   busy.value = false
+  leaving = true // publishing: no "leave?" question
   await navigateTo({ path: `/events/${id}`, query: { created: '1' } })
 }
+const saveError = ref('')
 
 // ---- Leaving part-way (decision 27 Oct) ----
 // Once anything has been added, leaving the flow (Exit, Back on the first
@@ -270,7 +284,7 @@ const mobileTitles = computed(() => ({
 
     <!-- Edition 1: Select Event (10754:73375) -->
     <div v-if="step === 'select'" class="host-m__body host-m__body--select">
-      <HostSelectEventList v-model="editionOf" :events="hostEvents" :loading="loadingEvents" />
+      <HostSelectEventList v-model="editionOf" :events="hostEvents" :loading="loadingEvents" :failed="eventsFailed" @retry="loadHostEvents" />
     </div>
 
     <!-- Create new event / Create New Edition (10754:72118, 10754:73664) -->
@@ -374,7 +388,7 @@ const mobileTitles = computed(() => ({
     </div>
 
     <!-- Edition 1: Select event -->
-    <HostSelectEventList v-if="step === 'select'" v-model="editionOf" :events="hostEvents" :loading="loadingEvents" />
+    <HostSelectEventList v-if="step === 'select'" v-model="editionOf" :events="hostEvents" :loading="loadingEvents" :failed="eventsFailed" @retry="loadHostEvents" />
 
     <!-- Event / Edition details -->
     <div v-else-if="step === 'details'" class="host-details-step">
@@ -441,6 +455,7 @@ const mobileTitles = computed(() => ({
     @close="deleting = null"
     @confirm="confirmDelete"
   />
+  <UiToast :message="saveError" :duration="5000" @done="saveError = ''" />
   <HostLeaveDialog :open="leaveOpen" :title="title" :edition="mode === 'edition'" @stay="leaveOpen = false" @leave="confirmLeave" />
 </template>
 
