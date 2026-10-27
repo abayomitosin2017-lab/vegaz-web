@@ -2,23 +2,27 @@
 import './styles.css'
 import { BIO_MAX_WORDS, capWords, countWords } from '~/services/profile'
 /**
- * "Introduce yourself" (decision 26 Oct; NOT IN FIGMA, PROPOSED layout).
- * Opens when someone joins an event's chat for the first time and has no
- * bio. Their bio becomes the automatic hello in the chat ("Hi everyone, my
- * name is {first name} and {bio}"), with their main profile photo.
+ * "Introduce yourself" (decision 26 Oct, updated 27 Oct; NOT IN FIGMA,
+ * PROPOSED layout and copy).
+ * Opens every time someone joins an event's chat for the first time. The
+ * box is filled in with their bio (empty if they have none); they can edit
+ * it. Exactly what they send is posted in the chat with their main profile
+ * photo (no fixed "Hi everyone" any more). It is saved as their bio only if
+ * they had no bio yet; otherwise the bio stays as it is.
  * Same frame as the birthday prompt: phones a bottom sheet, web a 441 card.
  * Text on the system (Airbnb-based) ramp: modal title 22/26, copy 14/20,
  * 24 padding, X top right. Bio field as on Edit Profile (100-word cap).
- * - "Save and join": inactive until something is written; saves the bio to
- *   the profile, joins, and posts the hello.
- * - "Skip for now": joins without a hello (they are asked again the next
- *   time they join a new event's chat).
+ * - "Send and join": inactive until something is written; joins and posts
+ *   the message (and saves it as the bio when there was none).
+ * - "Skip for now": joins without posting anything.
  * - X / Escape: cancels the join.
  */
-defineProps<{ open: boolean; busy?: boolean }>()
+const props = defineProps<{ open: boolean; busy?: boolean; /** Their bio, to start from */ initial?: string }>()
 const emit = defineEmits<{ close: []; save: [bio: string]; skip: [] }>()
 const bio = ref('')
 const id = useId()
+// Start from the bio each time it opens
+watch(() => props.open, (o) => { if (o) bio.value = capWords(props.initial ?? '') }, { immediate: true })
 const words = computed(() => countWords(bio.value))
 const ready = computed(() => words.value > 0)
 function onInput(e: Event) {
@@ -37,7 +41,7 @@ function save() { if (ready.value) emit('save', bio.value) }
         <div class="profile-bio__head">
           <div class="profile-bio__text">
             <h2 :id="`${id}-t`" class="profile-bio__title text-modal-title">Introduce yourself</h2>
-            <p :id="`${id}-c`" class="profile-bio__copy text-app-small-regular">You'll need a short bio so people in the chat can get to know you. We'll post it as your hello when you join.</p>
+            <p :id="`${id}-c`" class="profile-bio__copy text-app-small-regular">{{ initial?.trim() ? 'Say hello so people in the chat can get to know you. We\'ve started it with your bio; edit it before you send.' : 'Say hello so people in the chat can get to know you. We\'ll also save it as your bio.' }}</p>
           </div>
           <button type="button" class="profile-close profile-bio__x" aria-label="Close" @click="emit('close')">
             <img src="/images/host/icon-close-16.svg" alt="" width="16" height="16" />
@@ -65,7 +69,7 @@ function save() { if (ready.value) emit('save', bio.value) }
           :class="['profile-bio__btn', { 'profile-inactive': !ready || busy }]"
           :color="ready ? 'primary' : 'secondary'"
           :aria-disabled="!ready || busy ? 'true' : undefined"
-        >{{ busy ? 'Saving…' : 'Save and join' }}</UiButton>
+        >{{ busy ? 'Sending…' : 'Send and join' }}</UiButton>
         <UiButton class="profile-bio__btn" fill="ghost" color="secondary" :aria-disabled="busy ? 'true' : undefined" @click="!busy && emit('skip')">Skip for now</UiButton>
       </div>
     </form>

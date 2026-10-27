@@ -653,3 +653,12 @@ Measured on airbnb.com (home + a listing page) at 375, 768 and 1440 in a real br
 - Every back arrow now uses the same button, `UiBackButton`: a 36px round button, #F1F1F1 at 50% with a slight blur, and a 20px arrow (the style already in the Figma create-event and profile frames). Hover is a touch darker (PROPOSED).
 - Changed to match: the create-edition screens on phones (plain arrow before), the phone chat conversation (smaller circle before), the chat pop-up (no background before), the phone profile panel over the photo, and "Back to Home" on All events (purple text link before; the circle now sits before the text, which is dark grey).
 - Unchanged: the text "Back" buttons next to Continue / Proceed in flows (they are buttons with words, not back arrows) and the gallery scroll arrows.
+
+## 27 Oct — Chat intro: always asked, prefilled, sent as typed (replaces 26 Oct)
+
+- The "Introduce yourself" box now opens every time someone joins an event's chat for the first time (each event once), whether or not they have a bio. Hosts are still never asked in their own event's chat.
+- The box is filled in with their bio (empty if they have none). They can edit it, then "Send and join" (was "Save and join").
+- Only what is in the box is posted, with their main profile photo. The fixed "Hi everyone, my name is …" opening is removed (`introMessage` deleted).
+- It is saved as their bio only when they had no bio yet. If they already have one, editing the intro never changes the bio.
+- "Skip for now" still joins without posting anything. X / Escape cancels the join.
+- Copy (PROPOSED): with a bio, "Say hello so people in the chat can get to know you. We've started it with your bio; edit it before you send."; without one, "… We'll also save it as your bio."

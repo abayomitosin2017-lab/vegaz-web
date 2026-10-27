@@ -37,7 +37,7 @@
 import type { ChatPerson, ChatProfile } from '~/types/chat'
 import { getEvent } from '~/services/events'
 import { getTicketTypes } from '~/services/tickets'
-import { getProfile, introMessage, isInEventChat, joinEventChat, sendMessage } from '~/services/chat'
+import { getProfile, isInEventChat, joinEventChat, sendMessage } from '~/services/chat'
 import { saveBio } from '~/services/profile'
 import { ticketsHeld } from '~/services/tickets'
 import { priceRange } from '~/utils/money'
@@ -97,25 +97,26 @@ async function join() {
     openAuth()
     return
   }
-  // First time in this event's chat (hosts excluded): post a hello built from
-  // the bio; with no bio, ask for one first (decision 26 Oct)
+  // First time in this event's chat (hosts excluded): the intro box opens,
+  // filled in with their bio (decision 27 Oct, replaces 26 Oct)
   const firstTime = !isHost.value && !(await isInEventChat(user.value.username, event.value.id))
-  if (firstTime && !user.value.bio?.trim()) {
+  if (firstTime) {
     bioOpen.value = true
     return
   }
-  await enterChat(firstTime)
+  await enterChat()
 }
-async function enterChat(introduce: boolean) {
+/** Joins the chat; `intro` = the message they wrote, posted as typed */
+async function enterChat(intro?: string) {
   const u = user.value
   if (!u || !event.value) return
   joining.value = true
   try {
     const chatId = await joinEventChat(u.username, event.value.id)
-    if (introduce && u.bio?.trim()) {
+    if (intro?.trim()) {
       const me: ChatPerson = { id: 'u-me', name: `${u.firstName} ${u.lastName}`, username: u.username, avatarUrl: u.avatarUrl }
       const photo = u.photos?.[0] ?? u.avatarUrl // main profile photo; text only without one
-      await sendMessage(chatId, me, { text: introMessage(u.firstName, u.bio), photos: photo ? [photo] : undefined })
+      await sendMessage(chatId, me, { text: intro.trim(), photos: photo ? [photo] : undefined })
     }
     await navigateTo({ path: '/chat', query: { chat: chatId } })
   } finally {
@@ -123,23 +124,24 @@ async function enterChat(introduce: boolean) {
   }
 }
 
-// ---- "Introduce yourself" (no bio yet, first join) ----
+// ---- "Introduce yourself" (first join of each event chat) ----
 const bioOpen = ref(false)
 const bioSaving = ref(false)
-async function onBioSave(bio: string) {
+async function onBioSave(text: string) {
   if (!user.value) return
   bioSaving.value = true
   try {
-    setUser(await saveBio(user.value, bio))
+    // Saved as the bio only when they had none (decision 27 Oct)
+    if (!user.value.bio?.trim()) setUser(await saveBio(user.value, text))
     bioOpen.value = false
-    await enterChat(true)
+    await enterChat(text)
   } finally {
     bioSaving.value = false
   }
 }
 function onBioSkip() {
   bioOpen.value = false
-  enterChat(false)
+  enterChat()
 }
 // Finish joining once they've logged in or signed up
 watch(user, (u) => { if (u && joinAfterLogin) { joinAfterLogin = false; join() } })
@@ -269,7 +271,7 @@ function appPromptNever() {
       @join-chat="join"
     />
 
-    <ProfileBioPrompt :open="bioOpen" :busy="bioSaving" @close="bioOpen = false" @save="onBioSave" @skip="onBioSkip" />
+    <ProfileBioPrompt :open="bioOpen" :busy="bioSaving" :initial="user?.bio" @close="bioOpen = false" @save="onBioSave" @skip="onBioSkip" />
 
     <HostSuccessModal :open="createdOpen" :event-id="event.id" :title="event.title" @close="closeCreated" />
     <HostAppModal :open="appPromptOpen" @close="appPromptClosed = true" @never="appPromptNever" />

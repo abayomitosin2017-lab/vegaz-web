@@ -73,18 +73,6 @@ export async function joinEventChat(username: string, eventId: string): Promise<
   return chatId
 }
 
-/**
- * The automatic hello posted the first time someone joins an event's chat
- * (decision 26 Oct): "Hi everyone, my name is {first name} and {bio}".
- * The bio's first letter is lowered so it reads as one sentence
- * ("I'm an actor" -> "i'm an actor", as in the example). FLAG: a bio that
- * starts with a name ("Lagos-based...") would also be lowered.
- */
-export function introMessage(firstName: string, bio: string): string {
-  const b = bio.trim()
-  return `Hi everyone, my name is ${firstName} and ${b.charAt(0).toLowerCase()}${b.slice(1)}`
-}
-
 export async function getMessages(chatId: string): Promise<ChatMessage[]> {
   await wait(150)
   return structuredClone(messages[chatId] ?? [])
