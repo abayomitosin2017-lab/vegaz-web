@@ -45,7 +45,7 @@ function onKeydown(e: KeyboardEvent) {
       <img v-if="profile.photoUrl" :src="profile.photoUrl" alt="" />
       <button ref="closeButton" type="button" :class="'chat-profile__close'" :aria-label="phone ? backLabel : 'Close profile'" @click="emit('close')">
         <img class="chat-profile__close-x" src="/images/chat/icon-close-20.svg" alt="" width="16" height="16" />
-        <img class="chat-profile__close-back" src="/images/chat/icon-arrow-left-20.svg" alt="" width="16" height="16" />
+        <img class="chat-profile__close-back" src="/images/icon-back-20.svg" alt="" width="20" height="20" />
       </button>
     </div>
 
@@ -180,8 +180,15 @@ function onKeydown(e: KeyboardEvent) {
     top: var(--spacing-md);
     right: auto;
     left: var(--spacing-md);
-    background: var(--color-back-button);
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    background: var(--color-back-button); /* same as UiBackButton (decision 27 Oct) */
+    backdrop-filter: blur(2px);
   }
+  .chat-profile__close-back { width: 20px; height: 20px; }
   .chat-profile__close-x { display: none; }
   .chat-profile__close-back { display: block; }
   .chat-profile > :not(.chat-profile__photo) { margin-inline: var(--spacing-md); }

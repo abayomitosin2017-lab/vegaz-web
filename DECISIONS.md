@@ -645,5 +645,11 @@ Measured on airbnb.com (home + a listing page) at 375, 768 and 1440 in a real br
   - MOCK: "Don't show again" is remembered in this browser only; with the API it should be saved on the account.
 - **Add to calendar** (`EventAddToCalendar`): small grey secondary button on the right of the date row, opening a menu: Google Calendar, Apple Calendar (.ics file, works with other calendar apps too) and Outlook. Filled in with the title, address, description and event link.
   - OPEN ITEM: events have no end time, so calendar entries last 2 hours (`DEFAULT_HOURS` in `utils/calendar.ts`, PRODUCT TO CONFIRM).
-- **Assigning tickets is optional** (replaces 22 Oct "every ticket must have a person"): Proceed is always active on Assign tickets. While tickets are left a note says "Not assigning? The N unassigned tickets will be sent to you." (PROPOSED copy). When the order is placed, every unassigned ticket is given to the buyer.
+- **Assigning tickets is optional** (replaces 22 Oct "every ticket must have a person"): Proceed is always active on Assign tickets. While tickets are left a centred note at 80% opacity says "Not assigning? The N unassigned tickets will be sent to you." (PROPOSED copy). When the order is placed, every unassigned ticket is given to the buyer.
 - **Inactive buttons**: text and icons at 60% opacity on every button that is disabled or not ready yet (including while saving).
+
+## 27 Oct — One back button everywhere
+
+- Every back arrow now uses the same button, `UiBackButton`: a 36px round button, #F1F1F1 at 50% with a slight blur, and a 20px arrow (the style already in the Figma create-event and profile frames). Hover is a touch darker (PROPOSED).
+- Changed to match: the create-edition screens on phones (plain arrow before), the phone chat conversation (smaller circle before), the chat pop-up (no background before), the phone profile panel over the photo, and "Back to Home" on All events (purple text link before; the circle now sits before the text, which is dark grey).
+- Unchanged: the text "Back" buttons next to Continue / Proceed in flows (they are buttons with words, not back arrows) and the gallery scroll arrows.

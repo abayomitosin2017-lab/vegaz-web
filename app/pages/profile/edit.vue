@@ -94,15 +94,11 @@ function back() {
   <div v-if="user" class="profile-edit">
     <form class="profile-edit__inner" novalidate @submit.prevent="save">
       <div v-if="isPhone" class="profile-mbar">
-        <button type="button" class="profile-back" aria-label="Back" @click="back">
-          <img src="/images/host/m-arrow-left-20.svg" alt="" width="20" height="20" />
-        </button>
+        <UiBackButton class="profile-back" @click="back" />
         <h1 class="profile-mbar__title text-app-body-semibold">Edit Profile</h1>
       </div>
       <div v-else class="profile-edit__title-row">
-        <button type="button" class="profile-back" aria-label="Back" @click="back">
-          <img src="/images/host/m-arrow-left-20.svg" alt="" width="20" height="20" />
-        </button>
+        <UiBackButton class="profile-back" @click="back" />
         <h1 class="profile-edit__title text-app-h1-bold">Edit Profile</h1>
       </div>
 

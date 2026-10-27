@@ -44,16 +44,7 @@
 
 /* ---- Phone top bar: 36px back circle + centred title (Body semibold) ---- */
 .profile-mbar { position: relative; display: flex; align-items: center; justify-content: center; min-height: 36px; }
-.profile-back {
-  display: inline-flex;
-  padding: var(--spacing-xs);
-  border: 0;
-  border-radius: var(--radius-pill);
-  background: rgba(241, 241, 241, 0.5); /* raw in Figma */
-  backdrop-filter: blur(2px);
-  cursor: pointer;
-}
-.profile-back:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: 2px; }
+/* Back: UiBackButton (decision 27 Oct) */
 .profile-mbar .profile-back { position: absolute; left: 0; top: 0; }
 .profile-mbar__title { margin: 0; color: var(--color-text-primary); }
 

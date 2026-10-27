@@ -57,9 +57,7 @@ function onCta() {
   <UiModal :open="open" :width="560" phone="fullscreen" card-class="profile-act-card" :labelledby="`${id}-t`" @close="emit('close')">
     <div class="profile-act">
       <div v-if="isPhone" class="profile-mbar profile-act__mbar">
-        <button type="button" class="profile-back" aria-label="Back" @click="emit('close')">
-          <img src="/images/host/m-arrow-left-20.svg" alt="" width="20" height="20" />
-        </button>
+        <UiBackButton class="profile-back" @click="emit('close')" />
         <h2 :id="`${id}-t`" class="profile-mbar__title text-app-body-semibold">Activities</h2>
       </div>
       <div v-else class="profile-act__head">

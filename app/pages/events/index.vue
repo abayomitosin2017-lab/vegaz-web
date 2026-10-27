@@ -19,10 +19,7 @@ useHead({ title: 'All events · Vegaz' })
 
 <template>
   <div class="all-events">
-    <NuxtLink to="/" class="all-events__back text-small-semibold">
-      <img src="/images/chat/icon-arrow-left-20.svg" alt="" width="16" height="16" />
-      Back to Home
-    </NuxtLink>
+    <UiBackButton to="/" label="Back to Home" class="all-events__back" />
 
     <h1 class="all-events__title text-page-title">
       All events <span class="all-events__count">({{ events.length }})</span>
@@ -48,22 +45,7 @@ useHead({ title: 'All events · Vegaz' })
   margin-inline: auto;
   padding: var(--spacing-page-top) var(--container-inset-mobile) 42px;
 }
-.all-events__back {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xxs);
-  align-self: flex-start;
-  margin-left: calc(-1 * var(--spacing-xxs));
-  padding: var(--spacing-xxs);
-  border-radius: var(--radius-sm);
-  color: var(--color-action-primary);
-  text-decoration: none;
-}
-.all-events__back:hover { background: var(--color-background-secondary); }
-.all-events__back:focus-visible {
-  outline: var(--focus-ring-width) solid var(--focus-ring-color);
-  outline-offset: var(--focus-ring-offset);
-}
+.all-events__back { align-self: flex-start; } /* UiBackButton (decision 27 Oct) */
 .all-events__title { margin: 0; color: var(--color-text-primary); }
 .all-events__count { font-weight: var(--font-weight-regular); color: var(--color-text-secondary); }
 .all-events__grid {

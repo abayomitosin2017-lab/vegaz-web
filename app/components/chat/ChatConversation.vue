@@ -111,9 +111,7 @@ function onSend(draft: NewMessage) {
 <template>
   <section class="chat-conv" :aria-label="`${chat.title} chat`">
     <header class="chat-conv__head">
-      <button type="button" class="chat-conv__back" aria-label="Back to chats" @click="emit('back')">
-        <img src="/images/chat/icon-arrow-left-20.svg" alt="" width="16" height="16" />
-      </button>
+      <UiBackButton class="chat-conv__back" aria-label="Back to chats" @click="emit('back')" />
       <!-- Photo + title open the event page (decision 22 Oct) -->
       <component
         :is="chat.eventId ? NuxtLink : 'div'"
@@ -226,19 +224,7 @@ function onSend(draft: NewMessage) {
   line-height: var(--text-small-semibold-line);
   letter-spacing: var(--text-small-semibold-tracking);
 }
-.chat-conv__back {
-  display: none;
-  flex: none;
-  padding: var(--spacing-xs);
-  border: 0;
-  border-radius: var(--radius-pill);
-  background: var(--color-back-button);
-  cursor: pointer;
-}
-.chat-conv__back:focus-visible {
-  outline: var(--focus-ring-width) solid var(--focus-ring-color);
-  outline-offset: var(--focus-ring-offset);
-}
+.chat-conv__back { display: none; } /* UiBackButton; phones only */
 .chat-conv__title,
 .chat-conv__count { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .chat-conv__title { color: var(--color-chat-title); }

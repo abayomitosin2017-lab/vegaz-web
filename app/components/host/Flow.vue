@@ -240,7 +240,6 @@ const mobileTitles = computed(() => ({
     <HostMobileTopBar
       class="host-m__bar"
       :title="mobileTitles[step] || undefined"
-      :back="mode === 'edition' && (step === 'select' || step === 'details') ? 'plain' : 'circle'"
       @back="back"
     />
 

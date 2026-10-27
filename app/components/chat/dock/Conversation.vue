@@ -80,9 +80,7 @@ defineExpose({ focus: () => field.value?.focus(), receive })
 <template>
   <section class="dock-panel dock-conv" role="dialog" :aria-labelledby="titleId">
     <header class="dock-conv__head">
-      <button v-if="back" type="button" class="dock-icon-btn" aria-label="Back to chats" @click="emit('back')">
-        <img src="/images/chat/icon-arrow-left-20.svg" alt="" width="20" height="20" />
-      </button>
+      <UiBackButton v-if="back" aria-label="Back to chats" @click="emit('back')" />
       <span class="dock-conv__pic"><img v-if="chat.imageUrl" :src="chat.imageUrl" alt="" width="32" height="32" /></span>
       <span class="dock-conv__title">
         <h2 :id="titleId" class="dock-title dock-title--14 dock-ellipsis">{{ chat.title }}</h2>

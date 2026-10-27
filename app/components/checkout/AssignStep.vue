@@ -12,7 +12,7 @@
  * "+ Assign Ticket" while tickets are left; it opens Add user.
  * Back / Proceed. Decision 27 Oct (replaces 22 Oct): assigning is optional.
  * Proceed is always active; while tickets are left a note (x-Small regular
- * Grey_2, PROPOSED copy) says the unassigned tickets go to the buyer, and the
+ * Grey_2 at 80% opacity, centred; PROPOSED copy) says the unassigned tickets go to the buyer, and the
  * flow gives them to the buyer when the order is placed (Flow.vue).
  */
 import type { TicketAssignee } from '~/types/checkout'
@@ -77,7 +77,7 @@ const meta = (a: TicketAssignee) => [tierName(a.ticketId), ...(a.isBuyer ? ['You
 .checkout-assign__progress { display: flex; flex-direction: column; gap: var(--spacing-xs); color: var(--color-text-checkout); }
 .checkout-assign__labels { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-xs); }
 .checkout-assign__left { color: var(--color-text-secondary); }
-.checkout-assign__note { margin: 0; color: var(--color-text-secondary); }
+.checkout-assign__note { margin: 0; color: var(--color-text-secondary); text-align: center; opacity: 0.8; } /* decision 27 Oct */
 .checkout-assign__track { position: relative; height: 4px; overflow: hidden; border-radius: var(--radius-xs); background: var(--color-border-default); }
 .checkout-assign__fill { position: absolute; inset: 0 auto 0 0; border-radius: var(--radius-xs); background: var(--color-action-primary); transition: width 200ms ease; }
 
