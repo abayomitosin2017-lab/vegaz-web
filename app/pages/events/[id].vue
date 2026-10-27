@@ -27,6 +27,11 @@
  *   people are not clickable, decision 22 Oct)
  *   (desktop: side panel; phones: full screen). Invite Friend -> share.
  * - Copy icon -> copies the address, "Address copied".
+ * - Empty sections are hidden (decision 27 Oct): About Event with no
+ *   description, What to expect with no items, Community under COMMUNITY_MIN
+ *   (10) people. The "Not ready to buy a ticket?" block stays.
+ * - Host of this event: "Finish setting up in the Vegaz app" modal on each
+ *   visit (HostAppModal, decision 27 Oct).
  * Copy: "About Hangout" -> "About Event" (Hangouts -> Events rule).
  */
 import type { ChatPerson, ChatProfile } from '~/types/chat'
@@ -36,6 +41,7 @@ import { getProfile, introMessage, isInEventChat, joinEventChat, sendMessage } f
 import { saveBio } from '~/services/profile'
 import { ticketsHeld } from '~/services/tickets'
 import { priceRange } from '~/utils/money'
+import { COMMUNITY_MIN } from '~/config/event'
 
 const route = useRoute()
 const id = computed(() => String(route.params.id))
@@ -44,6 +50,17 @@ const { data: event } = await useAsyncData(`event-${id.value}`, () => getEvent(i
 const { data: tickets } = await useAsyncData(`tickets-${id.value}`, () => getTicketTypes(id.value), { watch: [id], default: () => [] })
 
 useHead(() => ({ title: event.value ? `${event.value.title} · Vegaz` : 'Event not found · Vegaz' }))
+
+// ---- Sections shown (empty ones hide, decision 27 Oct) ----
+const showAbout = computed(() => !!event.value?.about?.trim())
+const showExpect = computed(() => !!event.value?.expectations?.length)
+const showCommunity = computed(() => (event.value?.communityCount ?? 0) >= COMMUNITY_MIN)
+// Desktop: the ticket panel spans the left column's visible sections
+// (details, banner + the optional ones)
+const leftRows = computed(() => 2 + Number(showAbout.value) + Number(showExpect.value) + Number(showCommunity.value))
+
+// ---- Add to calendar (decision 27 Oct) ----
+const calendarEvent = computed(() => event.value && ({ title: event.value.title, startsAt: event.value.startsAt, location: event.value.address, details: event.value.about ?? '', url: eventUrl(event.value.id) }))
 
 // ---- Tickets ----
 const quantities = ref<Record<string, number>>({})
@@ -168,6 +185,18 @@ function closeCreated() {
   const { created: _created, ...query } = route.query
   navigateTo({ path: route.path, query }, { replace: true })
 }
+
+// ---- "Finish setting up in the Vegaz app" (hosts only, decision 27 Oct) ----
+// Every time the host opens their event (after "Event Created" on the first
+// visit), until "Don't show again". Closing it hides it for this visit.
+const hostApp = useHostAppPrompt()
+const appPromptClosed = ref(false)
+watch(id, () => { appPromptClosed.value = false })
+const appPromptOpen = computed(() => isHost.value && !createdOpen.value && !appPromptClosed.value && !hostApp.off.value)
+function appPromptNever() {
+  hostApp.turnOff()
+  appPromptClosed.value = true
+}
 </script>
 
 <template>
@@ -182,9 +211,13 @@ function closeCreated() {
 
     <EventGallery class="event-page__gallery" :photos="event.photos" :title="event.title" :event-id="event.id" @open="viewerIndex = $event" />
 
-    <div class="event-page__body">
+    <div class="event-page__body" :style="{ '--left-rows': leftRows }">
       <div class="event-page__intro">
-        <EventFacts :address="event.address" :starts-at="event.startsAt" :date-label="event.dateLabel" :price="price" @copy-address="copyAddress" />
+        <EventFacts :address="event.address" :starts-at="event.startsAt" :date-label="event.dateLabel" :price="price" @copy-address="copyAddress">
+          <template #date-action>
+            <ClientOnly><EventAddToCalendar :id="event.id" :event="calendarEvent!" /></ClientOnly>
+          </template>
+        </EventFacts>
         <EventHostTag :host="event.host" @open="openProfile(event.host)" />
       </div>
 
@@ -192,16 +225,16 @@ function closeCreated() {
         <EventTicketPanel v-model:quantities="quantities" :tickets="tickets ?? []" :total="total" :count="count" :holding="holding > 0" :host="isHost" :busy="joining" @buy="buy" @share="invite" @chat="join" />
       </div>
 
-      <section class="event-page__about" aria-labelledby="event-about-title">
+      <section v-if="showAbout" class="event-page__about" aria-labelledby="event-about-title">
         <h2 id="event-about-title" class="event-page__section-title text-detail-section-title">About Event</h2>
         <p class="event-page__about-text text-body-regular">{{ event.about }}</p>
       </section>
 
-      <EventExpectList class="event-page__expect" :items="event.expectations" />
+      <EventExpectList v-if="showExpect" class="event-page__expect" :items="event.expectations" />
 
       <EventJoinCard v-if="!inChat && !isHost" class="event-page__join-card" :busy="joining" @join="join" />
 
-      <EventCommunity class="event-page__community" :members="event.members" :count="event.communityCount" @invite="invite" />
+      <EventCommunity v-if="showCommunity" class="event-page__community" :members="event.members" :count="event.communityCount" @invite="invite" />
 
       <hr class="event-page__line" />
 
@@ -239,6 +272,7 @@ function closeCreated() {
     <ProfileBioPrompt :open="bioOpen" :busy="bioSaving" @close="bioOpen = false" @save="onBioSave" @skip="onBioSkip" />
 
     <HostSuccessModal :open="createdOpen" :event-id="event.id" :title="event.title" @close="closeCreated" />
+    <HostAppModal :open="appPromptOpen" @close="appPromptClosed = true" @never="appPromptNever" />
 
     <UiToast :message="toast" @done="toast = ''" />
   </div>
@@ -346,7 +380,7 @@ function closeCreated() {
   .event-page__body > * { grid-column: 1; }
   .event-page__tickets {
     grid-column: 2;
-    grid-row: 1 / span 5; /* the 5 visible left-column sections */
+    grid-row: 1 / span var(--left-rows, 5); /* the visible left-column sections (some hide when empty) */
     position: sticky;
     top: calc(var(--sizing-header-height) + var(--spacing-lg)); /* below the sticky header */
   }

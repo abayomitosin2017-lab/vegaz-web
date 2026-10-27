@@ -636,3 +636,14 @@ Measured on airbnb.com (home + a listing page) at 375, 768 and 1440 in a real br
 
 - The phone gallery photos had a dark gradient at the bottom (from the Figma phone frames). Removed: photos show as they are, on phones and everywhere else. The `--gradient-gallery-fade` token is deleted.
 - Unchanged: the blurred, darkened backdrop behind 1–3 photos on desktop (it is a background, not on the photos).
+
+## 27 Oct — Event page, host app prompt, calendar, optional assigning, inactive buttons
+
+- **Empty sections hide** on the event page: About Event when there is no description, What to expect when the host skipped it or added nothing, and Community until at least 10 people have joined (`COMMUNITY_MIN` in `config/event.ts`, PRODUCT TO CONFIRM the number). The "Not ready to buy a ticket?" block stays. On desktop the ticket panel spans only the sections that show.
+- **"Finish setting up in the Vegaz app"** (`HostAppModal`, PROPOSED layout and copy, not in Figma): only the host of the event sees it, each time they open its page (first time: right after "Event Created" closes), until "Don't show again". X, Escape or clicking outside closes it for that visit. Image: the app on a phone, supplied by design. One sentence about guest link, promoter link and ticket scanning; "Open the Vegaz app" opens the app or its store page.
+  - OPEN ITEM: the real app link (`config/app.ts`, placeholder, the button does nothing yet). Engineering: one smart / universal link that opens the app or the right store.
+  - MOCK: "Don't show again" is remembered in this browser only; with the API it should be saved on the account.
+- **Add to calendar** (`EventAddToCalendar`): small grey secondary button on the right of the date row, opening a menu: Google Calendar, Apple Calendar (.ics file, works with other calendar apps too) and Outlook. Filled in with the title, address, description and event link.
+  - OPEN ITEM: events have no end time, so calendar entries last 2 hours (`DEFAULT_HOURS` in `utils/calendar.ts`, PRODUCT TO CONFIRM).
+- **Assigning tickets is optional** (replaces 22 Oct "every ticket must have a person"): Proceed is always active on Assign tickets. While tickets are left a note says "Not assigning? The N unassigned tickets will be sent to you." (PROPOSED copy). When the order is placed, every unassigned ticket is given to the buyer.
+- **Inactive buttons**: text and icons at 60% opacity on every button that is disabled or not ready yet (including while saving).

@@ -10,9 +10,10 @@
  * three rows: the list scrolls (250px tall, thin scrollbar as in Figma) with
  * "Scroll to see all N assignees" under it.
  * "+ Assign Ticket" while tickets are left; it opens Add user.
- * Back / Proceed. Decision 22 Oct: every ticket must have a person, so
- * Proceed stays grey and inactive until 0 remaining (Figma: grey at 1 of 8,
- * purple at 8 of 8).
+ * Back / Proceed. Decision 27 Oct (replaces 22 Oct): assigning is optional.
+ * Proceed is always active; while tickets are left a note (x-Small regular
+ * Grey_2, PROPOSED copy) says the unassigned tickets go to the buyer, and the
+ * flow gives them to the buyer when the order is placed (Flow.vue).
  */
 import type { TicketAssignee } from '~/types/checkout'
 import type { TicketType } from '~/types/ticket'
@@ -59,11 +60,14 @@ const meta = (a: TicketAssignee) => [tierName(a.ticketId), ...(a.isBuyer ? ['You
         <img src="/images/checkout/icon-add-16.svg" alt="" width="16" height="16" />
         Assign Ticket
       </button>
+      <p v-if="!done" class="checkout-assign__note text-app-xsmall-regular">
+        Not assigning? {{ remaining === 1 ? 'The unassigned ticket' : `The ${remaining} unassigned tickets` }} will be sent to you.
+      </p>
     </div>
 
     <div class="checkout-actions">
       <UiButton color="secondary" @click="emit('back')">Back</UiButton>
-      <UiButton :color="done ? 'primary' : 'secondary'" :aria-disabled="!done ? 'true' : undefined" @click="done && emit('proceed')">{{ free ? 'RSVP' : 'Proceed' }}</UiButton>
+      <UiButton color="primary" @click="emit('proceed')">{{ free ? 'RSVP' : 'Proceed' }}</UiButton>
     </div>
   </div>
 </template>
@@ -73,6 +77,7 @@ const meta = (a: TicketAssignee) => [tierName(a.ticketId), ...(a.isBuyer ? ['You
 .checkout-assign__progress { display: flex; flex-direction: column; gap: var(--spacing-xs); color: var(--color-text-checkout); }
 .checkout-assign__labels { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-xs); }
 .checkout-assign__left { color: var(--color-text-secondary); }
+.checkout-assign__note { margin: 0; color: var(--color-text-secondary); }
 .checkout-assign__track { position: relative; height: 4px; overflow: hidden; border-radius: var(--radius-xs); background: var(--color-border-default); }
 .checkout-assign__fill { position: absolute; inset: 0 auto 0 0; border-radius: var(--radius-xs); background: var(--color-action-primary); transition: width 200ms ease; }
 

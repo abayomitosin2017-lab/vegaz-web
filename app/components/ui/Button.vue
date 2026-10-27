@@ -192,6 +192,11 @@ if (import.meta.dev && props.iconOnly && !attrs['aria-label'] && !attrs['aria-la
   border-color: var(--color-border-disabled);
   color: var(--color-text-disabled);
 }
+/* Inactive (disabled, or aria-disabled while a form isn't ready): text and
+   icons at 60% opacity, everywhere (decision 27 Oct) */
+.ui-button:disabled .ui-button__content,
+.ui-button[aria-disabled="true"] .ui-button__content { opacity: 0.6; }
+.ui-button[aria-disabled="true"] { cursor: not-allowed; }
 .ui-button--outline:disabled,
 .ui-button--ghost:disabled { background: transparent; }
 .ui-button--ghost:disabled { border-color: transparent; }

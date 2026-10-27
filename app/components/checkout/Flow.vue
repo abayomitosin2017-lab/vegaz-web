@@ -15,7 +15,7 @@
  *   Checkout -> Assign tickets <-> Add user / Edit user. The buyer gets the
  *   first ticket unless they already hold one for this event (buying more
  *   for others, decision 22 Oct).
- *   Proceed (every ticket assigned) -> Pay (mock Paystack; skipped when the
+ *   Proceed (assigning optional; leftovers go to the buyer, decision 27 Oct) -> Pay (mock Paystack; skipped when the
  *   total is ₦0) -> success, and the buyer is signed in.
  *   "Join Chat with Others" opens the event chat (the page handles it).
  *
@@ -161,6 +161,17 @@ function saveAssignee(value: Omit<TicketAssignee, 'id' | 'isBuyer'>) {
   step.value = 'assign'
 }
 
+// Assigning is optional (decision 27 Oct): tickets nobody was assigned to go
+// to the buyer, one row each, so every ticket in the order has a holder.
+function withBuyerForUnassigned(): TicketAssignee[] {
+  const list = [...assignees.value]
+  for (const id of lines.value) {
+    const left = (quantities.value[id] ?? 0) - list.filter(a => a.ticketId === id).length
+    for (let n = 0; n < left; n++) list.push({ id: `buyer-${id}-${n}`, fullName: buyerName.value, email: contact.value.email, phone: contact.value.phone, ticketId: id, isBuyer: true })
+  }
+  return list
+}
+
 // ---- Paying ----
 function order(): CheckoutOrder {
   const names = accountName.value ?? { firstName: details.value.firstName ?? '', lastName: details.value.lastName ?? '' }
@@ -168,7 +179,7 @@ function order(): CheckoutOrder {
     eventId: props.event.id,
     buyer: { ...contact.value, ...names, gender: details.value.gender, hasAccount: hasAccount.value },
     quantities: Object.fromEntries(props.tickets.map(t => [t.id, quantities.value[t.id] ?? 0]).filter(([, n]) => (n as number) > 0)),
-    assignees: assignees.value,
+    assignees: withBuyerForUnassigned(),
     total: total.value,
   }
 }

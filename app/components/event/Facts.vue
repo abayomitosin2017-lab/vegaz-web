@@ -9,6 +9,7 @@
  * - Date: calendar tile: month (Sub bold, Grey_3, Grey_5 top) over the day
  *   (Web Body semibold) + the date label. Figma shows "SEP 30" next to
  *   "16 Jan 2026"; the tile is built from the real date (decision 22 Oct).
+ *   #date-action slot: "Add to calendar" on the right (decision 27 Oct).
  * - Price: ticket icon + price range from the ticket prices ("Free - ₦10,000").
  */
 const props = defineProps<{ address: string; startsAt: string; dateLabel: string; price: string }>()
@@ -36,6 +37,7 @@ const day = computed(() => date.value.getDate())
         <span class="event-facts__day text-body-semibold">{{ day }}</span>
       </span>
       <span class="event-facts__text text-body-regular"><span class="visually-hidden">Date: </span>{{ dateLabel }}</span>
+      <slot name="date-action" />
     </li>
     <li class="event-facts__row">
       <span class="event-facts__icon" aria-hidden="true">
