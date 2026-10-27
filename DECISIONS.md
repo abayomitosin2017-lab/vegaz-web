@@ -825,3 +825,39 @@ All of these use one look, `UiStateMessage`: a 64 round Grey_6 circle with a 32 
   - Engineering: call `useSession().expire()` when a request answers 401. In development: `__vegaz.expireSession()` in the browser console.
 - **404 page** (wrong links): map pin with an X, "Page not found", "The link may be broken, or the page may have moved.", "Go to Home" + text-only "Explore events". Other crashes: "Something went wrong" + "Try again" / "Go to Home".
 - **Testing hook:** the mock services now fail when the device is offline (services/mockRequest.ts), so these states can be seen by turning off wifi. Delete with the mocks.
+
+## 27 Oct: Phone event header with a back arrow
+- **Phones (under 768px):** the event header is now the header on event pages, from the top (no scrolling needed). The Vegaz logo and search header is hidden there.
+  - Contents, left to right: a back arrow, the event name (one line, "…" when long), "Join Community - Free" / "Open Chat", then the Share icon.
+  - Back goes to the previous page. If they arrived from a link (no previous page), it goes to Home.
+  - It's hidden while the full-screen profile is open, which has its own back.
+- **Tablets and desktop:** unchanged. The normal header switches to the event header once you scroll past the name.
+
+## 27 Oct: PWA "Add to Home Screen" nudge, designed in Figma (not built yet)
+- Figma: Vegaz Revamp, page "PWA install", section "PWA · Add to Home Screen nudge (mobile)". It has three phone frames (393 wide), a notes panel, and two local components: "PWA / App icon" (Primary, radius 14, white Vegaz logo) and "PWA / Step".
+- **Banner:** a white card above the bottom bar with the app icon, "Get the Vegaz app" / "Add it to your Home Screen. No download.", a small "Add" button and an X. "Add" opens the sheet.
+- **Sheet:** the app icon, "Add Vegaz to your Home Screen", "Open Vegaz in one tap, full screen, like any other app. No app store download needed.", then 3 numbered steps, each with a small picture of what to tap (purple ring or highlighted row).
+  - Same design on every phone; only the steps and pictures change.
+  - iPhone (Safari): Share → "Add to Home Screen" → "Add", then "Got it".
+  - Android (Chrome): menu ⋮ → "Add to Home screen" / "Install app" → "Install". "Add to Home Screen" opens the browser's own install pop-up.
+  - "Not now" under each.
+- **When it shows** (decision): after a meaningful action (joining a community, buying a ticket or RSVP), never on first load. Phones only, and not once installed.
+- PROPOSED: X / Not now waits 14 days before asking again.
+- OPEN ITEM (engineering): web manifest, icons (192 / 512 + maskable), service worker.
+
+## 27 Oct: PWA install nudge built (Figma page "PWA install")
+- **When:** after a meaningful action: joining a community (event page), buying a ticket or RSVP (event page, or Buy Ticket from a chat).
+  - Phones only (under 768px).
+  - Not shown when Vegaz is already open from the Home Screen, or within 14 days of a dismissal (PROPOSED, kept on the device).
+  - It waits while a conversation fills the screen or during Create event.
+- **Banner** (Figma 10924:400): "Install Vegaz on your device" / "Add it to your Home Screen and access Vegaz easily". It sits 12 above the bottom navigation, or above the ticket bar on event pages.
+  - The whole card is tappable; the X closes it.
+  - FLAG: Figma's title says "Intall"; built as "Install".
+- **iPhone (Safari) only:** tapping the banner opens the sheet (Figma 10928:627): the app icon, title and line, three steps with the screenshots from Figma, then "Got it" and text-only "Not now". Any of them closes it for 14 days.
+- **Android (decision):** no sheet. Tapping the banner opens the browser's own install pop-up. If the browser offers no install pop-up (e.g. iPhone Chrome, Firefox), the banner isn't shown.
+- **Installable app:**
+  - `public/manifest.webmanifest`: name Vegaz, standalone, theme #4B099F.
+  - Icons in `public/icons` (192, 512, maskable 512, apple-touch 180), made from the Figma app icon.
+  - Meta tags in nuxt.config.
+  - OPEN ITEM (engineering): service worker / offline caching (not needed to install on Chrome Android today, but needed for offline use).
+- **Code:** `usePwaInstall` (rules and install prompt), `PwaBanner`, `PwaSheet`, `PwaAppIcon`. In development, `__vegaz.pwaNudge()` in the console shows the banner.

@@ -97,7 +97,9 @@ function watchStock() {
 onMounted(watchStock)
 watch(id, watchStock)
 onBeforeUnmount(() => stopStock?.())
+const { nudge: pwaNudge } = usePwaInstall()
 function onPurchased() {
+  pwaNudge() // bought a ticket / RSVP'd (decision 27 Oct)
   refreshStatus()
   refreshTickets() // fewer left now
 }
@@ -156,6 +158,7 @@ async function enterChat(intro?: string) {
   joining.value = true
   try {
     const chatId = await joinEventChat(u.username, event.value.id)
+    pwaNudge() // joined a community: offer "Add to Home Screen" (phones, decision 27 Oct)
     if (intro?.trim()) {
       const me: ChatPerson = { id: 'u-me', name: `${u.firstName} ${u.lastName}`, username: u.username, avatarUrl: u.avatarUrl }
       const photo = u.photos?.[0] ?? u.avatarUrl // main profile photo; text only without one
@@ -220,7 +223,9 @@ function closeProfile() {
 }
 // Phones: the profile fills the screen, so the site header hides meanwhile
 const hideHeaderOnPhone = useState('hide-header-phone', () => false)
-watchEffect(() => { hideHeaderOnPhone.value = !!profile.value })
+// Phones: the event header (EventStickyHeader, with a back arrow) replaces the
+// Vegaz header on event pages (decision 27 Oct)
+watchEffect(() => { hideHeaderOnPhone.value = !!event.value })
 onBeforeUnmount(() => { hideHeaderOnPhone.value = false })
 
 // ---- "Event Created" (host an event, Figma frame 20) ----
@@ -264,9 +269,9 @@ const appPromptOpen = computed(() => isHost.value && !createdOpen.value && !appP
 </script>
 
 <template>
-  <div v-if="event" :class="['event-page', { 'event-page--bar': count > 0 }]">
+  <div v-if="event" :class="['event-page', 'event-page--ready', { 'event-page--bar': count > 0 }]">
     <ClientOnly>
-      <EventStickyHeader :show="stickyOn && !profile" :title="event.title" :action-label="inChat || isHost ? 'Open Chat' : 'Join Community - Free'" :busy="joining" @share="invite" @action="join" />
+      <EventStickyHeader :show="stickyOn" :hidden="!!profile" :title="event.title" :action-label="inChat || isHost ? 'Open Chat' : 'Join Community - Free'" :busy="joining" @share="invite" @action="join" />
     </ClientOnly>
     <div ref="topRow" class="event-page__top">
       <h1 class="event-page__title text-page-title">{{ event.title }}</h1>
@@ -418,6 +423,10 @@ const appPromptOpen = computed(() => isHost.value && !createdOpen.value && !appP
 /* Phones: the title sits under the photos, 24px below, with the details
    (address, date, price) 24px under it (decisions 22 Oct; Figma has the
    title above the photos). */
+/* Phones: room for the fixed event header (the Vegaz header is hidden here, decision 27 Oct) */
+@media (max-width: 767px) {
+  .event-page--ready { padding-top: calc(var(--sizing-header-height) + var(--spacing-page-top)); }
+}
 @media (max-width: 767px) {
   .event-page__gallery { order: -1; }
   .event-page__top {

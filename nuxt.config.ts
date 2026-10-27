@@ -17,6 +17,17 @@ export default defineNuxtConfig({
         // Outfit weights used by the system: 300, 400, 500 (letter avatars), 600, 700, 900 (promo banner titles).
         // OPEN ITEM (engineering): Google Fonts vs self-hosted.
         { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap' },
+        // Installable web app (PWA, decision 27 Oct). OPEN ITEM (engineering):
+        // service worker / offline caching is not set up.
+        { rel: 'manifest', href: '/manifest.webmanifest' },
+        { rel: 'apple-touch-icon', href: '/icons/apple-touch-icon.png' },
+      ],
+      meta: [
+        { name: 'theme-color', content: '#4B099F' },
+        { name: 'apple-mobile-web-app-capable', content: 'yes' },
+        { name: 'mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-title', content: 'Vegaz' },
+        { name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
       ],
     },
   },

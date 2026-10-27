@@ -34,6 +34,7 @@ useHead({ title: 'Chats · Vegaz' })
 
 const { user } = useSession()
 const { open: openAuth } = useAuthModal()
+const { nudge: pwaNudge } = usePwaInstall() // after buying from a chat (decision 27 Oct)
 const route = useRoute()
 const router = useRouter()
 
@@ -208,7 +209,7 @@ function closeProfile() {
       :tickets="checkout.tickets"
       start="add"
       @close="checkout.open = false"
-      @purchased="loadChats"
+      @purchased="loadChats(); pwaNudge()"
     />
   </div>
 </template>

@@ -14,14 +14,26 @@
  * semibold, decision 27 Oct; was 18/24) and lines up with
  * the event page's content (1120 wide, 40 sides).
  * The page passes `show` (it watches its title row).
+ * Phones (< 768px, decision 27 Oct): this IS the header on event pages,
+ * from the top (no scrolling needed; the Vegaz header is hidden): a back
+ * arrow (UiBackButton, previous page, or Home when they arrived from a link),
+ * then the name, Join Community - Free / Open Chat and the Share icon.
+ * `hidden`: something covers the page (the full-screen profile).
  */
-defineProps<{ show: boolean; title: string; actionLabel: string; busy?: boolean }>()
+const props = defineProps<{ show: boolean; title: string; actionLabel: string; busy?: boolean; hidden?: boolean }>()
 const emit = defineEmits<{ share: []; action: [] }>()
+const phone = usePhoneLayout()
+const on = computed(() => !props.hidden && (phone.value || props.show))
+function back() {
+  if (window.history.state?.back) useRouter().back()
+  else navigateTo('/')
+}
 </script>
 
 <template>
-  <div :class="['event-sticky', { 'event-sticky--on': show }]" :aria-hidden="show ? undefined : 'true'" :inert="!show || undefined">
+  <div :class="['event-sticky', { 'event-sticky--on': on }]" :aria-hidden="on ? undefined : 'true'" :inert="!on || undefined">
     <div class="event-sticky__inner">
+      <UiBackButton class="event-sticky__back" @click="back" />
       <p class="event-sticky__title">{{ title }}</p>
       <div class="event-sticky__actions">
         <UiButton size="small" color="secondary" class="event-sticky__action" :disabled="busy" @click="emit('action')">{{ actionLabel }}</UiButton>
@@ -56,6 +68,10 @@ const emit = defineEmits<{ share: []; action: [] }>()
 }
 .event-sticky__inner { display: flex; align-items: center; gap: var(--spacing-sm); width: 100%; min-width: 0; }
 .event-sticky__share-web { display: none; }
+.event-sticky__back { margin-left: calc(-1 * var(--spacing-xs)); } /* the arrow lines up with the page edge */
+@media (min-width: 768px) { .event-sticky__back { display: none; } }
+/* Phones: always there, no slide-in */
+@media (max-width: 767px) { .event-sticky--on { transition: none; } }
 .event-sticky--on { opacity: 1; visibility: visible; transform: none; transition: opacity 150ms ease, transform 150ms ease, visibility 0s; }
 .event-sticky__title {
   flex: 1;
