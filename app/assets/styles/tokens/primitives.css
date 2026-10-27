@@ -148,14 +148,14 @@
   /* Page side margins, Airbnb home: 24 phone, 24 tablet, 48 desktop.
      Airbnb's desktop starts at 1128, so the "desktop" inset stays 24 until
      then (see the media query at the end of this file). */
-  --container-inset-mobile: 24px;
+  --container-inset-mobile: 16px; /* decision 27 Oct (was 24) */
   --container-inset-tablet: 24px;
   --container-inset-desktop: 24px;
   --container-inset-wide: 48px;
   /* Detail pages (event page), Airbnb listing: 1120 max content, side
      margins 24 phone, 40 tablet, 80 desktop (>= 1128) */
   --container-detail-max: 1120px;
-  --container-detail-inset-mobile: 24px;
+  --container-detail-inset-mobile: 16px; /* decision 27 Oct (was 24) */
   --container-detail-inset-tablet: 40px;
   --container-detail-inset-desktop: 40px;
 
@@ -174,4 +174,10 @@
     --container-inset-desktop: 48px;
     --container-detail-inset-desktop: 80px;
   }
+}
+
+/* Phones: header uses the bottom navigation's padding (decision 27 Oct):
+   10 + 40 tap areas + 10 + 1px line */
+@media (max-width: 767px) {
+  :root { --sizing-header-height: 61px; }
 }

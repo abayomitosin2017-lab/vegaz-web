@@ -35,7 +35,7 @@ const go = () => navigateTo(choice.value === 'fresh' ? '/host/new' : '/host/edit
   <HostFrame v-if="user" back-label="Cancel" :can-continue="true" @back="navigateTo('/')" @continue="go">
     <div class="host-choice">
       <div class="host-step-head host-choice__head">
-        <h1 class="host-step-head__title text-h3-bold">Create event</h1>
+        <h1 class="host-step-head__title host-choice__h1">Create event</h1>
         <p class="host-step-head__copy text-small-regular">How would you like to create your next event?</p>
       </div>
       <div class="host-choice__options" role="radiogroup" aria-label="How would you like to create your next event?">
@@ -71,7 +71,9 @@ const go = () => navigateTo(choice.value === 'fresh' ? '/host/new' : '/host/edit
 .host-choice__card:hover { border-color: var(--color-border-strong); }
 .host-choice__card--on, .host-choice__card--on:hover { padding: calc(var(--spacing-lg) - 2px); border: var(--border-width-emphasis) solid var(--color-action-primary); background: var(--color-host-selected); }
 .host-choice__card:has(input:focus-visible) { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
-.host-choice__title { color: var(--color-text-primary); }
+.host-choice__title { color: var(--color-text-primary); font-weight: var(--font-weight-bold); } /* bold (decision 27 Oct) */
+/* H2 32/40 bold (decision 27 Oct; was 20/24) */
+.host-choice__h1 { font-family: var(--font-family-base); font-weight: var(--font-weight-bold); font-size: 32px; line-height: 40px; letter-spacing: -0.5px; }
 .host-choice__copy { color: var(--color-text-secondary); }
 @media (max-width: 767px) {
   .host-choice__options { flex-direction: column; width: 100%; }

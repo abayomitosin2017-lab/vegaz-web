@@ -47,7 +47,7 @@ watch(() => root.value, el => {
   inset: 0;
   z-index: 900;
   overflow-y: auto;
-  padding: calc(21px + env(safe-area-inset-top, 0px)) var(--spacing-lg) 0;
+  padding: calc(21px + env(safe-area-inset-top, 0px)) var(--container-inset-mobile) 0;
   background: var(--color-background-primary);
 }
 .host-mscreen__head { display: flex; align-items: center; justify-content: space-between; margin: 0 2px 38px; }

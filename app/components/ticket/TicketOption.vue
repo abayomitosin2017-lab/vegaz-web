@@ -91,10 +91,10 @@ const isSoldOut = computed(() => props.ticket.availability === 'sold-out')
   overflow: hidden;
   color: var(--color-text-primary);
   font-family: var(--font-family-base);
-  font-weight: var(--text-app-small-semibold-weight);
-  font-size: var(--text-app-small-semibold-size);
-  line-height: var(--text-app-small-semibold-line);
-  letter-spacing: var(--text-app-small-semibold-tracking);
+  font-weight: var(--text-app-xsmall-semibold-weight); /* one step down, 12/16 (decision 27 Oct; was 14/18) */
+  font-size: var(--text-app-xsmall-semibold-size);
+  line-height: var(--text-app-xsmall-semibold-line);
+  letter-spacing: var(--text-app-xsmall-semibold-tracking);
   white-space: nowrap;
   text-overflow: ellipsis;
 }

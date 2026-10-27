@@ -53,5 +53,5 @@ const emit = defineEmits<{ explore: []; download: [] }>()
   line-height: var(--text-modal-title-line);
   letter-spacing: var(--text-modal-title-tracking);
 }
-.auth-success__body { color: var(--color-text-muted); }
+.auth-success__body { color: var(--color-text-secondary); } /* body Grey_2 (decision 27 Oct) */
 </style>

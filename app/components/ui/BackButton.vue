@@ -1,9 +1,9 @@
 <script setup lang="ts">
 /**
  * UiBackButton: the one back button used across the app (decision 27 Oct).
- * Style from the Figma fresh-event and profile phone frames: 36px round
- * button, #F1F1F1 at 50% (--color-back-button) with a 2px blur, 20px
- * ArrowLeft. Hover a touch darker (PROPOSED).
+ * 36px tap area with the 20px ArrowLeft and no background (decision 27 Oct:
+ * no grey circle behind icon buttons; was #F1F1F1 at 50%). Hover fades it a
+ * little (PROPOSED).
  * - Button by default (emits click); pass `to` for a link.
  * - `label` shows text beside the circle (e.g. "Back to Home"); without it
  *   the button is the icon only and `aria-label` names it ("Back" default).
@@ -47,11 +47,10 @@ const tag = computed(() => (props.to ? resolveComponent('NuxtLink') : 'button'))
   width: 36px;
   height: 36px;
   border-radius: var(--radius-pill);
-  background: var(--color-back-button);
-  backdrop-filter: blur(2px);
+  background: none; /* no grey circle behind icons (decision 27 Oct) */
 }
 .ui-back__circle img { display: block; width: 20px; height: 20px; }
-.ui-back:hover .ui-back__circle { background: var(--color-background-secondary); }
+.ui-back:hover .ui-back__circle { opacity: 0.7; } /* proposed */
 .ui-back--label { padding-right: var(--spacing-xs); }
 .ui-back:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: 2px; }
 </style>

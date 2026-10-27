@@ -16,6 +16,15 @@ const props = withDefaults(defineProps<{
   clickable?: boolean
 }>(), { value: undefined, edit: false, clickable: true })
 defineEmits<{ open: [] }>()
+// Fixed file paths (not built from the name) so every build finds the icons
+const ICONS: Record<typeof props.icon, string> = {
+  'event-details': '/images/host/row-event-details.svg',
+  'date-time': '/images/host/row-date-time.svg',
+  'edition': '/images/host/row-edition.svg',
+  'location': '/images/host/row-location.svg',
+  'categories': '/images/host/row-categories.svg',
+  'participants': '/images/host/row-participants.svg',
+}
 </script>
 
 <template>
@@ -25,7 +34,7 @@ defineEmits<{ open: [] }>()
     :class="['host-row', { 'host-row--button': clickable }]"
     @click="clickable && $emit('open')"
   >
-    <img class="host-row__icon" :src="`/images/host/row-${icon}.svg`" alt="" width="24" height="24" />
+    <img class="host-row__icon" :src="ICONS[icon]" alt="" width="24" height="24" />
     <span class="host-row__label text-app-small-regular">{{ label }}</span>
     <span v-if="value" class="host-row__value text-app-small-regular">{{ value }}</span>
     <span v-if="edit" class="host-row__edit" aria-hidden="true">Edit</span>

@@ -52,7 +52,7 @@ function go(path: string) { emit('close'); navigateTo(path) }
 .host-csheet { display: flex; flex-direction: column; gap: var(--spacing-lg); }
 .host-csheet__head { position: relative; display: flex; flex-direction: column; gap: var(--spacing-xxs); padding-right: var(--spacing-lg); }
 .host-csheet__title { margin: 0; color: var(--color-text-strong); }
-.host-csheet__copy { margin: 0; color: var(--color-text-muted); }
+.host-csheet__copy { margin: 0; color: var(--color-text-secondary) /* body Grey_2 (decision 27 Oct) */; }
 .host-csheet__close { position: absolute; right: 0; top: -6px; display: inline-flex; padding: 0; border: 0; background: none; cursor: pointer; border-radius: var(--radius-pill); }
 .host-csheet__close:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); }
 .host-csheet__list { display: flex; flex-direction: column; gap: var(--spacing-md); margin: 0; padding: 0; list-style: none; }

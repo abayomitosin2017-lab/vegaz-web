@@ -314,7 +314,6 @@ function onSend(draft: NewMessage) {
     --ui-button-pad-x: var(--spacing-xs);
     --ui-button-pad-y: var(--spacing-xxs);
     --ui-button-min-height: 0;
-    --ui-button-font-weight: var(--font-weight-regular);
   }
   /* Proposed: icon-only round share button on phones */
   .chat-conv__share { --ui-button-pad-x: var(--spacing-xs); --ui-button-pad-y: var(--spacing-xs); gap: 0; border-radius: var(--radius-pill); }

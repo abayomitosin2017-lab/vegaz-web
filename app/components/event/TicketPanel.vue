@@ -71,6 +71,9 @@ const buyLabel = computed(() => (free.value ? RSVP_LABEL : props.count ? `Buy Ti
   --ui-button-border-color: transparent;
 }
 
+/* Open Chat and Share Event live in the title row (desktop) and the sticky
+   header (phones / tablets), so the panel doesn't repeat them (decision 27 Oct) */
+.ticket-panel__chat, .ticket-panel__share { display: none; }
 /* Below 1024px: just the cards (phone frame); the bottom bar takes over */
 @media (max-width: 1023px) {
   .ticket-panel { padding: 0; border: 0; border-radius: 0; }

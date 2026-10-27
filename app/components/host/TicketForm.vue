@@ -180,8 +180,8 @@ const id = useId()
   bottom: 0;
   z-index: 2;
   justify-content: center;
-  padding: var(--spacing-md) var(--spacing-lg) calc(var(--spacing-2xl) + env(safe-area-inset-bottom, 0px));
+  padding: var(--spacing-md) var(--container-inset-mobile) calc(var(--spacing-2xl) + env(safe-area-inset-bottom, 0px));
   background: linear-gradient(180deg, rgba(255, 255, 255, 0), var(--base-white) 30%);
 }
-.host-ticket-form--phone .host-ticket-form__submit.ui-button { width: min(327px, 100%); }
+.host-ticket-form--phone .host-ticket-form__submit.ui-button { width: 100%; } /* decision 27 Oct (was 327) */
 </style>

@@ -99,7 +99,7 @@ if (import.meta.dev && props.iconOnly && !attrs['aria-label'] && !attrs['aria-la
   background: var(--btn-bg);
   color: var(--btn-fg);
   font-family: var(--font-family-base);
-  font-weight: var(--ui-button-font-weight, var(--text-app-body-semibold-weight));
+  font-weight: var(--ui-button-font-weight, var(--font-weight-semibold)); /* 600 on every button (decision 27 Oct) */
   font-size: var(--text-app-body-semibold-size);
   line-height: var(--text-app-body-semibold-line);
   letter-spacing: var(--text-app-body-semibold-tracking);
@@ -126,7 +126,7 @@ if (import.meta.dev && props.iconOnly && !attrs['aria-label'] && !attrs['aria-la
   font-size: var(--text-app-small-semibold-size);
   line-height: var(--text-app-small-semibold-line);
   letter-spacing: var(--text-app-small-semibold-tracking);
-  font-weight: var(--ui-button-font-weight, var(--text-app-small-semibold-weight));
+  font-weight: var(--ui-button-font-weight, var(--font-weight-semibold)); /* 600 on every button (decision 27 Oct) */
 }
 .ui-button--icon-only { --btn-pad-x: var(--spacing-md); }
 /* A 24px icon is taller than the 20 / 18 text line: trim the top and bottom
@@ -138,7 +138,7 @@ if (import.meta.dev && props.iconOnly && !attrs['aria-label'] && !attrs['aria-la
   font-size: var(--text-body-semibold-size);
   line-height: var(--text-body-semibold-line);
   letter-spacing: var(--text-body-semibold-tracking);
-  font-weight: var(--ui-button-font-weight, var(--text-body-semibold-weight));
+  font-weight: var(--ui-button-font-weight, var(--font-weight-semibold)); /* 600 on every button (decision 27 Oct) */
 }
 
 /* ---- primary ---- */

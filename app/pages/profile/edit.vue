@@ -234,7 +234,7 @@ function back() {
   .profile-edit__inner {
     width: auto;
     gap: 34px;
-    padding: calc(17px + env(safe-area-inset-top, 0px)) 17px 120px; /* the layout adds room for the bottom navigation */
+    padding: calc(17px + env(safe-area-inset-top, 0px)) var(--container-inset-mobile) 120px; /* the layout adds room for the bottom navigation */
   }
   .profile-edit__cols { flex-direction: column; align-items: stretch; gap: var(--spacing-lg); }
   .profile-edit__left, .profile-edit__right { width: auto; gap: var(--spacing-lg); }

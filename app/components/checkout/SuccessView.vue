@@ -48,7 +48,7 @@ const shown = computed(() => [0, 1, 2].map(i => props.photos[i] ?? props.photos[
 
     <div class="checkout-success__actions">
       <UiButton class="checkout-success__join" color="secondary" data-autofocus :aria-busy="busy ? 'true' : undefined" @click="!busy && emit('join')">Join Chat with Others</UiButton>
-      <UiButton class="checkout-success__cancel" color="secondary" fill="outline" @click="emit('close')">Cancel</UiButton>
+      <UiButton class="checkout-success__cancel" color="secondary" fill="ghost" @click="emit('close')">Cancel</UiButton><!-- text only (decision 27 Oct; was outlined) -->
     </div>
   </div>
 </template>
@@ -121,7 +121,7 @@ const shown = computed(() => [0, 1, 2].map(i => props.photos[i] ?? props.photos[
     --btn-bg: transparent;
     --btn-bg-hover: var(--color-success-close);
     --btn-fg: var(--base-white);
-    --ui-button-border-color: var(--color-success-outline);
+    --ui-button-border-color: transparent; /* text only (decision 27 Oct) */
   }
 }
 </style>

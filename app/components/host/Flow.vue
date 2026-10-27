@@ -159,6 +159,7 @@ function back() {
 async function publish(skipExpect = false) {
   if (!user.value || busy.value) return
   busy.value = true
+  leaving = true // publishing: no "leave?" question
   const id = await createEvent({
     title: title.value,
     description: description.value,
@@ -176,6 +177,30 @@ async function publish(skipExpect = false) {
   busy.value = false
   await navigateTo({ path: `/events/${id}`, query: { created: '1' } })
 }
+
+// ---- Leaving part-way (decision 27 Oct) ----
+// Once anything has been added, leaving the flow (Exit, Back on the first
+// step, the browser's back...) asks first: the draft isn't saved anywhere.
+const started = computed(() => !!(title.value.trim() || description.value.trim() || photos.value.length || date.value || time.value
+  || location.value || category.value || participants.value !== 'all' || tickets.value.length || expectations.value.length || editionOf.value))
+const leaveOpen = ref(false)
+let leaving = false
+let leaveTo: string | null = null
+onBeforeRouteLeave((to) => {
+  if (leaving || !started.value) return true
+  leaveTo = to.fullPath
+  leaveOpen.value = true
+  return false
+})
+function confirmLeave() {
+  leaveOpen.value = false
+  leaving = true
+  if (leaveTo) navigateTo(leaveTo)
+}
+// Closing or reloading the tab: the browser's own "leave site?" question
+function onBeforeUnload(e: BeforeUnloadEvent) { if (started.value && !leaving) { e.preventDefault(); e.returnValue = '' } }
+onMounted(() => window.addEventListener('beforeunload', onBeforeUnload))
+onBeforeUnmount(() => window.removeEventListener('beforeunload', onBeforeUnload))
 
 // ---- tickets ----
 function addTicket(t: DraftTicket) { tickets.value = [...tickets.value, t] }
@@ -416,6 +441,7 @@ const mobileTitles = computed(() => ({
     @close="deleting = null"
     @confirm="confirmDelete"
   />
+  <HostLeaveDialog :open="leaveOpen" @stay="leaveOpen = false" @leave="confirmLeave" />
 </template>
 
 <style scoped>
@@ -431,11 +457,11 @@ const mobileTitles = computed(() => ({
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
-  padding: var(--spacing-section) var(--spacing-lg) 136px;
+  padding: var(--spacing-section) var(--container-inset-mobile) 136px; /* sides: page inset 16 (decision 27 Oct) */
   background: var(--color-background-primary);
 }
 .host-m--details { padding-bottom: var(--spacing-2xl); }
-.host-m--select { padding-left: var(--spacing-section); padding-right: var(--spacing-section); }
+.host-m--select { padding-left: var(--container-inset-mobile); padding-right: var(--container-inset-mobile); }
 .host-m__bar { margin-bottom: 35px; }
 .host-m--select .host-m__bar, .host-m--details.host-m .host-m__bar { margin-bottom: var(--spacing-lg); }
 .host-m--expect .host-m__bar { margin-bottom: var(--spacing-lg); }
@@ -462,10 +488,10 @@ const mobileTitles = computed(() => ({
   z-index: 5;
   display: flex;
   justify-content: center;
-  padding: var(--spacing-md) var(--spacing-lg) calc(var(--spacing-2xl) + env(safe-area-inset-bottom, 0px));
+  padding: var(--spacing-md) var(--container-inset-mobile) calc(var(--spacing-2xl) + env(safe-area-inset-bottom, 0px));
   background: linear-gradient(180deg, rgba(255, 255, 255, 0), var(--base-white) 30%);
 }
-.host-m__float .ui-button { max-width: 327px; }
+.host-m__float .ui-button { width: 100%; } /* edge to edge within the 16 inset (decision 27 Oct; was 327) */
 /* Bottom bar with a top line (Select Event, What to expect): white,
    rgba(225,225,225,0.5) line, 20 padding; Skip (Grey_6, Primary text) +
    Proceed, 16 apart */

@@ -1,7 +1,8 @@
-import type { EventDetails, EventSummary, HomeEvents } from '~/types/event'
+import type { EventDetails, EventMember, EventSummary, HomeEvents } from '~/types/event'
 import { homeEventsMock } from '~/mocks/events'
 import { catalog, eventById } from '~/mocks/eventCatalog'
 import { createdEventIds } from '~/mocks/hosting'
+import { communityOf } from '~/mocks/community'
 
 /**
  * Events data service (MOCK). Components never import mocks directly; they
@@ -52,4 +53,17 @@ export async function searchEvents(query: string, limit = 6): Promise<EventSumma
     .filter(e => [e.title, e.location, e.category].some(v => v.toLowerCase().includes(q)))
     .slice(0, limit)
     .map(({ id, title, location, dateLabel, category, imageUrl }) => ({ id, title, location, dateLabel, category, imageUrl }))
+}
+
+/**
+ * Everyone in an event's community, a page at a time ("View all", decision
+ * 27 Oct). Host first. MOCK: invented people fill the list up to the count.
+ * OPEN ITEM (engineering): endpoint and page size.
+ */
+export async function getCommunityMembers(eventId: string, offset = 0, limit = 30): Promise<{ members: EventMember[]; total: number }> {
+  await wait()
+  const event = eventById[eventId]?.event
+  if (!event) return { members: [], total: 0 }
+  const all = communityOf(eventId, event.members, Math.max(event.communityCount, event.members.length))
+  return { members: structuredClone(all.slice(offset, offset + limit)), total: all.length }
 }

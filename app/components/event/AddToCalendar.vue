@@ -43,5 +43,16 @@ function onSelect(choice: string) {
 
 <style scoped>
 .add-cal { flex: none; }
-.add-cal__button { --ui-button-pad-y: 6px; white-space: nowrap; }
+.add-cal__button {
+  /* Compact pill so the date row lines up with the address and price rows
+     (decision 27 Oct): 28 tall like the Figma pill (14/20 text, 4 above and
+     below), 12 sides */
+  --ui-button-pad-y: 4px;
+  --ui-button-pad-x: 12px;
+  --ui-button-min-height: 28px;
+  white-space: nowrap;
+  font-size: var(--text-small-semibold-size);
+  line-height: 20px;
+}
+.add-cal__button :deep(.ui-button__label) { font-size: inherit; line-height: inherit; }
 </style>

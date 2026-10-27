@@ -96,7 +96,7 @@ const link = computed(() => (import.meta.client && props.eventId ? eventUrl(prop
 .host-success__check img { position: absolute; left: -31.67px; top: -20.67px; width: 164px; height: 164px; max-width: none; }
 .host-success__text { display: flex; flex-direction: column; gap: var(--spacing-xs); max-width: 340px; }
 .host-success__title { margin: 0; color: var(--color-text-primary); }
-.host-success__copy { margin: 0; color: var(--color-text-muted); }
+.host-success__copy { margin: 0; color: var(--color-text-secondary) /* body Grey_2 (decision 27 Oct) */; }
 .host-success__invite {
   box-sizing: border-box;
   width: min(360px, 100%);

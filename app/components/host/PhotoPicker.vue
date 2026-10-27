@@ -322,7 +322,7 @@ function onKey(e: KeyboardEvent) {
   .host-photos__drop, .host-photos__cover { aspect-ratio: 1; } /* square on phones (decision 26 Oct) */
   .host-photos__web { display: none; }
   .host-photos__phone { display: inline; }
-  .host-photos__thumbs { overflow-x: auto; margin-right: calc(-1 * var(--spacing-lg)); padding-right: var(--spacing-lg); scrollbar-width: none; }
+  .host-photos__thumbs { overflow-x: auto; margin-right: calc(-1 * var(--container-inset-mobile)); padding-right: var(--container-inset-mobile); scrollbar-width: none; }
   .host-photos__thumbs::-webkit-scrollbar { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { .host-photos__thumb-btn img { transition: none; } }

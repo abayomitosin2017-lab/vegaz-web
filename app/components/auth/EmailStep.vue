@@ -62,7 +62,7 @@ function submit() {
   width: 310px;
   max-width: 100%;
   margin: 0 auto;
-  color: var(--color-text-note);
+  color: var(--color-text-secondary); /* body Grey_2 (decision 27 Oct; was #525964) */
   font-family: var(--font-family-base);
   font-weight: var(--text-xsmall-regular-weight);
   /* Base size = x-Small so the paragraph's own line box does not add height */

@@ -201,7 +201,8 @@ function onKeydown(e: KeyboardEvent) {
 .checkout-select--host .checkout-select__field:hover { border-color: var(--color-border-strong); }
 .checkout-select--host .checkout-select__field[aria-expanded='true'], .checkout-select--host .checkout-select__field:focus-visible { border-color: var(--color-border-focus); }
 .checkout-select--host .checkout-select__list { max-height: none; }
-.checkout-select--host .checkout-select__option { padding-block: var(--spacing-sm) calc(var(--spacing-sm) - 2px); }
+.checkout-select--host .checkout-select__option { padding-block: calc(var(--spacing-sm) + 4px) calc(var(--spacing-sm) + 2px); } /* +4 (decision 27 Oct) */
+.checkout-select--host .checkout-select__option-label { font-weight: var(--font-weight-bold); } /* bold titles (decision 27 Oct) */
 .checkout-select--host .checkout-select__text { gap: 10px; }
 .checkout-select--host .checkout-select__option + .checkout-select__option::before { border-top-color: var(--color-border-subtle); }
 

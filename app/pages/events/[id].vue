@@ -4,8 +4,8 @@
  * 10724:67468).
  *
  * Desktop (>= 1024px, Desktop 64/65/66): 1140px column, 62px under the header.
- *   Title row: title (40/48 bold) + "Join Community - Free" (secondary,
- *   Grey_5 line, 32px sides, + icon). 40px below: gallery. 40px below: two
+ *   Title row: title (40/48 bold) + "Share Event" and "Join Community -
+ *   Free" (small secondary pills, Grey_5 line, text only; decision 27 Oct). 40px below: gallery. 40px below: two
  *   columns, 601px left (sections 48px apart) and the 431px ticket panel on
  *   the right, which stays in view while scrolling (decision 22 Oct).
  * Phones and tablets (< 1024px, Figma phone frames; tablet decision 22 Oct):
@@ -23,14 +23,15 @@
  * - Join Community: signed out -> Login or signup first; then the event's
  *   chat opens.
  * - Buy Ticket: opens the buy ticket flow (CheckoutFlow; decisions 22 Oct).
- * - Photo -> full-size viewer. "Hosted by" tag -> profile panel (community
- *   people are not clickable, decision 22 Oct)
- *   (desktop: side panel; phones: full screen). Invite Friend -> share.
+ * - Photo -> full-size viewer. "Hosted by" tag -> profile panel. Community
+ *   "View all" / "+N Others" -> everyone in a modal; tapping a person opens
+ *   their profile (decision 27 Oct)
+ *   (desktop: side panel; phones: full screen).
  * - Copy icon -> copies the address, "Address copied".
  * - Empty sections are hidden (decision 27 Oct): About Event with no
  *   description, What to expect with no items, Community under COMMUNITY_MIN
  *   (10) people. The "Not ready to buy a ticket?" block stays.
- * - Host of this event: "Finish setting up in the Vegaz app" modal on each
+ * - Host of this event: "Unlock your host tools in the app" modal on each
  *   visit (HostAppModal, decision 27 Oct).
  * Copy: "About Hangout" -> "About Event" (Hangouts -> Events rule).
  */
@@ -80,6 +81,13 @@ const inChat = ref(false)
 async function refreshStatus() {
   holding.value = ticketsHeld(user.value?.email, id.value)
   inChat.value = user.value ? await isInEventChat(user.value.username, id.value) : false
+}
+// Phone ticket bar: tapping it (not the button) scrolls to the tickets
+function showTickets() {
+  const el = document.querySelector<HTMLElement>('.event-page__tickets')
+  if (!el) return
+  const header = document.querySelector<HTMLElement>('.site-header')?.offsetHeight ?? 0
+  window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - header - 16, behavior: 'smooth' })
 }
 function buy() {
   if (count.value > 0) checkoutOpen.value = true
@@ -188,27 +196,51 @@ function closeCreated() {
   navigateTo({ path: route.path, query }, { replace: true })
 }
 
-// ---- "Finish setting up in the Vegaz app" (hosts only, decision 27 Oct) ----
+// ---- Community "View all" (decision 27 Oct) ----
+const communityOpen = ref(false)
+function openMember(person: ChatPerson) {
+  communityOpen.value = false
+  nextTick(() => openProfile(person))
+}
+
+// ---- Phones / tablets: sticky header with the name + buttons (decision 27 Oct) ----
+// Shows once the title row has scrolled up behind the site header
+const topRow = ref<HTMLElement | null>(null)
+const stickyOn = ref(false)
+let topObserver: IntersectionObserver | null = null
+function watchTop() {
+  topObserver?.disconnect()
+  if (!topRow.value) return
+  const header = document.querySelector<HTMLElement>('.site-header')?.offsetHeight ?? 0
+  topObserver = new IntersectionObserver(([e]) => { stickyOn.value = !!e && !e.isIntersecting && e.boundingClientRect.top < header }, { rootMargin: `-${header}px 0px 0px 0px` })
+  topObserver.observe(topRow.value)
+}
+onMounted(() => nextTick(watchTop))
+watch([id, () => !!event.value], () => nextTick(watchTop))
+onBeforeUnmount(() => topObserver?.disconnect())
+
+// ---- "Unlock your host tools in the app" (hosts only, decision 27 Oct) ----
 // Every time the host opens their event (after "Event Created" on the first
-// visit), until "Don't show again". Closing it hides it for this visit.
-const hostApp = useHostAppPrompt()
+// visit). "Maybe Later" / closing hides it until their next visit.
 const appPromptClosed = ref(false)
 watch(id, () => { appPromptClosed.value = false })
-const appPromptOpen = computed(() => isHost.value && !createdOpen.value && !appPromptClosed.value && !hostApp.off.value)
-function appPromptNever() {
-  hostApp.turnOff()
-  appPromptClosed.value = true
-}
+const appPromptOpen = computed(() => isHost.value && !createdOpen.value && !appPromptClosed.value)
 </script>
 
 <template>
   <div v-if="event" :class="['event-page', { 'event-page--bar': count > 0 }]">
-    <div class="event-page__top">
+    <ClientOnly>
+      <EventStickyHeader :show="stickyOn && !profile" :title="event.title" :action-label="inChat || isHost ? 'Open Chat' : 'Join Community - Free'" :busy="joining" @share="invite" @action="join" />
+    </ClientOnly>
+    <div ref="topRow" class="event-page__top">
       <h1 class="event-page__title text-page-title">{{ event.title }}</h1>
-      <UiButton size="small" color="secondary" class="event-page__join" :disabled="joining" @click="join">
-        <template v-if="!inChat && !isHost" #icon><img src="/images/event/icon-plus-24.svg" alt="" width="16" height="16" /></template>
-        {{ inChat || isHost ? 'Open Chat' : 'Join Community - Free' }}
-      </UiButton>
+      <!-- Text only, with Share Event beside it (decision 27 Oct) -->
+      <div class="event-page__actions">
+        <UiButton size="small" color="secondary" class="event-page__join" :disabled="joining" @click="join">
+          {{ inChat || isHost ? 'Open Chat' : 'Join Community - Free' }}
+        </UiButton>
+        <UiButton size="small" color="secondary" class="event-page__share" @click="invite">Share Event</UiButton><!-- far right (decision 27 Oct) -->
+      </div>
     </div>
 
     <EventGallery class="event-page__gallery" :photos="event.photos" :title="event.title" :event-id="event.id" @open="viewerIndex = $event" />
@@ -225,6 +257,10 @@ function appPromptNever() {
 
       <div class="event-page__tickets">
         <EventTicketPanel v-model:quantities="quantities" :tickets="tickets ?? []" :total="total" :count="count" :holding="holding > 0" :host="isHost" :busy="joining" @buy="buy" @share="invite" @chat="join" />
+        <!-- Desktop: a cue that joining is free (decision 27 Oct; hidden for the host and members) -->
+        <p v-if="!inChat && !isHost" class="event-page__join-note text-small-regular">
+          You can <button type="button" class="event-page__join-link text-small-semibold" :disabled="joining" @click="join">join community</button> without buying ticket
+        </p>
       </div>
 
       <section v-if="showAbout" class="event-page__about" aria-labelledby="event-about-title">
@@ -236,14 +272,14 @@ function appPromptNever() {
 
       <EventJoinCard v-if="!inChat && !isHost" class="event-page__join-card" :busy="joining" @join="join" />
 
-      <EventCommunity v-if="showCommunity" class="event-page__community" :members="event.members" :count="event.communityCount" @invite="invite" />
+      <EventCommunity v-if="showCommunity" class="event-page__community" :members="event.members" :count="event.communityCount" @view="communityOpen = true" />
 
       <hr class="event-page__line" />
 
       <EventAppBanner class="event-page__banner" />
     </div>
 
-    <EventTicketBar v-if="count > 0 && !isHost" class="event-page__bar" :total="total" :count="count" :tiers="picked.length" :free="isFreeOnly(tickets ?? [], quantities)" @buy="buy" />
+    <EventTicketBar v-if="count > 0 && !isHost" class="event-page__bar" :total="total" :count="count" :tiers="picked.length" :free="isFreeOnly(tickets ?? [], quantities)" @buy="buy" @show="showTickets" />
 
     <UiPhotoViewer
       :open="viewerIndex !== null"
@@ -274,7 +310,8 @@ function appPromptNever() {
     <ProfileBioPrompt :open="bioOpen" :busy="bioSaving" :initial="user?.bio" @close="bioOpen = false" @save="onBioSave" @skip="onBioSkip" />
 
     <HostSuccessModal :open="createdOpen" :event-id="event.id" :title="event.title" @close="closeCreated" />
-    <HostAppModal :open="appPromptOpen" @close="appPromptClosed = true" @never="appPromptNever" />
+    <EventCommunityModal :open="communityOpen" :event-id="event.id" :count="event.communityCount" @close="communityOpen = false" @open="openMember" />
+    <HostAppModal :open="appPromptOpen" @close="appPromptClosed = true" />
 
     <UiToast :message="toast" @done="toast = ''" />
   </div>
@@ -301,20 +338,17 @@ function appPromptNever() {
   padding: var(--spacing-page-top) var(--container-detail-inset-mobile) var(--spacing-4xl);
 }
 /* Room for the bottom ticket bar */
-.event-page--bar { padding-bottom: calc(var(--spacing-4xl) + 90px); }
+/* room for the ticket bar is added under the whole page by EventTicketBar (decision 27 Oct) */
 
 .event-page__top { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-md); }
+.event-page__actions { flex: none; display: none; gap: var(--spacing-xs); }
 .event-page__title { margin: 0; color: var(--color-text-primary); overflow-wrap: anywhere; }
-.event-page__join {
-  display: none;
-  flex: none;
-  --ui-button-border-color: var(--color-border-default);
-}
-/* Airbnb small pill ("Become a host"): 40 tall, 12 sides, 16px icon */
-.event-page__join :deep(.ui-button__icon) { width: var(--sizing-icon-small); height: var(--sizing-icon-small); }
+.event-page__join,
+.event-page__share { flex: none; --ui-button-border-color: var(--color-border-default); } /* Airbnb small pill, 40 tall, text only */
 
 .event-page__body { display: flex; flex-direction: column; gap: var(--spacing-xl); min-width: 0; } /* phones: 32 (Figma) */
 .event-page__intro { display: flex; flex-direction: column; gap: var(--spacing-md); }
+.event-page__join-note { display: none; }
 .event-page__about { display: flex; flex-direction: column; gap: var(--spacing-md); }
 .event-page__section-title { margin: 0; color: var(--color-text-primary); }
 .event-page__about-text { margin: 0; color: var(--color-text-secondary); white-space: pre-line; }
@@ -350,6 +384,9 @@ function appPromptNever() {
 
 @media (min-width: 768px) {
   .event-page { gap: var(--spacing-2xl); padding-inline: var(--container-detail-inset-tablet); }
+  /* Title row to photos: 24, the same as header to title row, so the title
+     sits evenly between them (decision 27 Oct; was 40) */
+  .event-page__gallery { margin-top: calc(var(--spacing-lg) - var(--spacing-2xl)); }
   /* Airbnb listing sections: 48 above and below each dividing line */
   .event-page__body { gap: var(--spacing-section-block); }
   /* Proposed: desktop/tablet profile = side panel over the page */
@@ -369,7 +406,7 @@ function appPromptNever() {
     max-width: calc(var(--container-detail-max) + 2 * var(--container-detail-inset-desktop));
   }
   .event-page--bar { padding-bottom: 52px; }
-  .event-page__join { display: inline-flex; }
+  .event-page__actions { display: flex; }
   .event-page__body {
     display: grid;
     /* Airbnb listing columns: 7/12 content, 1/12 gap, 4/12 booking card
@@ -386,6 +423,10 @@ function appPromptNever() {
     position: sticky;
     top: calc(var(--sizing-header-height) + var(--spacing-lg)); /* below the sticky header */
   }
+  .event-page__join-note { display: block; margin: var(--spacing-md) 0 0; color: var(--color-text-secondary); text-align: center; }
+  .event-page__join-link { display: inline; padding: 0; border: 0; background: none; color: var(--color-action-primary); cursor: pointer; }
+  .event-page__join-link:hover { text-decoration: underline; }
+  .event-page__join-link:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: 2px; border-radius: var(--radius-xs); }
   .event-page__join-card,
   .event-page__line,
   .event-page__bar { display: none; }

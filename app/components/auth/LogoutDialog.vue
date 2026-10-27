@@ -63,7 +63,7 @@ const id = useId()
 }
 .auth-logout__copy {
   margin: 0;
-  color: var(--color-text-checkout);
+  color: var(--color-text-secondary); /* body Grey_2 (decision 27 Oct) */
   font-family: var(--font-family-base);
   font-weight: var(--text-app-body-regular-weight); font-size: var(--text-app-body-regular-size); line-height: var(--text-app-body-regular-line); letter-spacing: var(--text-app-body-regular-tracking);
 }

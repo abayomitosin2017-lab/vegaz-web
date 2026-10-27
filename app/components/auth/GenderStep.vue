@@ -78,7 +78,7 @@ function submit() {
 .auth-gender__top { gap: var(--spacing-lg); }
 .auth-gender__content { gap: var(--spacing-lg); }
 .auth-gender__intro { gap: var(--spacing-xxs); }
-.auth-gender__copy { color: var(--color-text-heading-strong); }
+.auth-gender__copy { color: var(--color-text-secondary); } /* body Grey_2 (decision 27 Oct) */
 .auth-gender__copy p { margin: 0; }
 
 .auth-gender__options { display: flex; flex-direction: column; gap: var(--spacing-md); width: 100%; }

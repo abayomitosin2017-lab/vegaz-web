@@ -8,13 +8,18 @@
  *     phones 1 per row, full width (decision 22 Oct: bigger images),
  *     tablet (768-1023) 4, desktop 5 (as on Home)
  *   - Page padding matches Home
+ * With "?q=" (phone search, decision 27 Oct): "Results for “…” (N)" and the
+ *   matching events; a short message when nothing matches.
  * OPEN ITEMS: order, paging/infinite scroll, filters (by category or date).
  */
-import { getAllEvents } from '~/services/events'
+import { getAllEvents, searchEvents } from '~/services/events'
 
-const { data: events } = await useAsyncData('all-events', getAllEvents, { default: () => [] })
+// "?q=" (phone search, decision 27 Oct): the events matching the search
+const route = useRoute()
+const q = computed(() => String(route.query.q ?? '').trim())
+const { data: events } = await useAsyncData('all-events', () => (q.value ? searchEvents(q.value, 100) : getAllEvents()), { default: () => [], watch: [q] })
 
-useHead({ title: 'All events · Vegaz' })
+useHead(() => ({ title: q.value ? `“${q.value}” · Vegaz` : 'All events · Vegaz' }))
 </script>
 
 <template>
@@ -22,8 +27,9 @@ useHead({ title: 'All events · Vegaz' })
     <UiBackButton to="/" label="Back to Home" class="all-events__back" />
 
     <h1 class="all-events__title text-page-title">
-      All events <span class="all-events__count">({{ events.length }})</span>
+      <template v-if="q">Results for “{{ q }}”</template><template v-else>All events</template> <span class="all-events__count">({{ events.length }})</span>
     </h1>
+    <p v-if="q && !events.length" class="all-events__empty text-body-regular">No events found. Try another name, place or category.</p>
 
     <ul class="all-events__grid">
       <li v-for="e in events" :key="e.id">
@@ -46,7 +52,8 @@ useHead({ title: 'All events · Vegaz' })
   padding: var(--spacing-page-top) var(--container-inset-mobile) 42px;
 }
 .all-events__back { align-self: flex-start; } /* UiBackButton (decision 27 Oct) */
-.all-events__title { margin: 0; color: var(--color-text-primary); }
+.all-events__title { margin: 0; color: var(--color-text-primary); overflow-wrap: anywhere; }
+.all-events__empty { margin: 0; color: var(--color-text-secondary); }
 .all-events__count { font-weight: var(--font-weight-regular); color: var(--color-text-secondary); }
 .all-events__grid {
   display: grid;

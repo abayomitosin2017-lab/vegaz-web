@@ -11,8 +11,9 @@
  * highlight = Grey_6 row.
  *
  * Each item is a 44px-tall row (28px text + 8px above and below) so it is an
- * easy tap target; the card padding is reduced to 8px to keep every text line
- * exactly where Figma puts it (16, 60, 104, 148; line at 192; Log out at 209).
+ * easy tap target.  Spacing from Figma 10682:52438 (update 27 Oct): first text 16 from the top,
+ * rows 8 apart (24 between texts), the line 8 under the last row, Log
+ * out's row 8 under the line, 24 under its text.
  *
  * Behaviour: standard menu button. Click, Enter, Space or Arrow Down opens and
  * focuses the first item; Arrow Up/Down, Home/End move; Escape closes and
@@ -136,7 +137,10 @@ const triggerProps = computed(() => ({
   display: flex;
   flex-direction: column;
   width: var(--ui-dropdown-width);
-  padding-block: var(--spacing-xs);
+  /* Figma 10682:52438 spacing (updated 27 Oct): first text 16 from the top,
+     rows 8 apart (24 between texts), 24 under the last text */
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) 0 var(--spacing-md);
   border-radius: var(--radius-lg);
   background: var(--color-background-primary);
   box-shadow: var(--shadow-dp2);
@@ -166,9 +170,10 @@ const triggerProps = computed(() => ({
 .ui-dropdown__item:focus-visible { box-shadow: inset 0 0 0 var(--focus-ring-width) var(--focus-ring-color); }
 
 .ui-dropdown__separator {
-  /* Figma: 16px gap, 1px Grey_5 line, 16px gap (rows supply 8px each side) */
+  /* Figma: 8 above and below the 1px Grey_5 line (the menu's 8 gap), rows
+     keep their 8 padding */
   width: 100%;
-  margin: var(--spacing-xs) 0;
+  margin: 0;
   border: 0;
   border-top: var(--border-width-default) solid var(--color-border-default);
 }

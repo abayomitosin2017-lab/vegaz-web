@@ -4,11 +4,13 @@
  * (Figma event details, "Avatar 2" instances).
  *
  * Title: "Community" Headline 3 semibold + " (24)" regular Grey_2.
- * "Invite Friend": Web Small semibold Primary, 8px padding; shares the event
- * (decision 22 Oct: share sheet, else copy link).
+ * "View all" (was "Invite Friend", decision 27 Oct): Web Small semibold
+ * Primary, 8px padding; opens the community list (EventCommunityModal).
+ * "+N Others" opens it too.
  * Person (80px wide): 48px photo or letter avatar; the host gets a green
  * "Host" pill (Sub, white, 2px white edge) overlapping the photo by 16px;
- * a 12px gender dot (F pink / M, 2px white edge) at the photo's top right;
+ * an 18px gender tag (F pink / M, 2px white edge, 10px semibold letter) at
+ * the photo's top right (decision 27 Oct; was 12 / 6px);
  * name 14/18 regular #141316 at every width, one line with "..."
  * (Figma 10713:56670, 22 Oct; was 12/18, phones 10/14).
  * Last: "+N Others" (48px #F0F0F0 circle, 18/28 semibold #4E4E4E).
@@ -20,7 +22,7 @@
 import type { EventMember } from '~/types/event'
 
 const props = defineProps<{ members: EventMember[]; count: number }>()
-const emit = defineEmits<{ invite: [] }>()
+const emit = defineEmits<{ view: [] }>()
 
 const others = computed(() => Math.max(0, props.count - props.members.length))
 </script>
@@ -31,7 +33,7 @@ const others = computed(() => Math.max(0, props.count - props.members.length))
       <h2 id="event-community-title" class="event-title text-detail-section-title">
         Community <span class="event-community__count">({{ count.toLocaleString('en-GB') }})</span>
       </h2>
-      <button type="button" class="event-community__invite text-small-semibold" @click="emit('invite')">Invite Friend</button>
+      <button type="button" class="event-community__invite text-small-semibold" aria-haspopup="dialog" @click="emit('view')">View all</button>
     </div>
 
     <ul class="event-community__row">
@@ -48,11 +50,11 @@ const others = computed(() => Math.max(0, props.count - props.members.length))
         </span>
       </li>
       <li v-if="others" class="event-community__person">
-        <span class="event-community__who event-community__who--static">
+        <button type="button" class="event-community__who event-community__who--more" aria-haspopup="dialog" @click="emit('view')">
           <span class="event-community__more">+{{ others > 99 ? '99' : others }}</span>
           <span class="event-community__badge-slot" />
-          <span class="event-community__name">Others<span class="visually-hidden"> ({{ others }} more people)</span></span>
-        </span>
+          <span class="event-community__name">Others<span class="visually-hidden"> ({{ others }} more people, view all)</span></span>
+        </button>
       </li>
     </ul>
   </section>
@@ -77,6 +79,9 @@ const others = computed(() => Math.max(0, props.count - props.members.length))
   cursor: pointer;
 }
 .event-community__invite:hover { background: var(--color-background-secondary); } /* proposed */
+.event-community__who--more { cursor: pointer; border-radius: var(--radius-md); }
+.event-community__who--more:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: 2px; }
+.event-community__who--more:hover .event-community__more { background: var(--color-border-default); } /* proposed */
 
 .event-community__row {
   display: flex;
@@ -111,19 +116,19 @@ const others = computed(() => Math.max(0, props.count - props.members.length))
 }
 .event-community__gender {
   position: absolute;
-  top: 7px;
-  left: 40px; /* Figma: 56px into the 80px slot, photo starts at 16px */
+  top: 1px;
+  left: 34px; /* top right of the photo; 18 with the 2px white edge so F / M read clearly (decision 27 Oct; was 12 with a 6px letter) */
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 12px;
-  height: 12px;
+  width: 18px;
+  height: 18px;
   border: var(--border-width-emphasis) solid var(--color-background-primary);
   border-radius: var(--radius-pill);
   box-sizing: border-box;
   color: var(--color-text-inverse);
-  font-size: 6px;
-  font-weight: var(--font-weight-regular);
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
   line-height: 1;
   overflow: hidden;
 }

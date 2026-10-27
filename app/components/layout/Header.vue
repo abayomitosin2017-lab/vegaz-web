@@ -13,18 +13,18 @@
  *
  * Signed in (`user` set; Figma HOME/LOGGED IN 10653:39743 and
  * HOME/LOGGED IN/MOBILE 10653:39803):
- *   - desktop: "Host an Event" + profile button (avatar, name, @username,
+ *   - desktop: "Add your Event" + profile button (avatar and name only,
+ *     the @username line removed 27 Oct;
  *     down arrow); the logo frame is 374px wide so the search stays centred
- *   - mobile: search icon button + 40px avatar button with the desktop
+ *   - mobile: search icon button + 32px avatar button (was 40) with the desktop
  *     down arrow beside it (decision 22 Oct)
  *   Both open the profile menu (UiDropdownMenu, Figma 10653:40453).
  *
  * Search (LayoutSearchBox): typing shows matching events in a list under
  * the field; choosing one opens its page (decision 22 Oct; results page not
- * designed). Phones (decision 21 Oct, not in Figma): tapping the search icon
- * turns the bar into the search field (48px tall so the bar stays 80px) and a
- * "Cancel" text button. Escape or Cancel closes it and puts focus back on the
- * icon; it also closes when the page changes.
+ * designed). Phones (decision 27 Oct, replaces the in-bar field with
+ * "Cancel"): tapping the search icon opens a full-screen search with a close
+ * X and suggested events (LayoutMobileSearch).
  *
  * Emits `host`, `login` and `menu` (profile menu item id).
  */
@@ -49,23 +49,10 @@ watch(() => props.user, async (now, before) => {
 const accountLabel = computed(() => (props.user ? `Account menu, ${fullName.value} @${props.user.username}` : ''))
 
 
-// Phones: the search icon opens a search bar in the header
+// Phones: the search icon opens the full-screen search (decision 27 Oct)
 const mobileSearchOpen = ref(false)
-const mobileSearchBox = ref<{ focus: () => void } | null>(null)
-const mobileSearchButton = ref<{ $el: HTMLElement } | null>(null)
-async function openMobileSearch() {
-  mobileSearchOpen.value = true
-  await nextTick()
-  mobileSearchBox.value?.focus()
-}
-async function closeMobileSearch() {
-  mobileSearchOpen.value = false
-  await nextTick()
-  mobileSearchButton.value?.$el?.focus()
-}
-function onMobileSearchKey(e: KeyboardEvent) {
-  if (e.key === 'Escape') { e.preventDefault(); closeMobileSearch() }
-}
+function openMobileSearch() { mobileSearchOpen.value = true }
+function closeMobileSearch() { mobileSearchOpen.value = false }
 const route = useRoute()
 watch(() => route.fullPath, () => { mobileSearchOpen.value = false })
 // Phones: Chat lives in the bottom navigation (with its unread count), so
@@ -77,26 +64,19 @@ const mobileMenuItems = computed<DropdownItem[]>(() => profileMenuItems.filter(i
   <header ref="root" class="site-header">
     <!-- Mobile variant (< 768px) -->
     <div class="site-header__bar site-header__bar--mobile">
-      <!-- Search open: field + Cancel fill the bar -->
-      <div v-if="mobileSearchOpen" class="site-header__mobile-search" @keydown="onMobileSearchKey">
-        <LayoutSearchBox ref="mobileSearchBox" @chosen="mobileSearchOpen = false" />
-        <UiButton fill="ghost" color="secondary" text-style="web" class="site-header__search-cancel" @click="closeMobileSearch">Cancel</UiButton>
-      </div>
-      <template v-else>
       <NuxtLink to="/" class="site-header__logo-link" aria-label="Vegaz home">
         <img class="site-header__logo" src="/images/logo-header.svg" alt="Vegaz" width="85" height="36" />
       </NuxtLink>
       <div v-if="showActions" class="site-header__icons">
-        <!-- Airbnb header round buttons: 40 x 40; search icon 16, profile 24 -->
+        <!-- Airbnb header round buttons: 40 x 40; icons 24 (Figma, decision 27 Oct); login: Figma user icon -->
         <UiButton
           color="secondary"
           icon-only
-          ref="mobileSearchButton"
           aria-label="Search for events"
-          class="site-header__icon-button site-header__icon-button--small-icon"
+          class="site-header__icon-button"
           @click="openMobileSearch"
         >
-          <template #icon><img src="/images/icon-search-24.svg" alt="" width="16" height="16" /></template>
+          <template #icon><img src="/images/icon-search-24.svg" alt="" width="24" height="24" /></template>
         </UiButton>
         <UiButton
           v-if="!user"
@@ -107,24 +87,24 @@ const mobileMenuItems = computed<DropdownItem[]>(() => profileMenuItems.filter(i
           data-login
           @click="emit('login')"
         >
-          <template #icon><img src="/images/icon-profile-24.svg" alt="" width="24" height="24" /></template>
+          <template #icon><img src="/images/icon-user-24.svg" alt="" width="24" height="24" /></template>
         </UiButton>
         <UiDropdownMenu v-else :items="mobileMenuItems" label="Account" @select="emit('menu', $event)">
           <template #trigger="{ props: trigger }">
             <button type="button" class="site-header__avatar-button" :aria-label="accountLabel" data-account-trigger v-bind="trigger">
-              <UiAvatar :name="user.firstName" :seed="user.username" :src="user.avatarUrl" />
+              <UiAvatar :name="user.firstName" :seed="user.username" :src="user.avatarUrl" :size="28" /><!-- 28: a filled photo reads as the same size as the 24 outline search icon (decision 27 Oct) -->
               <img class="site-header__arrow" src="/images/icon-arrow-down-16.svg" alt="" width="16" height="16" />
             </button>
           </template>
         </UiDropdownMenu>
       </div>
-      </template>
     </div>
+    <!-- Phones: the search icon opens the full-screen search (decision 27 Oct) -->
+    <LayoutMobileSearch :open="mobileSearchOpen" @close="closeMobileSearch" />
 
     <!-- Default variant (>= 768px) -->
     <div :class="['site-header__bar', 'site-header__bar--desktop', { 'site-header__bar--signed-in': user }]">
-      <!-- Figma keeps the logo in a 355px (signed out) / 374px (signed in) frame,
-           as wide as the actions on the right, so the search sits centred -->
+      <!-- Logo, search exactly centred, actions (equal side columns) -->
       <div class="site-header__brand">
         <NuxtLink to="/" class="site-header__logo-link" aria-label="Vegaz home">
           <img class="site-header__logo" src="/images/logo-header.svg" alt="Vegaz" width="85" height="36" />
@@ -136,19 +116,14 @@ const mobileMenuItems = computed<DropdownItem[]>(() => profileMenuItems.filter(i
       <div v-if="showActions" class="site-header__actions">
         <!-- Airbnb "Become a host": 40 tall pill, 11 / 12 padding, 14/18 w500 -->
         <UiButton size="small" fill="ghost" color="secondary" @click="emit('host')">
-          Host an Event
+          Add your Event
         </UiButton>
         <UiButton v-if="!user" size="small" fill="solid" color="secondary" data-login @click="emit('login')">Login or signup</UiButton>
         <UiDropdownMenu v-else :items="profileMenuItems" label="Account" @select="emit('menu', $event)">
           <template #trigger="{ props: trigger }">
             <button type="button" class="site-header__profile" :aria-label="accountLabel" data-account-trigger v-bind="trigger">
-              <span class="site-header__who">
-                <UiAvatar :name="user.firstName" :seed="user.username" :src="user.avatarUrl" />
-                <span class="site-header__names">
-                  <span class="site-header__name text-small-semibold">{{ fullName }}</span>
-                  <span class="site-header__handle text-xsmall-regular">@{{ user.username }}</span>
-                </span>
-              </span>
+              <!-- Photo only (decision 27 Oct): 32 photo + arrow, 40 tall like "Add your Event" -->
+              <UiAvatar :name="user.firstName" :seed="user.username" :src="user.avatarUrl" :size="32" />
               <img class="site-header__arrow" src="/images/icon-arrow-down-16.svg" alt="" width="16" height="16" />
             </button>
           </template>
@@ -184,36 +159,26 @@ const mobileMenuItems = computed<DropdownItem[]>(() => profileMenuItems.filter(i
 .site-header__bar--mobile {
   box-sizing: border-box;
   height: calc(var(--sizing-header-height) - var(--border-width-default));
-  padding: 0 var(--container-inset-mobile);
+  padding: 10px var(--container-inset-mobile); /* same 10 above / below as the bottom navigation (decision 27 Oct) */
 }
 .site-header__icons {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  /* Icons only now (decision 27 Oct): the 40 tap areas sit 4 apart, so the
+     icons themselves are 20 apart; the last icon lines up with the page edge */
+  gap: var(--spacing-xxs);
+  margin-right: calc(-1 * var(--spacing-xs));
 }
-.site-header__mobile-search {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  gap: var(--spacing-xs);
-  min-width: 0;
-}
-.site-header__mobile-search > :first-child { flex: 1; min-width: 0; }
-/* 48px tall like the icon buttons, so the bar stays 80px */
-.site-header__mobile-search :deep(.ui-input) {
-  min-height: var(--sizing-control-standard);
-  /* 36px search button centred in 48px: 6px above and below, minus the 1px line */
-  padding-block: calc((var(--sizing-control-standard) - 36px) / 2 - var(--border-width-default));
-}
-.site-header__search-cancel { flex: none; --ui-button-pad-x: var(--spacing-xs); }
 .site-header__icon-button {
   --ui-button-min-height: var(--sizing-icon-button-md);
   --ui-button-pad-y: var(--spacing-xs);
   --ui-button-pad-x: var(--spacing-xs);
   --ui-button-border-color: transparent;
 }
-.site-header__icon-button--small-icon { --ui-button-pad-y: var(--spacing-sm); --ui-button-pad-x: var(--spacing-sm); }
-.site-header__icon-button--small-icon :deep(.ui-button__icon) { width: var(--sizing-icon-small); height: var(--sizing-icon-small); }
+/* Just the icon, no grey circle (decision 27 Oct) */
+.site-header .site-header__icon-button,
+.site-header .site-header__icon-button:hover,
+.site-header .site-header__icon-button:active { background: transparent; }
 .site-header__bar--desktop { display: none; }
 
 /* ---- Default variant (>= 768px): Figma 18px top/bottom, 64px sides,
@@ -221,7 +186,10 @@ const mobileMenuItems = computed<DropdownItem[]>(() => profileMenuItems.filter(i
 @media (min-width: 768px) {
   .site-header__bar--mobile { display: none; }
   .site-header__bar--desktop {
-    display: flex;
+    /* Search exactly in the middle of the page (decision 27 Oct): two equal
+       side columns, logo left, actions right */
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 509px) minmax(0, 1fr);
     gap: var(--spacing-md); /* keeps items apart when squeezed (not in Figma at 1440) */
     /* Airbnb compact header: 80 tall (1px line included) */
     box-sizing: border-box;
@@ -235,13 +203,7 @@ const mobileMenuItems = computed<DropdownItem[]>(() => profileMenuItems.filter(i
   }
 }
 
-.site-header__brand {
-  /* shrinks before the search field when squeezed (768-1439) */
-  flex: 0 100 355px;
-  height: var(--sizing-logo-height);
-  min-width: 76px;
-}
-.site-header__bar--signed-in .site-header__brand { flex-basis: 374px; }
+.site-header__brand { justify-self: start; height: var(--sizing-logo-height); min-width: 76px; }
 .site-header__logo-link { display: inline-block; border-radius: var(--radius-xs); color: inherit; }
 .site-header__logo-link:focus-visible {
   outline: var(--focus-ring-width) solid var(--focus-ring-color);
@@ -250,13 +212,24 @@ const mobileMenuItems = computed<DropdownItem[]>(() => profileMenuItems.filter(i
 /* Airbnb logo height: 32 (Vegaz logo kept, 85 x 35.962 scaled to 32 tall) */
 .site-header__logo { display: block; width: auto; height: var(--sizing-logo-height); }
 
-.site-header__search { flex: 0 1 376px; min-width: 0; }
+.site-header__search { min-width: 0; }
+/* Search field sized as in Figma (HOME/DEFAULT 10847:29392, decision 27 Oct):
+   509 wide, 52 tall, 18 to the placeholder, placeholder 16/24 Grey_3 (Figma 18), 32
+   purple button with a 16 icon, 10 from the right */
+.site-header__search :deep(.ui-input) {
+  padding: calc(10px - var(--border-width-default)) calc(10px - var(--border-width-default)) calc(10px - var(--border-width-default)) calc(18px - var(--border-width-default));
+  font-size: 16px; /* decision 27 Oct (Figma 18) */
+  line-height: 24px;
+  letter-spacing: 0;
+}
+.site-header__search :deep(.ui-input__field)::placeholder { color: var(--color-text-muted); }
+.site-header__search :deep(.ui-input__action) { width: 32px; height: 32px; }
 
 .site-header__actions {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  flex: none;
+  justify-self: end;
 }
 
 /* ---- Signed in ---- */
@@ -268,7 +241,8 @@ const mobileMenuItems = computed<DropdownItem[]>(() => profileMenuItems.filter(i
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xxs);
-  padding: 0;
+  min-height: 40px;
+  padding: 0 var(--spacing-xs) 0 var(--spacing-xs); /* same 8 as the icon buttons */
   border: 0;
   border-radius: var(--radius-full);
   background: transparent;
@@ -280,8 +254,8 @@ const mobileMenuItems = computed<DropdownItem[]>(() => profileMenuItems.filter(i
 .site-header__profile {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-xxs) var(--spacing-md) var(--spacing-xxs) var(--spacing-xxs);
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xxs) var(--spacing-sm) var(--spacing-xxs) var(--spacing-xxs); /* 4 + 32 photo + 4 = 40 tall */
   border: 0;
   /* 0.5px hairline drawn as a shadow: browsers round a 0.5px border up to 1px
      in layout, which would make the button 51px instead of Figma's 50 */
@@ -294,18 +268,6 @@ const mobileMenuItems = computed<DropdownItem[]>(() => profileMenuItems.filter(i
 }
 .site-header__profile:hover,
 .site-header__profile[aria-expanded='true'] { background: var(--color-background-neutral); } /* proposed: Grey_5 */
-.site-header__who { display: flex; align-items: center; gap: var(--spacing-xs); min-width: 0; }
-.site-header__names { display: flex; flex-direction: column; min-width: 0; }
-/* Long names end in "..." (not in Figma; FLAG) */
-.site-header__name,
-.site-header__handle {
-  max-width: 160px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.site-header__name { color: var(--color-text-primary); }
-.site-header__handle { color: var(--color-text-muted); }
 .site-header__arrow { flex: none; width: 16px; height: 16px; }
 .site-header__avatar-button:focus-visible,
 .site-header__profile:focus-visible {

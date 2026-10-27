@@ -3,15 +3,16 @@
  * Phone bottom navigation (Figma 10870:35376 content; Airbnb sizing, decision
  * 26 Oct). Phones only (< 768px). White bar, 1px black/10 line on top, 10
  * above and below the tabs (plus the phone's safe area); 65 tall. Tabs 44
- * tall, 3 top padding, icon 24, 5 gap, label 10/12 with 0.2 letter spacing
- * (500 active, 400 others), as measured on airbnb.com; label size 11/13
- * (decision 26 Oct, Airbnb uses 10/12). Items hug their
+ * tall, 3 top padding, icon 24, 5 gap, as measured on airbnb.com; label
+ * 11/13 (decision 26 Oct), 0.2 letter spacing, semibold in every state
+ * (Figma update 27 Oct; Figma's 12/18 size not taken, 11 kept). Items hug their
  * content and sit 64 apart, centred (Figma update 26 Oct):
- * - Explore (Figma update 26 Oct, was Home): Compass icon 24 (Linear; Bold
- *   when active); goes to Home
- * - Create: dark purple (#24044D, raw in Figma) pill, 24 / 4 padding, white
- *   + 16; opens Host an Event (logs in first when signed out)
- * - Chat: Chat Round Dots 24 (Linear; Bold when active); red unread count.
+ * - Explore (Figma update 26 Oct, was Home): Compass icon 24, Linear; Grey_3,
+ *   Primary when active (Figma update 27 Oct: no Bold icon); goes to Home
+ * - Create: Primary pill (Figma update 27 Oct, was #24044D), 24 / 4 padding,
+ *   light purple (#F1E9FF) + 16; opens Host an Event (logs in first)
+ * - Chat: Chat Round Dots 24, Linear; Grey_3, Primary when active; red
+ *   unread count.
  *   Signed out it asks to log in first, like the Chat page.
  * Colours from Figma: Grey_3, Primary when active, Grey_1 for Create.
  * Active: Explore on Home and All events, Chat on the Chat page.
@@ -86,9 +87,8 @@ const count = computed(() => (user.value && unread.value ? (unread.value > 99 ? 
 .bottom-nav__item:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: 4px; }
 .bottom-nav__item--on { color: var(--color-action-primary); }
 .bottom-nav__item--create { color: var(--color-text-strong); }
-.bottom-nav__label { font-family: var(--font-family-base); font-weight: var(--font-weight-regular); font-size: var(--text-nav-label-size); line-height: var(--text-nav-label-line); letter-spacing: var(--text-nav-label-tracking); white-space: nowrap; }
-.bottom-nav__item--on .bottom-nav__label { font-weight: var(--text-nav-label-weight); }
-.bottom-nav__pill { display: inline-flex; align-items: center; justify-content: center; padding: var(--spacing-xxs) var(--spacing-lg); border-radius: var(--radius-pill); background: #24044d; } /* raw in Figma */
+.bottom-nav__label { font-family: var(--font-family-base); font-weight: var(--font-weight-semibold); /* Figma: semibold in every state (27 Oct) */ font-size: var(--text-nav-label-size); line-height: var(--text-nav-label-line); letter-spacing: var(--text-nav-label-tracking); white-space: nowrap; }
+.bottom-nav__pill { display: inline-flex; align-items: center; justify-content: center; padding: var(--spacing-xxs) var(--spacing-lg); border-radius: var(--radius-pill); background: var(--color-action-primary); } /* Figma update 27 Oct: Primary (was #24044D) */
 .bottom-nav__icon { position: relative; display: inline-flex; }
 .bottom-nav__count {
   position: absolute;

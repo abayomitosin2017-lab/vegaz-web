@@ -662,3 +662,95 @@ Measured on airbnb.com (home + a listing page) at 375, 768 and 1440 in a real br
 - It is saved as their bio only when they had no bio yet. If they already have one, editing the intro never changes the bio.
 - "Skip for now" still joins without posting anything. X / Escape cancels the join.
 - Copy (PROPOSED): with a bio, "Say hello so people in the chat can get to know you. We've started it with your bio; edit it before you send."; without one, "… We'll also save it as your bio."
+
+## 27 Oct — Design feedback (round 1)
+
+- **"You can join community without buying ticket"** under the ticket card on desktop (≥ 1024px), outside the card and centred, Small regular Grey_2. "join community" is a purple (Primary) semibold link that runs the normal join flow (log in if needed, intro box on first join, then the chat). Hidden for the host and for anyone already in the event's chat. Phones keep the "Not ready to buy a ticket?" block.
+- **Ticket card titles** (SINGLE, COUPLE…): one step down, 14/18 → 12/16 (app x-Small semibold, weight unchanged), still in capitals.
+- **Phone page side padding: 16** (was 24). Changed at the source (`--container-inset-mobile` and `--container-detail-inset-mobile`), so every page follows; the create-event phone screens, the ticket screen, the photo strip and Edit Profile now use the same token. The bottom action buttons on the create-event phone screens now run edge to edge inside the 16 margin (were capped at 327). Indents inside sections (e.g. the 8px inset of the create-event fields) are unchanged.
+
+## 27 Oct — Event details icons (Figma 10894:35489) and title-row buttons
+
+- Address, date and price rows use the Figma icons (Phosphor MapPin, CalendarDots, Ticket; CopySimple for copy) with no box around them; the month/day calendar tile is gone. Sizes follow Airbnb's listing rows (measured on airbnb.com): icon 24, 16 to the text, text 16/20 regular, 24 between rows (Figma has 20px icons 18 apart). Copy icon 16. Text colours unchanged (Grey_1, phones Grey_2). "Add to calendar" unchanged.
+- Desktop title row: "Join Community - Free" is text only (+ icon removed) and a "Share Event" pill sits beside it (same small secondary style). Share uses the phone share sheet, or copies the link ("Link copied").
+- Desktop ticket card: the "Open Chat" (host) and "Share Event" (host or ticket holder) buttons under the tickets are hidden on desktop, since the title row has both. Phones and tablets keep them there, because the title-row buttons only show on desktop.
+- "Add to calendar" is now a compact pill, 28 tall (14/20 semibold, 4 above and below, 12 sides; Figma's pill size), and every details row is 28 tall (icon and text centred in it), so address, date and price sit evenly apart (icons 52 apart on desktop).
+
+## 27 Oct — Header search, login icon (Figma 10847:27370), bold card titles
+
+- **Desktop search field** sized as in Figma HOME/DEFAULT: 509 wide (shrinks on smaller laptops), 52 tall, placeholder 18/24 Grey_3 starting 18 from the edge, 32 purple button with a 16 icon, 10 from the right. Replaces the Airbnb 376 / 14px / 36 sizing. Phone search bar (after tapping the icon) unchanged.
+- **Phone header buttons** stay Airbnb 40 round, but the icons are now 24 (search was 16).
+- **Login icon** on phones (signed out): the Figma person outline (`icon-user-24.svg`, drawn with our 1.5px line rule). Signed in still shows their photo.
+- **Event card titles** are bold (700) on every event card (Home rows, All events, Activities); size unchanged.
+- Event page (768px and up): the photos now sit 24 below the title row (was 40), the same as the header to the title row, so the title is evenly spaced (desktop: 29 above and below the title text, the row being as tall as its 40px buttons). Phones unchanged (already 24).
+
+## 27 Oct — Community "View all", bigger gender tag, Home "Explore all"
+
+- **Community section**: "Invite Friend" is now **"View all"** and opens `EventCommunityModal` (NOT IN FIGMA, PROPOSED layout): web a 441 card, phones a bottom sheet; title "Community (N)", X; a scrolling list of everyone, host first, each row a 48 photo/letter avatar and the name (16/20). More load as you scroll (30 at a time). Tapping a person closes the list and opens their profile. "+N Others" opens the list too. (Inviting is still available through Share Event.)
+  - MOCK: the catalog only names 5 people per event, so `mocks/community.ts` invents the rest (stable per event) up to the community count. Service: `getCommunityMembers(eventId, offset, limit)`. OPEN ITEM (engineering): endpoint and page size.
+- **Gender tag** on community photos: 18 (with its 2px white edge, was 12) and a 10px semibold F / M (was 6px regular) so it can be read.
+- **Home "Explore all"**: the button sits under the card row, left aligned, 24 below, on every screen (was beside the "Explore all events" heading from 768px up).
+
+## 27 Oct — Home hero from Figma, "Add your Event", host app modal copy, modal body colour
+
+- **Home hero** (Figma HOME/DEFAULT 10847:27412 and HOME/DEFAULT/MOBILE 10847:27650):
+  - Desktop (≥ 1024): 70 above and below; title left, 56/64 bold, -1 letter spacing, up to 581 wide; right column up to 506 wide with the sentence (18/28 Grey_2) and, 24 below, a 240 × 52 "Join Vegaz" (18/28 semibold). Sides line up with the page content (not Figma's 58).
+  - Tablet (768–1023): same layout with today's sizes (40/48 title, 16/24 text, 48 button), 40 above and below.
+  - Phones: 40 above and below, 16 title to text, 32 text to the full-width button; sizes unchanged.
+  - **"Join Vegaz"** (was "Add your event") opens Login or signup; it is hidden once signed in.
+- **Header and footer**: "Host an Event" now reads **"Add your Event"** (same action: starts hosting).
+- **Host app modal**: title "Unlock your host tools in the app"; body "Get your guest and promoter links, scan tickets at the door and manage your event, all in the Vegaz app." Both centred, body Grey_2. **"Maybe Later"** replaces "Don't show again": it closes the modal until their next visit (there is no permanent opt-out any more; `useHostAppPrompt` removed).
+- **Body text in modals and pop-ups is Grey_2** (`--color-text-secondary`): Log out, host app, Event Created, ticket-kind sheet, Activities (empty state and note), signup success, gender step, and the terms note on the email step. Titles, labels and field text stay dark. Already Grey_2: bio, birthday and gender prompts, host dialogs, auth step copy. Not changed: the checkout success copy (light text on the dark card).
+
+## 27 Oct — Bottom nav (Figma update), hero button, footer, phone search
+
+- **Bottom navigation** (Figma 10870:35376 update): Create pill is now Primary with a light purple (#F1E9FF) +; active tab icons are the Linear icons in Primary (no Bold icons); inactive Grey_3; labels semibold in every state. Kept from earlier decisions: Airbnb bar sizing (65 tall, 10 above / below, 44 tabs) and 11/13 labels (Figma shows 12/18 and 15 padding).
+- **Home hero button** (desktop and tablet): Airbnb standard button (48 tall, 16/20, 24 sides) that fits "Join Vegaz" (~125 wide); Figma's 240 × 52 felt too big. Phones keep the full-width button.
+- **Footer**: "Hot events right now" and "Upcoming events" removed from Discover.
+- **Phone search** (`LayoutMobileSearch`, NOT IN FIGMA, PROPOSED): the search icon opens a full-screen search instead of turning the header into a field with "Cancel". Close X (40 round, Grey_6) on the left, then the search pill; before typing, "Suggested events" (up to 6 happening this week); while typing, up to 6 matches or "No events found"; rows: 48 flier, title, place · date. Tapping a row opens the event; Search / Enter opens the All events page with the results (`/events?q=…`, "Results for “…” (N)"). What was typed is kept. Desktop keeps the dropdown under the header field.
+
+## 27 Oct — Create-event hierarchy and alignment, phone search close, icon buttons, Home bottom space
+
+- **Create event choice screen**: "Create event" is H2 32/40 bold (was 20/24 semibold); "Start fresh event" / "Use existing event" are bold.
+- **Create-event layout (desktop and tablet)**: content lines up with the top bar, 64 from the screen edge: the step rail's text starts in line with the logo (the grey rail still runs to the screen edge and widens by the difference), and the form / side panel ("Your tickets") end in line with Exit. The middle form is narrower as a result. Same on every step and on 1024–1279 and tablet widths.
+- **Ticket type dropdown** (create-event flow): option titles bold; 4px more padding above and below each option. Colours unchanged.
+- **Details row icons** (Location, Categories, Participants…): fixed file paths instead of names built at runtime, so every build finds them (they were missing in the preview).
+- **Phone search**: the clear (x) inside the field is removed; the close X sits to the right of the field, with no background.
+- **Icon buttons have no grey circle** behind them: back buttons (`UiBackButton`, everywhere) and the profile panel close / back. Hover fades the icon slightly (PROPOSED). Header search / login round buttons are unchanged.
+- **Home**: 24 between the "Explore all" button and the footer on every screen (was 141 on desktop/tablet, 42 on phones).
+
+## 27 Oct — Phone ticket bar redesign
+
+- Based on Airbnb's booking bar (measured at 375: 48-tall button, 16/20 text, 24 sides) and made clearer:
+  - 16 above and below (+ safe area), page margins at the sides (16 phones; 24/40 tablet).
+  - Top: 1px hairline (black at 6%) and a soft shadow `0 -4px 16px rgba(17,17,26,.06)` so it lifts off white pages.
+  - Left: total 18/24 bold Grey_1 ("Free" when there's nothing to pay) over "3 tickets · 2 tiers" 14/18 regular Grey_2.
+  - Right: standard 48 primary button (16/20, at least 148 wide): "Buy Ticket", or "RSVP" for free-only picks.
+- Room is now reserved under the whole page while the bar shows, so the bottom of the footer is no longer hidden behind it.
+- Tapping the ticket bar anywhere except its button smoothly scrolls the page to the ticket list (just below the header). The total and summary are a button for keyboard and screen-reader users ("…, Show tickets").
+- Header (signed in): the phone profile photo is 32 (was 40) so it balances the 24px search icon; on desktop the profile button shows the photo and name only (the @username line is removed).
+
+## 27 Oct — Hero when signed in, button weight, header centring, carousels, profile menu spacing
+
+- **Home hero** is hidden whenever someone is signed in; the first row then sits 24 under the header.
+- **Button text is semibold (600)** on every `UiButton` (was 500), including the chat header "Buy Ticket" (was regular).
+- **Desktop header**: the search is exactly in the middle of the page (two equal side columns), placeholder/text 16px (Figma 18). The profile button is the photo (32) + arrow only, 40 tall like "Add your Event" (name removed).
+- **Phone header**: the search and login icons have no grey circle (just the icon). Spacing tightened: 40 tap areas 4 apart, so the icons are 20 apart and the last one lines up with the 16 page margin. Profile photo 28 (with its arrow): a filled photo reads as the same size as the 24 outline search icon.
+- **Phone carousels**: no scrollbar under the cards; 12 extra space below the cards.
+- **Profile menu spacing** (Figma 10682:52438, updated): 24 between items (rows 8 apart), 8 above and below the line, 16 above the first item and 24 below "Log out" (our menu text keeps its Airbnb size, so the gaps are copied rather than the absolute positions).
+
+## 27 Oct — Rotating promo banner with animated art (Figma 10653:38231)
+
+- **768px and up**: one full-width promo banner at a time (Figma 10653:38259 "Refer a host" and 10904:35652 "Get free tickets"), cross-fading (0.6s) every 30 seconds, round and round. Two dots under it (8 round, the current one a 20-wide Primary pill, PROPOSED) show which one is on and switch it; the timer pauses while the pointer or keyboard focus is on the banner.
+- Built from parts (not one image) so the art can move: Primary card 168 tall, radius 20; illustration 231 from the left edge; centred text 323 wide (title 34/34 Outfit Black 900 in Lime #C6FF00 / Pink #FF4081, uppercase; 16 below, 14/18 white); pink 56 round arrow 46 from the right. Outfit 900 is now loaded.
+- **Animation (PROPOSED)**: the illustration floats slowly with a slight tilt (6s loop) and its white sparkles twinkle (staggered); only the visible banner animates, and nothing moves for people who turn on "reduce motion". Done in CSS on the Figma SVGs (`assets/illustrations/`), no extra library. A richer animation would need a Lottie file from design.
+- **Phones**: unchanged (both square banners in a sideways row).
+- OPEN ITEM (unchanged): no destination for the banners / arrow yet.
+- Promo banner arrows (Figma update 27 Oct): 48 round (was 56), still 46 from the right; Pink on "Refer a host", cyan (#00E5FF) on "Get free tickets".
+- Phone header (< 768px): 10 above and below, the same as the bottom navigation, so it is 61 tall (10 + 40 tap areas + 10 + 1px line; was 80). `--sizing-header-height` is 61 on phones, so the chat page height and sticky offsets follow.
+- Host app modal: title is the app H2, 24/32 bold, with balanced line breaks (no single word left alone). "Maybe Later" is a text-only button (ghost: no fill, no border).
+- Ticket bought (purple screen, phones): "Cancel" under "Join Chat with Others" is text only (white, no outline).
+- **Event page sticky header (phones and tablets, < 1024)**: once the event name scrolls up behind the site header, `EventStickyHeader` takes the header's place (same height and bottom line): the event name on the left (16/20 semibold, one line, "…"), and on the right a Share icon button (40, no background) and the same small secondary button as the desktop title row ("Join Community - Free", or "Open Chat" for the host / members). It disappears when the name scrolls back into view. Not shown on desktop, where the title row has the buttons.
+- The "Open Chat" and "Share Event" buttons under the tickets are removed at every width (desktop title row / phone sticky header have them).
+- Share sits on the far right: in the phone/tablet sticky header (icon lined up with the page edge) and in the desktop title row (after "Join Community - Free" / "Open Chat").
+- **Leaving Create event part-way** (`HostLeaveDialog`, NOT IN FIGMA, PROPOSED copy, Log out dialog layout; phones a bottom sheet): once anything has been added (title, description, photos, date or time, location, category, participants, tickets, What to expect, or a chosen event for an edition), trying to leave the flow (Exit, Back on the first step, the browser's back button, any link) asks "Leave event setup?" with "Your event isn't published yet. If you leave now, everything you've added will be lost." — red "Leave" and "Keep editing" (focused first; X, Escape and clicking outside also keep them in). Nothing added yet: leaves straight away. Publishing never asks. Closing or reloading the tab shows the browser's own "Leave site?" warning.

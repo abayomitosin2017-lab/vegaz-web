@@ -1,6 +1,7 @@
 /**
  * Footer content, copied exactly from Figma Footer (node 9864:56123).
- * "Explore Events" opens the All events page (decision 22 Oct). "Host an Event"
+ * "Explore Events" opens the All events page (decision 22 Oct). "Hot events
+ * right now" and "Upcoming events" removed (decision 27 Oct). "Host an Event"
  * starts hosting and Terms / Privacy open the legal pages (decision 26 Oct).
  * OPEN ITEM: every other `href` is a placeholder ('#'). Real routes and social
  * URLs are not in Figma and must be supplied.
@@ -15,9 +16,7 @@ export const footerColumns: FooterColumn[] = [
     heading: 'Discover',
     links: [
       { label: 'Explore Events', href: '/events' },
-      { label: 'Host an Event', href: '/host', action: 'host' }, // decision 26 Oct (was "Create an Event")
-      { label: 'Hot events right now', href: '#' },
-      { label: 'Upcoming events', href: '#' },
+      { label: 'Add your Event', href: '/host', action: 'host' }, // decision 27 Oct (was "Host an Event", before that "Create an Event")
     ],
   },
   {

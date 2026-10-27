@@ -114,7 +114,7 @@ function onKeydown(e: KeyboardEvent) {
   padding: var(--spacing-xs);
   border: 0;
   border-radius: var(--radius-pill);
-  background: var(--color-chat-subtle);
+  background: none; /* no grey circle behind icons (decision 27 Oct) */
   cursor: pointer;
 }
 .chat-profile__close-back { display: none; }
@@ -185,8 +185,7 @@ function onKeydown(e: KeyboardEvent) {
     width: 36px;
     height: 36px;
     padding: 0;
-    background: var(--color-back-button); /* same as UiBackButton (decision 27 Oct) */
-    backdrop-filter: blur(2px);
+    background: none; /* same as UiBackButton: no grey circle (decision 27 Oct) */
   }
   .chat-profile__close-back { width: 20px; height: 20px; }
   .chat-profile__close-x { display: none; }

@@ -116,7 +116,7 @@ const morph = useEventMorph()
   gap: var(--spacing-xxs);
   padding-inline: var(--spacing-xxs);
 }
-.event-card__title { color: var(--color-text-primary); }
+.event-card__title { color: var(--color-text-primary); font-weight: var(--font-weight-bold); } /* bold 700 (decision 27 Oct; size unchanged) */
 .event-card__meta { color: var(--color-text-secondary); }
 
 /* Overflow rule from Figma "Hangout card" (node 7343:7945):

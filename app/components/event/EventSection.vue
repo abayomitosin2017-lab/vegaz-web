@@ -4,10 +4,11 @@
  *
  * 768px and up (Desktop - 29): cards share the row width equally, 16px gap.
  *   768-1023 (tablet) shows one card fewer per row (design decision).
- *   The optional #action slot sits to the right of the title.
+ *   The optional #action slot sits below the cards, left aligned, 24 under
+ *   them (decision 27 Oct; was right of the title).
  * Below 768px (HOME/DEFAULT/MOBILE): the row scrolls sideways; cards keep a
  *   fixed width (small 160px, medium 205px, rounded from Figma's 160.57 and
- *   205.33). The #action slot moves below the cards, left-aligned.
+ *   205.33). The #action slot sits below the cards, left-aligned.
  */
 import type { EventSummary } from '~/types/event'
 
@@ -56,6 +57,14 @@ const headingId = useId()
   margin-inline: calc(-1 * var(--container-inset-mobile));
   padding-inline: var(--container-inset-mobile);
   overflow-x: auto;
+  /* No scrollbar under the cards (decision 27 Oct) */
+  scrollbar-width: none;
+}
+.event-section__row::-webkit-scrollbar { display: none; }
+/* Phones: 12 extra below the cards, so a scroll bar (where the phone shows
+   one anyway) sits under the text, not on it (decision 27 Oct) */
+@media (max-width: 767px) {
+  .event-section__row { padding-bottom: var(--spacing-sm); }
 }
 .event-section__card { flex: none; }
 .event-section { --event-card-width-small: 160.571px; --event-card-width-medium: 205.333px; }
@@ -72,7 +81,7 @@ const headingId = useId()
 @media (min-width: 768px) {
   .event-section { grid-template-columns: minmax(0, 1fr) auto; }
   .event-section__title { grid-column: 1; align-self: center; }
-  .event-section__action { grid-row: 1; grid-column: 2; }
+  .event-section__action { grid-row: 3; grid-column: 1; } /* below the cards, left aligned (decision 27 Oct) */
   .event-section__row {
     grid-column: 1 / -1;
     /* Figma centres the cards; top-aligned here so cards whose text wraps on

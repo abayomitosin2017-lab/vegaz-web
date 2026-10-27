@@ -6,6 +6,8 @@ import './styles.css'
  *   rail (360) | form (scrolls) | side panel (400, optional)
  *   ---------------- bottom bar (80, fixed) ----------------
  *
+ * Edges (decision 27 Oct): step rail text, form and side panel line up with
+ * the top bar's logo (left) and Exit (right), 64 from the screen edge.
  * Form column: padding 48 / 64 (48 on every side when a side panel is shown),
  * items 32 apart, max width of the content follows the frame (952 without a
  * side panel, 584 with one).
@@ -68,13 +70,25 @@ function onContinue() {
 </template>
 
 <style scoped>
-.host-frame { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+.host-frame {
+  /* Edges line up with the top bar: the logo on the left, Exit on the right
+     (64 from the screen edge, decision 27 Oct) */
+  --host-edge: var(--spacing-4xl);
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+/* Step rail: grey panel still runs to the screen edge; its text starts in
+   line with the logo (was 40 in); the rail widens by the same amount, so the
+   middle form gets narrower */
+.host-frame__body :deep(.host-rail) { width: calc(var(--sizing-host-rail) + var(--host-edge) - var(--spacing-2xl)); padding-left: var(--host-edge); }
 .host-frame__body { flex: 1 1 auto; min-height: 0; display: flex; }
 .host-frame__form {
   box-sizing: border-box;
   flex: 1 1 auto;
   min-width: 0;
-  padding: var(--spacing-page-top) var(--spacing-4xl) var(--spacing-3xl);
+  padding: var(--spacing-page-top) var(--host-edge) var(--spacing-3xl) var(--spacing-4xl);
   overflow-y: auto;
 }
 .host-frame__form--side { padding: var(--spacing-page-top) var(--spacing-3xl) var(--spacing-3xl); }
@@ -85,8 +99,9 @@ function onContinue() {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
-  width: var(--sizing-host-side);
-  padding: var(--spacing-3xl) var(--spacing-xl);
+  /* right side ends in line with Exit; the panel widens by the extra */
+  width: calc(var(--sizing-host-side) + var(--host-edge) - var(--spacing-xl));
+  padding: var(--spacing-3xl) var(--host-edge) var(--spacing-3xl) var(--spacing-xl);
   border-left: var(--border-width-default) solid var(--color-border-default);
   overflow-y: auto;
   background: var(--color-background-primary);
@@ -98,7 +113,7 @@ function onContinue() {
   align-items: center;
   justify-content: space-between;
   height: var(--sizing-host-bottombar);
-  padding: 0 var(--spacing-4xl);
+  padding: 0 var(--host-edge);
   border-top: var(--border-width-default) solid var(--color-border-default);
   background: var(--color-background-primary);
 }
@@ -109,9 +124,10 @@ function onContinue() {
    below 1024   no rail; the side panel moves under the form and the whole
                 body scrolls; bars use 16px sides and equal-width buttons */
 @media (max-width: 1279px) {
-  .host-frame__body :deep(.host-rail) { width: 280px; padding: var(--spacing-xl) var(--spacing-lg); }
-  .host-frame__form, .host-frame__form--side { padding: var(--spacing-xl); }
-  .host-frame__side { width: 320px; padding: var(--spacing-xl) var(--spacing-lg); }
+  .host-frame__body :deep(.host-rail) { width: calc(280px + var(--host-edge) - var(--spacing-lg)); padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-xl) var(--host-edge); }
+  .host-frame__form { padding: var(--spacing-xl) var(--host-edge) var(--spacing-xl) var(--spacing-xl); }
+  .host-frame__form--side { padding: var(--spacing-xl); }
+  .host-frame__side { width: calc(320px + var(--host-edge) - var(--spacing-lg)); padding: var(--spacing-xl) var(--host-edge) var(--spacing-xl) var(--spacing-lg); }
 }
 @media (max-width: 1023px) {
   .host-frame__body { flex-direction: column; overflow-y: auto; }
@@ -122,5 +138,10 @@ function onContinue() {
   .host-frame__bar { padding: 0 var(--spacing-md); gap: var(--spacing-md); }
   .host-frame__right { flex: 2; }
   .host-frame__back.ui-button, .host-frame__skip.ui-button, .host-frame__next.ui-button { width: auto !important; flex: 1; padding-inline: var(--spacing-xs); }
+}
+/* Tablet (768-1023): the top bar keeps 64 sides, so the content does too */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .host-frame__form, .host-frame__form--side, .host-frame__side { padding-inline: var(--host-edge); }
+  .host-frame__bar { padding: 0 var(--host-edge); }
 }
 </style>
