@@ -11,8 +11,8 @@
  * "Join Chat with Others" (secondary button, full width).
  * Phones: full purple screen: light Vegaz logo top left, close top right,
  * content centred (330px), buttons "Join Chat with Others" (white) and
- * "Cancel" (purple with Grey_1 outline, white text), 8px apart; a soft dark
- * glow at the bottom.
+ * "Close" (text only; was "Cancel", decision 27 Oct: it only closes this
+ * screen, back to the event page), 8px apart; a soft dark glow at the bottom.
  *
  * Photos: the event's own photos (flier first), not Figma's sample images.
  * Copy (decision 22 Oct): "it's way" -> "its way", "hangout chat" ->
@@ -48,7 +48,7 @@ const shown = computed(() => [0, 1, 2].map(i => props.photos[i] ?? props.photos[
 
     <div class="checkout-success__actions">
       <UiButton class="checkout-success__join" color="secondary" data-autofocus :aria-busy="busy ? 'true' : undefined" @click="!busy && emit('join')">Join Chat with Others</UiButton>
-      <UiButton class="checkout-success__cancel" color="secondary" fill="ghost" @click="emit('close')">Cancel</UiButton><!-- text only (decision 27 Oct; was outlined) -->
+      <UiButton class="checkout-success__cancel" color="secondary" fill="ghost" @click="emit('close')">Close</UiButton><!-- text only (decision 27 Oct; was outlined) -->
     </div>
   </div>
 </template>

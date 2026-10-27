@@ -158,10 +158,17 @@ onBeforeUnmount(() => {
 })
 
 defineExpose({ focusFirst })
+
+// Render the dialog layer only once the page is running in the browser.
+// Dialogs are always closed on first load, and an "appear" transition inside
+// a Teleport breaks server-rendered page start-up (Vue hydration error on
+// the event and chat pages, found 27 Oct).
+const ready = ref(false)
+onMounted(() => { ready.value = true })
 </script>
 
 <template>
-  <Teleport to="body">
+  <Teleport v-if="ready" to="body">
     <Transition name="ui-modal" appear>
     <div
       v-if="open"

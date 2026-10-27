@@ -767,3 +767,9 @@ Measured on airbnb.com (home + a listing page) at 375, 768 and 1440 in a real br
   - Also: the community "View all" list (including the next page), My Activities, the chat pop-up (list and messages) and the edition event picker.
 - **How:** pages now load their data "lazily", so the page frame (header, footer) appears straight away and the placeholders fill the gaps, instead of a blank screen until everything is ready. The Home mock now waits like a real request does.
 - NOT IN FIGMA, PROPOSED: shapes follow the real layouts; colours are existing Grey tokens.
+
+## 27 Oct: Buy ticket success screen: "Close" instead of "Cancel"
+- The phone button under "Join Chat with Others" now says **Close** (still text only). It and the X (desktop and phones) close the success screen only, and the buyer stays on the event page.
+- Closing also puts the buyer in the event's community, so the event page shows them as already in the chat: the "Join the community" card and note are gone, and the button reads **Open Chat**. On desktop it's in the title row; on phones it's in the bar that appears at the top once they scroll. Open Chat goes straight into the chat.
+- ASSUMPTION (engineering to confirm): buying a ticket includes membership of the event's community. Because they're already members, the chat intro box doesn't open when they come in through Open Chat later. "Join Chat with Others" still opens the intro box first, as before.
+- Fix found while testing: the shared dialog component now renders only after the page has started in the browser. When the event and chat pages were opened directly (server-rendered), a dialog's opening animation broke start-up and left the page blank. Nothing visible changes.

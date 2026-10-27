@@ -18,6 +18,9 @@
  *   Proceed (assigning optional; leftovers go to the buyer, decision 27 Oct) -> Pay (mock Paystack; skipped when the
  *   total is ₦0) -> success, and the buyer is signed in.
  *   "Join Chat with Others" opens the event chat (the page handles it).
+ *   "Close" / X on the success screen (decision 27 Oct): closes only the
+ *   success screen and puts the buyer in the event's community, so the
+ *   event page shows them as in the chat ("Open Chat").
  *
  * Quantities are shared with the page (v-model), so the cart and the
  * ticket cards always match. Closing keeps what was typed until the page
@@ -30,6 +33,7 @@ import type { TicketType } from '~/types/ticket'
 import type { BuyerDetails, CheckoutContact, CheckoutOrder, TicketAssignee } from '~/types/checkout'
 import type { SelectOption } from './Select.vue'
 import { createOrder, findAccount, holdsTicket, issueTickets, payOrder, signInBuyer } from '~/services/checkout'
+import { joinEventChat } from '~/services/chat'
 
 type Step = 'contact' | 'details' | 'cart' | 'add' | 'assign' | 'assignee' | 'pay' | 'success'
 
@@ -211,6 +215,15 @@ function close() {
   }
   emit('close')
 }
+/** Success screen "Close" / X: the buyer joins the community, then back to the event page */
+async function closeSuccess() {
+  if (busy.value) return
+  if (purchased.value && user.value) {
+    busy.value = true
+    try { await joinEventChat(user.value.username, props.event.id) } finally { busy.value = false }
+  }
+  close()
+}
 function joinChat() {
   close()
   emit('join-chat')
@@ -287,8 +300,8 @@ watch(step, () => nextTick(() => modal.value?.focusFirst()))
     :labelledby="`${titleId}-done`"
     :dismissible="false"
     fallback-focus="[data-account-trigger]"
-    @close="close"
+    @close="closeSuccess"
   >
-    <CheckoutSuccessView :title-id="`${titleId}-done`" :photos="event.photos" @close="close" @join="joinChat" />
+    <CheckoutSuccessView :title-id="`${titleId}-done`" :photos="event.photos" :busy="busy" @close="closeSuccess" @join="joinChat" />
   </UiModal>
 </template>
