@@ -1,12 +1,18 @@
 <script setup lang="ts">
 /**
- * EventStickyHeader: phones and tablets (< 1024px, decision 27 Oct). Once the
+ * EventStickyHeader: every width (phones and tablets 27 Oct; desktop added
+ * 27 Oct). Once the
  * event's name has scrolled up behind the site header, this bar takes the
  * header's place: the event name on the left (one line, "..." when long),
  * then on the right the same buttons as the desktop title row: the small
  * secondary "Join Community - Free" / "Open Chat", and Share on the far
  * right (icon only here, 40 tap area, no background; decision 27 Oct). It goes away when the name scrolls
  * back into view. White, the header's height and bottom line.
+ * Desktop (>= 1024px): the two buttons are exactly the title row's: small
+ * secondary "Join Community - Free" / "Open Chat" and "Share Event" (text,
+ * 40 tall pills, 8 apart). The name uses the page title's size (26/30,
+ * semibold, decision 27 Oct; was 18/24) and lines up with
+ * the event page's content (1120 wide, 40 sides).
  * The page passes `show` (it watches its title row).
  */
 defineProps<{ show: boolean; title: string; actionLabel: string; busy?: boolean }>()
@@ -15,12 +21,17 @@ const emit = defineEmits<{ share: []; action: [] }>()
 
 <template>
   <div :class="['event-sticky', { 'event-sticky--on': show }]" :aria-hidden="show ? undefined : 'true'" :inert="!show || undefined">
-    <p class="event-sticky__title">{{ title }}</p>
-    <div class="event-sticky__actions">
-      <UiButton size="small" color="secondary" class="event-sticky__action" :disabled="busy" @click="emit('action')">{{ actionLabel }}</UiButton>
-      <button type="button" class="event-sticky__share" aria-label="Share event" @click="emit('share')">
-        <img src="/images/chat/icon-share-24.svg" alt="" width="24" height="24" />
-      </button>
+    <div class="event-sticky__inner">
+      <p class="event-sticky__title">{{ title }}</p>
+      <div class="event-sticky__actions">
+        <UiButton size="small" color="secondary" class="event-sticky__action" :disabled="busy" @click="emit('action')">{{ actionLabel }}</UiButton>
+        <!-- Phones / tablets: icon only -->
+        <button type="button" class="event-sticky__share" aria-label="Share event" @click="emit('share')">
+          <img src="/images/chat/icon-share-24.svg" alt="" width="24" height="24" />
+        </button>
+        <!-- Desktop: the title row's "Share Event" button -->
+        <UiButton size="small" color="secondary" class="event-sticky__share-web" @click="emit('share')">Share Event</UiButton>
+      </div>
     </div>
   </div>
 </template>
@@ -43,6 +54,8 @@ const emit = defineEmits<{ share: []; action: [] }>()
   transform: translateY(-4px);
   transition: opacity 150ms ease, transform 150ms ease, visibility 0s linear 150ms;
 }
+.event-sticky__inner { display: flex; align-items: center; gap: var(--spacing-sm); width: 100%; min-width: 0; }
+.event-sticky__share-web { display: none; }
 .event-sticky--on { opacity: 1; visibility: visible; transform: none; transition: opacity 150ms ease, transform 150ms ease, visibility 0s; }
 .event-sticky__title {
   flex: 1;
@@ -62,6 +75,13 @@ const emit = defineEmits<{ share: []; action: [] }>()
 .event-sticky__share:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: 2px; }
 .event-sticky__action { --ui-button-border-color: var(--color-border-default); white-space: nowrap; }
 @media (min-width: 768px) { .event-sticky { padding-inline: var(--container-inset-tablet); } }
-@media (min-width: 1024px) { .event-sticky { display: none; } }
+@media (min-width: 1024px) {
+  .event-sticky { padding: 0 var(--container-detail-inset-desktop); }
+  .event-sticky__inner { max-width: var(--container-detail-max); margin: 0 auto; gap: var(--spacing-md); }
+  .event-sticky__title { font-size: var(--text-page-title-size); font-weight: var(--text-page-title-weight); line-height: var(--text-page-title-line); letter-spacing: var(--text-page-title-tracking); } /* same as the page title */
+  .event-sticky__actions { gap: var(--spacing-xs); margin-right: 0; }
+  .event-sticky__share { display: none; }
+  .event-sticky__share-web { display: inline-flex; flex: none; --ui-button-border-color: var(--color-border-default); }
+}
 @media (prefers-reduced-motion: reduce) { .event-sticky, .event-sticky--on { transition: none; transform: none; } }
 </style>

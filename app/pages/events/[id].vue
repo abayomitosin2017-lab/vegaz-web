@@ -207,7 +207,7 @@ function openMember(person: ChatPerson) {
   nextTick(() => openProfile(person))
 }
 
-// ---- Phones / tablets: sticky header with the name + buttons (decision 27 Oct) ----
+// ---- Sticky header with the name + buttons, every width (decision 27 Oct; desktop added 27 Oct) ----
 // Shows once the title row has scrolled up behind the site header
 const topRow = ref<HTMLElement | null>(null)
 const stickyOn = ref(false)

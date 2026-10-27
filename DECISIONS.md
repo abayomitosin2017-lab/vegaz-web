@@ -773,3 +773,8 @@ Measured on airbnb.com (home + a listing page) at 375, 768 and 1440 in a real br
 - Closing also puts the buyer in the event's community, so the event page shows them as already in the chat: the "Join the community" card and note are gone, and the button reads **Open Chat**. On desktop it's in the title row; on phones it's in the bar that appears at the top once they scroll. Open Chat goes straight into the chat.
 - ASSUMPTION (engineering to confirm): buying a ticket includes membership of the event's community. Because they're already members, the chat intro box doesn't open when they come in through Open Chat later. "Join Chat with Others" still opens the intro box first, as before.
 - Fix found while testing: the shared dialog component now renders only after the page has started in the browser. When the event and chat pages were opened directly (server-rendered), a dialog's opening animation broke start-up and left the page blank. Nothing visible changes.
+
+## 27 Oct: Event page sticky header on desktop too
+- The sticky bar (event name and buttons, shown once the name scrolls up behind the site header) now shows at every width, desktop included.
+- Desktop (1024px and up): the two buttons are exactly the ones in the title row ("Join Community - Free" / "Open Chat", then "Share Event"). They're the same 40-tall text pills, in the same spot on screen, 8 apart. The name uses the page title's size (26/30 semibold, same as before scrolling; was 18/24), left aligned with the page content (1120 wide, 40 sides). The bar is the site header's height (80) with its bottom line.
+- Phones and tablets are unchanged: small button, then the Share icon.
