@@ -44,6 +44,13 @@ const props = withDefaults(
     tickets: TicketType[]
     /** 'add': start on Add Ticket with an empty cart (chat "Buy Ticket", decision 22 Oct) */
     start?: 'cart' | 'add'
+    /**
+     * Phones: the Buy Ticket sheet already was the cart (decision 28 Oct), so
+     * the flow skips Ticket Cart: signed out -> email (and details) -> Assign
+     * tickets; signed in -> Assign tickets. Back from Assign tickets goes to
+     * the email step, or closes for signed-in buyers.
+     */
+    skipCart?: boolean
   }>(),
   { start: 'cart' },
 )
@@ -81,7 +88,8 @@ watch(() => props.open, (isOpen) => {
     hasAccount.value = true
     contact.value = { email: user.value.email ?? '', phone: user.value.phone ?? '' }
     accountName.value = { firstName: user.value.firstName, lastName: user.value.lastName }
-    step.value = props.start === 'add' ? 'add' : 'cart'
+    if (props.skipCart) startAssigning()
+    else step.value = props.start === 'add' ? 'add' : 'cart'
   } else {
     step.value = 'contact'
   }
@@ -95,7 +103,7 @@ async function onContact(value: CheckoutContact) {
     const res = await findAccount(value.email)
     hasAccount.value = res.exists
     accountName.value = res.exists && res.firstName ? { firstName: res.firstName, lastName: res.lastName ?? '' } : null
-    if (res.exists) step.value = 'cart'
+    if (res.exists) afterContact()
     else {
       details.value = { ...details.value, phone: details.value.phone || value.phone }
       step.value = 'details'
@@ -106,7 +114,16 @@ async function onContact(value: CheckoutContact) {
 }
 function onDetails(value: BuyerDetails) {
   details.value = value
-  step.value = 'cart'
+  afterContact()
+}
+/** After email (and details): the cart, or straight to Assign tickets (phone sheet) */
+function afterContact() {
+  if (props.skipCart) startAssigning()
+  else step.value = 'cart'
+}
+function backFromAssign() {
+  if (props.skipCart) backFromCart()
+  else step.value = 'cart'
 }
 function backFromCart() {
   if (user.value) emit('close')
@@ -273,7 +290,7 @@ watch(step, () => nextTick(() => modal.value?.focusFirst()))
       :count="count"
       :free="free"
       @close="close"
-      @back="step = 'cart'"
+      @back="backFromAssign"
       @add="openAssignee(null)"
       @edit="openAssignee"
       @proceed="proceedFromAssign"

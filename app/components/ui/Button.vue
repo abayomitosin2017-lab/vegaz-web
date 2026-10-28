@@ -30,7 +30,7 @@
  */
 type Size = 'standard' | 'small'
 type Fill = 'solid' | 'outline' | 'ghost'
-type Color = 'primary' | 'secondary'
+type Color = 'primary' | 'secondary' | 'positive'
 type TextStyle = 'app' | 'web'
 
 const props = withDefaults(
@@ -153,6 +153,18 @@ if (import.meta.dev && props.iconOnly && !attrs['aria-label'] && !attrs['aria-la
   --btn-fg: var(--color-action-primary);
 }
 .ui-button--primary.ui-button--ghost { --btn-fg: var(--color-action-primary); }
+
+/* ---- positive (green #20AF0B): "Join Community" buttons, decision 28 Oct ----
+   Hover / pressed: 8% / 16% darker (PROPOSED). FLAG: white text on #20AF0B is
+   about 3:1 contrast, below the 4.5:1 guideline for small text. */
+.ui-button--positive.ui-button--solid {
+  --btn-bg: var(--color-status-success);
+  --btn-border: var(--color-status-success);
+  --btn-fg: var(--base-white);
+  --btn-bg-hover: color-mix(in srgb, var(--color-status-success) 92%, black);
+  --btn-bg-active: color-mix(in srgb, var(--color-status-success) 84%, black);
+  --ui-button-border-color: transparent;
+}
 
 /* ---- secondary ---- */
 .ui-button--secondary { --btn-fg: var(--color-text-strong); }

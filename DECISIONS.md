@@ -869,3 +869,33 @@ All of these use one look, `UiStateMessage`: a 64 round Grey_6 circle with a 32 
 
 ## 28 Oct: Hero button copy
 - The Home hero button now reads "Join Vegaz - Free" (was "Join Vegaz"). It still opens log in / sign up.
+
+## 28 Oct: "Join Community" buttons are green
+- Every "Join Community - Free" / "Join Community for free" button is now a solid green active button: #20AF0B (Positive token), white text, no outline.
+  - Covers the desktop title row, the sticky event header on all screens, and the phone "Not ready to buy a ticket?" card.
+  - Hover and pressed are slightly darker (PROPOSED).
+- New `UiButton` colour: `color="positive"`.
+- Once they're in the chat, the button reads "Open Chat" and stays the grey secondary button.
+- The text link "join community" under the tickets is unchanged.
+- FLAG: white on #20AF0B is about 3:1 contrast, under the 4.5:1 guideline for small text.
+
+## 28 Oct: Phone Buy Ticket bar → ticket sheet (Figma "Vegaz web bugs", section 80:2)
+- **Phones (under 768px), not the host:** `EventMobileBuy` is always at the bottom of the event page.
+  - Bar: white, top corners 24, Grey_5 line, soft shadow, 16 / 16 / 24 padding, full-width 48 "Buy Ticket" ("RSVP" for free-only events).
+  - Once something is picked on the page, the summary sits 24 above the button: "2 tickets · 2 tiers" (14/18 Grey_2) and the total (24 bold).
+- **Tapping the button:**
+  - The same panel grows up into the Buy Ticket sheet (300ms strong ease-out; 220ms back) and the page dims, header included.
+  - The button stays in place and becomes "Proceed", inactive until a ticket is picked.
+  - Sheet: "Buy Ticket" + X, the same ticket cards as the page, and a fixed footer (Grey_5 line, summary 14/20 + total 24/32 bold, "No tickets yet / ₦0" when empty, 24 above Proceed).
+  - The summary slides into its footer spot.
+  - With many tiers the sheet stops at the bottom of the page header and only the cards scroll.
+  - X, the dimmed page or Escape closes it.
+- **Shared picks:** page and sheet use the same quantities and totals.
+- **Proceed:** skips Ticket Cart (decision). Signed out → email (and details) → Assign tickets; signed in → Assign tickets. Back from Assign tickets returns to the email step, or closes for signed-in buyers (`CheckoutFlow skipCart`).
+- **Tablets:** keep the old bar (shown once a ticket is picked). Desktop is unchanged.
+- **Phone event header:** the "Join Community - Free" button is smaller so it balances with the name and icons: 32 tall, 12 sides, 12/18 semibold.
+- **Update 28 Oct (Figma changes):**
+  - The phone bar's top corners are 40 (24 once it's the sheet).
+  - With picks, the bar's summary is centred 16 above the button: "2 tickets · 2 tiers" (14/18 Grey_2), a 1 x 16 line (Grey_1 40%) and the total (16/24 bold), 24 apart.
+  - Opening the sheet: as it grows out, the summary text and total travel from the centre of the bar to their places in the footer (left / right) and grow to size (total 16 → 24/32), 300ms; closing reverses it.
+- **Update 28 Oct:** the ticket sheet title "Buy Ticket" uses the same title style as the other sheets and pop-ups (22/26 semibold, `text-app-h2-bold`), instead of Figma's 24/32 bold.

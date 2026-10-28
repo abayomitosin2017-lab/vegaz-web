@@ -19,7 +19,7 @@ const emit = defineEmits<{ join: [] }>()
       <h2 id="join-card-title" class="join-card__title">Not ready to buy a ticket? Join our community.</h2>
       <p class="join-card__note text-small-regular">Join for free to get updates and announcements about this event, and never miss out.</p>
     </div>
-    <UiButton size="small" color="secondary" class="join-card__button" :disabled="busy" @click="emit('join')">Join Community for free</UiButton>
+    <UiButton size="small" color="positive" class="join-card__button" :disabled="busy" @click="emit('join')">Join Community for free</UiButton>
   </section>
 </template>
 

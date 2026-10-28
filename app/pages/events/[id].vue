@@ -107,6 +107,7 @@ const total = computed(() => picked.value.reduce((sum, t) => sum + t.price * (qu
 const price = computed(() => priceRange((tickets.value ?? []).map(t => t.price)))
 // Buy Ticket opens the checkout (Figma 10713:56670, decisions 22 Oct)
 const checkoutOpen = ref(false)
+const phone = usePhoneLayout()
 // Tickets the signed-in user holds for this event, and whether they're in its chat
 const holding = ref(0)
 // The signed-in user hosts this event (they created it): their main action is
@@ -274,7 +275,7 @@ const appPromptOpen = computed(() => isHost.value && !createdOpen.value && !appP
       <h1 class="event-page__title text-page-title">{{ event.title }}</h1>
       <!-- Text only, with Share Event beside it (decision 27 Oct) -->
       <div class="event-page__actions">
-        <UiButton size="small" color="secondary" class="event-page__join" :disabled="joining" @click="join">
+        <UiButton size="small" :color="inChat || isHost ? 'secondary' : 'positive'" class="event-page__join" :disabled="joining" @click="join">
           {{ inChat || isHost ? 'Open Chat' : 'Join Community - Free' }}
         </UiButton>
         <UiButton size="small" color="secondary" class="event-page__share" @click="invite">Share Event</UiButton><!-- far right (decision 27 Oct) -->
@@ -317,7 +318,21 @@ const appPromptOpen = computed(() => isHost.value && !createdOpen.value && !appP
       <EventAppBanner class="event-page__banner" />
     </div>
 
-    <EventTicketBar v-if="count > 0 && !isHost" class="event-page__bar" :total="total" :count="count" :tiers="picked.length" :free="isFreeOnly(tickets ?? [], quantities)" @buy="buy" @show="showTickets" />
+    <!-- Phones: Buy Ticket bar that grows into the ticket sheet (decision 28 Oct) -->
+    <ClientOnly>
+      <EventMobileBuy
+        v-if="phone && !isHost && (tickets ?? []).length && !profile"
+        v-model:quantities="quantities"
+        :tickets="tickets ?? []"
+        :total="total"
+        :count="count"
+        :tiers="picked.length"
+        :free="isFreeOnly(tickets ?? [], quantities)"
+        @proceed="buy"
+      />
+    </ClientOnly>
+    <!-- Tablets: the bar once a ticket is picked -->
+    <EventTicketBar v-if="!phone && count > 0 && !isHost" class="event-page__bar" :total="total" :count="count" :tiers="picked.length" :free="isFreeOnly(tickets ?? [], quantities)" @buy="buy" @show="showTickets" />
 
     <UiPhotoViewer
       :open="viewerIndex !== null"
@@ -340,6 +355,7 @@ const appPromptOpen = computed(() => isHost.value && !createdOpen.value && !appP
       :open="checkoutOpen"
       :event="event"
       :tickets="tickets ?? []"
+      :skip-cart="phone"
       @close="checkoutOpen = false"
       @purchased="onPurchased"
       @join-chat="join"

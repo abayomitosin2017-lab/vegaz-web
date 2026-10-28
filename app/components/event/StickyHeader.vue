@@ -36,7 +36,7 @@ function back() {
       <UiBackButton class="event-sticky__back" @click="back" />
       <p class="event-sticky__title">{{ title }}</p>
       <div class="event-sticky__actions">
-        <UiButton size="small" color="secondary" class="event-sticky__action" :disabled="busy" @click="emit('action')">{{ actionLabel }}</UiButton>
+        <UiButton size="small" :color="actionLabel === 'Open Chat' ? 'secondary' : 'positive'" class="event-sticky__action" :disabled="busy" @click="emit('action')">{{ actionLabel }}</UiButton>
         <!-- Phones / tablets: icon only -->
         <button type="button" class="event-sticky__share" aria-label="Share event" @click="emit('share')">
           <img src="/images/chat/icon-share-24.svg" alt="" width="24" height="24" />
@@ -70,6 +70,17 @@ function back() {
 .event-sticky__share-web { display: none; }
 .event-sticky__back { margin-left: calc(-1 * var(--spacing-xs)); } /* the arrow lines up with the page edge */
 @media (min-width: 768px) { .event-sticky__back { display: none; } }
+/* Phones: a smaller button so it sits in balance with the name and icons
+   (decision 28 Oct): 32 tall, 12 sides, 12/18 semibold */
+@media (max-width: 767px) {
+  .event-sticky .event-sticky__action.ui-button {
+    --ui-button-min-height: 32px;
+    --ui-button-pad-y: 7px;
+    --ui-button-pad-x: 12px;
+    font-size: 12px;
+    line-height: 18px;
+  }
+}
 /* Phones: always there, no slide-in */
 @media (max-width: 767px) { .event-sticky--on { transition: none; } }
 .event-sticky--on { opacity: 1; visibility: visible; transform: none; transition: opacity 150ms ease, transform 150ms ease, visibility 0s; }
@@ -89,7 +100,9 @@ function back() {
 .event-sticky__actions { flex: none; display: flex; align-items: center; gap: var(--spacing-xxs); margin-right: calc(-1 * var(--spacing-xs)); } /* the share icon lines up with the page edge */
 .event-sticky__share { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 0; border: 0; border-radius: var(--radius-pill); background: none; cursor: pointer; }
 .event-sticky__share:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: 2px; }
-.event-sticky__action { --ui-button-border-color: var(--color-border-default); white-space: nowrap; }
+.event-sticky__action { white-space: nowrap; }
+.event-sticky__action.ui-button--secondary { --ui-button-border-color: var(--color-border-default); }
+/* "Join Community - Free" is the green active button (decision 28 Oct) */
 @media (min-width: 768px) { .event-sticky { padding-inline: var(--container-inset-tablet); } }
 @media (min-width: 1024px) {
   .event-sticky { padding: 0 var(--container-detail-inset-desktop); }
