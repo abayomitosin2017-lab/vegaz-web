@@ -866,3 +866,6 @@ All of these use one look, `UiStateMessage`: a 64 round Grey_6 circle with a 32 
   - It then stays on every page until they close it (X, or "Not now" / "Got it" on iPhone) or add Vegaz. On Android, cancelling the browser's pop-up also closes it.
   - Closing it hides it for this visit only; it comes back the next time they open Vegaz and land on Home.
   - No longer tied to joining or buying; no 14-day wait.
+
+## 28 Oct: Hero button copy
+- The Home hero button now reads "Join Vegaz - Free" (was "Join Vegaz"). It still opens log in / sign up.

@@ -14,7 +14,7 @@
  * Phones: stacked, 40 above and below, 16 title to text, 32 to the
  * full-width button (Figma); sizes unchanged (title 32/40, text 16/24 Grey_3).
  *
- * "Join Vegaz" opens Login or signup (was "Add your event"). The whole hero
+ * "Join Vegaz - Free" (decision 28 Oct; was "Join Vegaz") opens Login or signup (was "Add your event"). The whole hero
  * is hidden once signed in (pages/index.vue, decision 27 Oct). Copy exactly as in Figma (no full stop).
  */
 const emit = defineEmits<{ join: [] }>()
@@ -28,7 +28,7 @@ const emit = defineEmits<{ join: [] }>()
         <p class="home-hero__text text-body-regular">
           Vegaz is your superpower for making friends and having a blast! Find your crew, plan epic activities, and create memories
         </p>
-        <UiButton text-style="web" class="home-hero__button" @click="emit('join')">Join Vegaz</UiButton>
+        <UiButton text-style="web" class="home-hero__button" @click="emit('join')">Join Vegaz - Free</UiButton>
       </div>
     </div>
   </section>
