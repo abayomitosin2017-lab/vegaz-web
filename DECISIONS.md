@@ -916,3 +916,12 @@ All of these use one look, `UiStateMessage`: a 64 round Grey_6 circle with a 32 
 
 ## 29 Oct: PWA sheet label
 - The iPhone install sheet's label reads "How to add it on iPhone" ("(Safari)" removed), in the app and in Figma.
+
+## 29 Oct (later): Green Open Chat, button delay, tappable summary
+- **Open Chat is green too:** once someone has joined, "Open Chat" keeps the green active button (#20AF0B), in the desktop title row and the sticky header on every screen. For hosts, it's green as well.
+- **Phone ticket sheet:**
+  - Opening: the sheet grows and the page dims first. 0.5 seconds later, the button and the summary move into their sheet places and the button becomes "Confirm" (inspired by the reference the client shared).
+  - The footer's change in height is smoothed so the sheet's top edge doesn't jump.
+  - Closing: everything moves back at once.
+- **Tappable summary:** on the closed phone bar, tapping the summary ("1 ticket · 1 tier | ₦70,000") also opens the sheet. It works with the keyboard too.
+- **Update 29 Oct:** the button delay is 0.15 seconds (was 0.5, then 0.2).

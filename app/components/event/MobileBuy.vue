@@ -36,6 +36,10 @@
  *     sheet closes. Opened with nothing picked: the normal order;
  *   - when cards are hidden below, the footer gets a soft top shadow
  *     (0 -6 16, 8%) so it reads as sitting over them.
+ * Update 29 Oct (later): opening, the sheet grows and the page dims first;
+ * 0.15s later (was 0.5s, then 0.2s) the button and summary move into their sheet places (the button
+ * becomes Confirm). Closing moves everything at once. Tapping the summary in
+ * the closed bar opens the sheet too.
  */
 import type { TicketType } from '~/types/ticket'
 import { formatNaira } from '~/utils/money'
@@ -62,6 +66,11 @@ const EASE = 'cubic-bezier(0.23, 1, 0.32, 1)'
  * the bar to the left of the footer and grow; the button slides right and
  * narrows to "Confirm". The reverse on closing.
  */
+// The button follows 0.15s after the sheet when opening (decision 29 Oct; was 0.5s, then 0.2s)
+const BUTTON_DELAY = 150
+const btnOpen = ref(false) // button already showing "Confirm"
+const footOpen = ref(false) // footer in its sheet layout (summary left, Confirm right)
+let btnTimer: ReturnType<typeof setTimeout> | undefined
 async function morphSummary(change: () => void) {
   const text = [metaEl.value, totalEl.value].filter((e): e is HTMLElement => !!e)
   const btn = panel.value?.querySelector<HTMLElement>('.mbuy__action') ?? null
@@ -87,12 +96,14 @@ async function morphSummary(change: () => void) {
     const b = btn.getBoundingClientRect()
     btn.style.transition = 'none'
     btn.style.width = `${btnBefore.width}px`
-    btn.style.transform = `translate(${btnBefore.left - b.left}px, ${btnBefore.top - b.top}px)`
+    const c = btn.getBoundingClientRect() // where it sits at its old width in the new layout
+    btn.style.transform = `translate(${btnBefore.left - c.left}px, ${btnBefore.top - c.top}px)`
     void btn.offsetWidth
-    btn.style.transition = `transform 300ms ${EASE}, width 300ms ${EASE}`
+    const delay = 0
+    btn.style.transition = `transform 300ms ${EASE} ${delay}ms, width 300ms ${EASE} ${delay}ms`
     btn.style.width = `${b.width}px`
     btn.style.transform = ''
-    setTimeout(() => { btn.style.width = ''; btn.style.transition = '' }, 320)
+    setTimeout(() => { btn.style.width = ''; btn.style.transition = '' }, delay + 320)
   }
 }
 
@@ -124,8 +135,8 @@ const titleId = useId()
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`
 const summary = computed(() => (props.count > 0 ? `${plural(props.count, 'ticket')} · ${plural(props.tiers, 'tier')}` : 'No tickets yet'))
 const totalLabel = computed(() => (props.count === 0 ? '₦0' : props.total === 0 ? 'Free' : formatNaira(props.total)))
-const action = computed(() => (open.value ? 'Confirm' : props.free ? 'RSVP' : 'Buy Ticket'))
-const inactive = computed(() => open.value && props.count === 0)
+const action = computed(() => (btnOpen.value ? 'Confirm' : props.free ? 'RSVP' : 'Buy Ticket'))
+const inactive = computed(() => btnOpen.value && props.count === 0)
 
 /** Sheet height: its content, but never above the page header */
 function measure() {
@@ -139,20 +150,40 @@ async function openSheet() {
   grouped.value = props.count > 0
   pickedIds.value = props.tickets.filter(t => (quantities.value[t.id] ?? 0) > 0).map(t => t.id)
   if (list.value) list.value.scrollTop = 0
-  await morphSummary(() => { open.value = true })
+  clearTimeout(btnTimer)
+  open.value = true // the sheet grows and the page dims first...
+  await nextTick()
+  // ...then, 0.15s later, the button (with the summary) moves into place and becomes Confirm
+  btnTimer = setTimeout(async () => {
+    if (!open.value) return
+    const footBefore = foot.value?.offsetHeight ?? 0
+    await morphSummary(() => { footOpen.value = true; btnOpen.value = true })
+    // The footer gets shorter (summary moves beside the button): hold the
+    // sheet's height for a frame, then let its top settle smoothly
+    const shrink = footBefore - (foot.value?.offsetHeight ?? 0)
+    if (shrink > 0 && top.value) {
+      top.value.style.transition = 'none'
+      topHeight.value += shrink
+      await nextTick()
+      void top.value.offsetHeight
+      top.value.style.transition = ''
+      measure()
+    }
+  }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : BUTTON_DELAY)
   document.documentElement.style.overflow = 'hidden'
   measure()
   closeBtn.value?.focus({ preventScroll: true })
 }
 function close() {
   if (!open.value) return
-  morphSummary(() => { open.value = false; topHeight.value = 0 })
+  clearTimeout(btnTimer)
+  morphSummary(() => { open.value = false; footOpen.value = false; btnOpen.value = false; topHeight.value = 0 })
   document.documentElement.style.overflow = ''
   nextTick(() => panel.value?.querySelector<HTMLElement>('.mbuy__action')?.focus({ preventScroll: true }))
 }
 function onAction() {
   if (!open.value) { openSheet(); return }
-  if (inactive.value) return
+  if (!btnOpen.value || inactive.value) return // still turning into Confirm, or nothing picked
   close()
   emit('proceed')
 }
@@ -192,7 +223,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div :class="['mbuy', { 'mbuy--open': open }]">
+  <div :class="['mbuy', { 'mbuy--open': open, 'mbuy--foot': footOpen }]">
     <div class="mbuy__scrim" aria-hidden="true" @click="close" />
     <section
       ref="panel"
@@ -218,7 +249,16 @@ onBeforeUnmount(() => {
       </div>
 
       <div ref="foot" :class="['mbuy__foot', { 'mbuy__foot--shadow': open && moreBelow }]">
-        <div :class="['mbuy__summary', { 'mbuy__summary--on': open || count > 0 }]" aria-live="polite">
+        <!-- Closed bar: tapping the summary opens the sheet too (decision 29 Oct) -->
+        <div
+          :class="['mbuy__summary', { 'mbuy__summary--on': footOpen || count > 0, 'mbuy__summary--tap': !open && count > 0 }]"
+          aria-live="polite"
+          :role="!open && count > 0 ? 'button' : undefined"
+          :tabindex="!open && count > 0 ? 0 : undefined"
+          :aria-label="!open && count > 0 ? `${summary}, ${totalLabel}. Show tickets` : undefined"
+          @click="!open && count > 0 && openSheet()"
+          @keydown.enter.space.prevent="!open && count > 0 && openSheet()"
+        >
           <div class="mbuy__summary-inner">
             <span ref="metaEl" class="mbuy__meta">{{ summary }}</span>
             <span class="mbuy__divider" aria-hidden="true" />
@@ -313,7 +353,7 @@ onBeforeUnmount(() => {
   border-top: var(--border-width-default) solid transparent;
   transition: border-color 200ms ease;
 }
-.mbuy--open .mbuy__foot {
+.mbuy--foot .mbuy__foot {
   flex-direction: row;
   align-items: center;
   gap: var(--spacing-md);
@@ -326,18 +366,20 @@ onBeforeUnmount(() => {
 .mbuy__summary--on { grid-template-rows: 1fr; opacity: 1; }
 .mbuy__summary-inner { display: flex; align-items: center; justify-content: center; gap: var(--spacing-lg); min-height: 0; overflow: hidden; transition: margin-bottom 300ms cubic-bezier(0.23, 1, 0.32, 1); }
 .mbuy__summary--on .mbuy__summary-inner { margin-bottom: var(--spacing-md); } /* bar: 16 above the button */
-.mbuy--open .mbuy__summary { flex: 1; min-width: 0; }
+.mbuy--foot .mbuy__summary { flex: 1; min-width: 0; }
 /* Sheet (decision 29 Oct): total over count on the left, Confirm on the right */
-.mbuy--open .mbuy__summary-inner { flex-direction: column-reverse; align-items: flex-start; justify-content: center; gap: 2px; margin-bottom: 0; }
+.mbuy--foot .mbuy__summary-inner { flex-direction: column-reverse; align-items: flex-start; justify-content: center; gap: 2px; margin-bottom: 0; }
+.mbuy__summary--tap { cursor: pointer; -webkit-tap-highlight-color: transparent; border-radius: var(--radius-sm); }
+.mbuy__summary--tap:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: 4px; }
 .mbuy__divider { flex: none; width: 1px; height: 16px; background: color-mix(in srgb, var(--grey-1) 40%, transparent); }
-.mbuy--open .mbuy__divider { display: none; }
+.mbuy--foot .mbuy__divider { display: none; }
 .mbuy__meta { color: var(--color-text-secondary); font-family: var(--font-family-base); font-size: 14px; line-height: 18px; white-space: nowrap; }
 .mbuy__total { display: inline-block; color: var(--color-text-strong); font-family: var(--font-family-base); font-size: 16px; font-weight: 700; line-height: 24px; white-space: nowrap; }
 .mbuy__meta { display: inline-block; }
 /* In the sheet: total 18/24 bold over the count 14/18 (as the earlier bar) */
-.mbuy--open .mbuy__total { font-size: 18px; line-height: 24px; }
+.mbuy--foot .mbuy__total { font-size: 18px; line-height: 24px; }
 .mbuy__action.ui-button { width: 100%; }
-.mbuy--open .mbuy__action.ui-button { flex: none; width: auto; min-width: 148px; }
+.mbuy--foot .mbuy__action.ui-button { flex: none; width: auto; min-width: 148px; }
 
 @media (prefers-reduced-motion: reduce) {
   .mbuy__top, .mbuy--open .mbuy__top, .mbuy__summary, .mbuy__summary-inner, .mbuy__meta, .mbuy__total, .mbuy__panel, .mbuy--open .mbuy__panel { transition: none; }

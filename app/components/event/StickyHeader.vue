@@ -36,7 +36,7 @@ function back() {
       <UiBackButton class="event-sticky__back" @click="back" />
       <p class="event-sticky__title">{{ title }}</p>
       <div class="event-sticky__actions">
-        <UiButton size="small" :color="actionLabel === 'Open Chat' ? 'secondary' : 'positive'" class="event-sticky__action" :disabled="busy" @click="emit('action')">{{ actionLabel }}</UiButton>
+        <UiButton size="small" :color="'positive'" class="event-sticky__action" :disabled="busy" @click="emit('action')">{{ actionLabel }}</UiButton>
         <!-- Phones / tablets: icon only -->
         <button type="button" class="event-sticky__share" aria-label="Share event" @click="emit('share')">
           <img src="/images/chat/icon-share-24.svg" alt="" width="24" height="24" />

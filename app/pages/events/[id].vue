@@ -275,7 +275,7 @@ const appPromptOpen = computed(() => isHost.value && !createdOpen.value && !appP
       <h1 class="event-page__title text-page-title">{{ event.title }}</h1>
       <!-- Text only, with Share Event beside it (decision 27 Oct) -->
       <div class="event-page__actions">
-        <UiButton size="small" :color="inChat || isHost ? 'secondary' : 'positive'" class="event-page__join" :disabled="joining" @click="join">
+        <UiButton size="small" :color="'positive'" class="event-page__join" :disabled="joining" @click="join">
           {{ inChat || isHost ? 'Open Chat' : 'Join Community - Free' }}
         </UiButton>
         <UiButton size="small" color="secondary" class="event-page__share" @click="invite">Share Event</UiButton><!-- far right (decision 27 Oct) -->
