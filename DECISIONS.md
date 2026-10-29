@@ -924,4 +924,4 @@ All of these use one look, `UiStateMessage`: a 64 round Grey_6 circle with a 32 
   - The footer's change in height is smoothed so the sheet's top edge doesn't jump.
   - Closing: everything moves back at once.
 - **Tappable summary:** on the closed phone bar, tapping the summary ("1 ticket · 1 tier | ₦70,000") also opens the sheet. It works with the keyboard too.
-- **Update 29 Oct:** the button delay is 0.15 seconds (was 0.5, then 0.2).
+- **Update 29 Oct:** the button delay is 0.17 seconds (tried 0.5, 0.2 and 0.15).

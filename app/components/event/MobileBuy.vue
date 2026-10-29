@@ -37,7 +37,7 @@
  *   - when cards are hidden below, the footer gets a soft top shadow
  *     (0 -6 16, 8%) so it reads as sitting over them.
  * Update 29 Oct (later): opening, the sheet grows and the page dims first;
- * 0.15s later (was 0.5s, then 0.2s) the button and summary move into their sheet places (the button
+ * 0.17s later the button and summary move into their sheet places (the button
  * becomes Confirm). Closing moves everything at once. Tapping the summary in
  * the closed bar opens the sheet too.
  */
@@ -66,8 +66,8 @@ const EASE = 'cubic-bezier(0.23, 1, 0.32, 1)'
  * the bar to the left of the footer and grow; the button slides right and
  * narrows to "Confirm". The reverse on closing.
  */
-// The button follows 0.15s after the sheet when opening (decision 29 Oct; was 0.5s, then 0.2s)
-const BUTTON_DELAY = 150
+// The button follows 0.17s after the sheet when opening (decision 29 Oct; tried 0.5s, 0.2s, 0.15s)
+const BUTTON_DELAY = 170
 const btnOpen = ref(false) // button already showing "Confirm"
 const footOpen = ref(false) // footer in its sheet layout (summary left, Confirm right)
 let btnTimer: ReturnType<typeof setTimeout> | undefined
@@ -153,7 +153,7 @@ async function openSheet() {
   clearTimeout(btnTimer)
   open.value = true // the sheet grows and the page dims first...
   await nextTick()
-  // ...then, 0.15s later, the button (with the summary) moves into place and becomes Confirm
+  // ...then, 0.17s later, the button (with the summary) moves into place and becomes Confirm
   btnTimer = setTimeout(async () => {
     if (!open.value) return
     const footBefore = foot.value?.offsetHeight ?? 0
