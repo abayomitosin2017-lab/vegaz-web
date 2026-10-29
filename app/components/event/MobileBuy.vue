@@ -24,6 +24,18 @@
  *   and only the cards scroll.
  * Picks are the page's own quantities (v-model), so page and sheet always
  * match. X, the dimmed page or Escape closes it. Proceed emits `proceed`.
+ *
+ * Client update 29 Oct (replaces parts of the above):
+ *   - title "Confirm Ticket", button "Confirm"; close icon 20 (standard) in 36;
+ *   - footer in the sheet: total (18/24 bold) over "2 tickets · 2 tiers"
+ *     (14/18 Grey_2) on the left, Confirm (48, min 148) on the right; the
+ *     bar's centred summary and full-width button morph into it;
+ *   - opened after picking on the page: picked tiers first, then a small
+ *     "Other Tiers" label (12/18 semibold Grey_3) and the rest; a tier picked
+ *     from Other Tiers glides up and stays there (even back at 0) until the
+ *     sheet closes. Opened with nothing picked: the normal order;
+ *   - when cards are hidden below, the footer gets a soft top shadow
+ *     (0 -6 16, 8%) so it reads as sitting over them.
  */
 import type { TicketType } from '~/types/ticket'
 import { formatNaira } from '~/utils/money'
@@ -36,39 +48,83 @@ const open = ref(false)
 const panel = ref<HTMLElement | null>(null)
 const top = ref<HTMLElement | null>(null)
 const head = ref<HTMLElement | null>(null)
-const list = ref<HTMLElement | null>(null)
+const listGroup = ref<{ $el: HTMLElement } | null>(null)
+const list = computed(() => listGroup.value?.$el ?? null)
 const foot = ref<HTMLElement | null>(null)
 const closeBtn = ref<HTMLButtonElement | null>(null)
 const topHeight = ref(0)
 const metaEl = ref<HTMLElement | null>(null)
 const totalEl = ref<HTMLElement | null>(null)
 
-/** Summary text and total travel and grow between the bar and the sheet (FLIP) */
+const EASE = 'cubic-bezier(0.23, 1, 0.32, 1)'
+/**
+ * Bar <-> sheet morph (FLIP): the count and total travel from the centre of
+ * the bar to the left of the footer and grow; the button slides right and
+ * narrows to "Confirm". The reverse on closing.
+ */
 async function morphSummary(change: () => void) {
-  const els = [metaEl.value, totalEl.value].filter((e): e is HTMLElement => !!e)
+  const text = [metaEl.value, totalEl.value].filter((e): e is HTMLElement => !!e)
+  const btn = panel.value?.querySelector<HTMLElement>('.mbuy__action') ?? null
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  const before = els.map(e => e.getBoundingClientRect())
+  const before = text.map(e => ({ r: e.getBoundingClientRect(), fs: parseFloat(getComputedStyle(e).fontSize) }))
+  const btnBefore = btn?.getBoundingClientRect()
   change()
   await nextTick()
   if (reduce) return
-  els.forEach((el, i) => {
+  text.forEach((el, i) => {
     const a = before[i]!
     const b = el.getBoundingClientRect()
-    if (!a.width || !b.width) return // wasn't visible (nothing picked): it just fades in
+    if (!a.r.width || !b.width) return // wasn't visible (nothing picked): it just fades in
+    const scale = a.fs / parseFloat(getComputedStyle(el).fontSize)
     el.style.transition = 'none'
     el.style.transformOrigin = 'left top'
-    el.style.transform = `translate(${a.left - b.left}px, ${a.top - b.top}px) scale(${a.height / b.height})`
+    el.style.transform = `translate(${a.r.left - b.left}px, ${a.r.top - b.top}px) scale(${scale})`
     void el.offsetWidth
-    el.style.transition = 'transform 300ms cubic-bezier(0.23, 1, 0.32, 1)'
+    el.style.transition = `transform 300ms ${EASE}`
     el.style.transform = ''
   })
+  if (btn && btnBefore) {
+    const b = btn.getBoundingClientRect()
+    btn.style.transition = 'none'
+    btn.style.width = `${btnBefore.width}px`
+    btn.style.transform = `translate(${btnBefore.left - b.left}px, ${btnBefore.top - b.top}px)`
+    void btn.offsetWidth
+    btn.style.transition = `transform 300ms ${EASE}, width 300ms ${EASE}`
+    btn.style.width = `${b.width}px`
+    btn.style.transform = ''
+    setTimeout(() => { btn.style.width = ''; btn.style.transition = '' }, 320)
+  }
+}
+
+// ---- Flow 2 (picked on the page first): picked tiers on top, then "Other Tiers" ----
+// A tier picked inside the sheet moves up; it stays there (even back at 0)
+// until the sheet closes (decision 29 Oct). Flow 1 keeps the normal order.
+const grouped = ref(false)
+const pickedIds = ref<string[]>([])
+watch(quantities, (q) => {
+  if (!open.value || !grouped.value) return
+  for (const t of props.tickets) if ((q[t.id] ?? 0) > 0 && !pickedIds.value.includes(t.id)) pickedIds.value.push(t.id)
+}, { deep: true })
+type Row = { key: string; ticket?: TicketType }
+const rows = computed<Row[]>(() => {
+  if (!grouped.value) return props.tickets.map(t => ({ key: t.id, ticket: t }))
+  const picked = props.tickets.filter(t => pickedIds.value.includes(t.id))
+  const other = props.tickets.filter(t => !pickedIds.value.includes(t.id))
+  return [...picked.map(t => ({ key: t.id, ticket: t })), ...(other.length ? [{ key: '__other' }] : []), ...other.map(t => ({ key: t.id, ticket: t }))]
+})
+
+// ---- Scroll shadow: the footer looks like it sits over the cards ----
+const moreBelow = ref(false)
+function checkScroll() {
+  const l = list.value
+  moreBelow.value = !!l && l.scrollHeight - l.scrollTop - l.clientHeight > 1
 }
 const titleId = useId()
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`
 const summary = computed(() => (props.count > 0 ? `${plural(props.count, 'ticket')} · ${plural(props.tiers, 'tier')}` : 'No tickets yet'))
 const totalLabel = computed(() => (props.count === 0 ? '₦0' : props.total === 0 ? 'Free' : formatNaira(props.total)))
-const action = computed(() => (open.value ? 'Proceed' : props.free ? 'RSVP' : 'Buy Ticket'))
+const action = computed(() => (open.value ? 'Confirm' : props.free ? 'RSVP' : 'Buy Ticket'))
 const inactive = computed(() => open.value && props.count === 0)
 
 /** Sheet height: its content, but never above the page header */
@@ -77,8 +133,12 @@ function measure() {
   const header = document.querySelector<HTMLElement>('.event-sticky')?.offsetHeight ?? 61
   const room = window.innerHeight - header - foot.value.offsetHeight
   topHeight.value = Math.min(head.value.offsetHeight + list.value.scrollHeight, room)
+  setTimeout(checkScroll, 320) // after the sheet has grown
 }
 async function openSheet() {
+  grouped.value = props.count > 0
+  pickedIds.value = props.tickets.filter(t => (quantities.value[t.id] ?? 0) > 0).map(t => t.id)
+  if (list.value) list.value.scrollTop = 0
   await morphSummary(() => { open.value = true })
   document.documentElement.style.overflow = 'hidden'
   measure()
@@ -100,6 +160,7 @@ function onKey(e: KeyboardEvent) {
   if (e.key === 'Escape' && open.value) { e.preventDefault(); close() }
 }
 watch(() => props.tickets.length, () => nextTick(measure))
+watch(rows, () => nextTick(() => { measure(); checkScroll() }))
 
 // Room under the page (and the chat dock / PWA banner) for the closed bar
 const { bottomOffset } = useChatDock()
@@ -143,19 +204,20 @@ onBeforeUnmount(() => {
     >
       <div ref="top" class="mbuy__top" :style="{ height: `${topHeight}px` }" :inert="!open || undefined">
         <div ref="head" class="mbuy__head">
-          <h2 :id="titleId" class="mbuy__title text-app-h2-bold">Buy Ticket</h2>
+          <h2 :id="titleId" class="mbuy__title text-app-h2-bold">Confirm Ticket</h2>
           <button ref="closeBtn" type="button" class="mbuy__close" aria-label="Close" @click="close">
-            <img src="/images/pwa/icon-close-16.svg" alt="" width="16" height="16" />
+            <img src="/images/chat/icon-close-20.svg" alt="" width="20" height="20" />
           </button>
         </div>
-        <ul ref="list" class="mbuy__list">
-          <li v-for="t in tickets" :key="t.id">
-            <TicketOption v-model:quantity="quantities[t.id]" :ticket="t" />
+        <TransitionGroup ref="listGroup" tag="ul" name="mbuy-row" class="mbuy__list" @scroll.passive="checkScroll">
+          <li v-for="row in rows" :key="row.key" :class="{ 'mbuy__other': !row.ticket }">
+            <TicketOption v-if="row.ticket" v-model:quantity="quantities[row.ticket.id]" :ticket="row.ticket" />
+            <template v-else>Other Tiers</template>
           </li>
-        </ul>
+        </TransitionGroup>
       </div>
 
-      <div ref="foot" class="mbuy__foot">
+      <div ref="foot" :class="['mbuy__foot', { 'mbuy__foot--shadow': open && moreBelow }]">
         <div :class="['mbuy__summary', { 'mbuy__summary--on': open || count > 0 }]" aria-live="polite">
           <div class="mbuy__summary-inner">
             <span ref="metaEl" class="mbuy__meta">{{ summary }}</span>
@@ -221,8 +283,9 @@ onBeforeUnmount(() => {
   justify-content: space-between;
   padding: var(--spacing-lg) var(--spacing-xs) var(--spacing-md) var(--spacing-md);
 }
+/* 20 close icon, the standard icon size (decision 29 Oct) */
 .mbuy__title { margin: 0; color: var(--color-text-strong); } /* same title style as the other sheets and pop-ups (22/26 semibold, decision 28 Oct) */
-.mbuy__close { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: var(--radius-pill); background: none; cursor: pointer; }
+.mbuy__close { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: var(--radius-pill); background: none; cursor: pointer; }
 .mbuy__close:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); }
 .mbuy__list {
   display: flex;
@@ -236,6 +299,10 @@ onBeforeUnmount(() => {
   overscroll-behavior: contain;
   list-style: none;
 }
+/* "Other Tiers": small grey label, 8 above the first other tier (gap 16 - 8) */
+.mbuy__other { margin: var(--spacing-xs) 0 calc(-1 * var(--spacing-xs)); color: var(--color-text-muted); font-family: var(--font-family-base); font-size: 12px; font-weight: var(--font-weight-semibold); line-height: 18px; }
+/* A tier picked from "Other Tiers" glides up into the picked group */
+.mbuy-row-move { transition: transform 300ms cubic-bezier(0.23, 1, 0.32, 1); }
 
 /* Fixed footer: summary + the one button (Buy Ticket -> Proceed) */
 .mbuy__foot {
@@ -246,21 +313,31 @@ onBeforeUnmount(() => {
   border-top: var(--border-width-default) solid transparent;
   transition: border-color 200ms ease;
 }
-.mbuy--open .mbuy__foot { border-top-color: var(--color-border-default); }
+.mbuy--open .mbuy__foot {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--spacing-md);
+  border-top-color: var(--color-border-default);
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+/* Cards hidden below: a soft shadow so the footer reads as sitting on top */
+.mbuy__foot--shadow { box-shadow: 0 -6px 16px rgba(17, 17, 26, 0.08); }
 .mbuy__summary { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows 300ms cubic-bezier(0.23, 1, 0.32, 1), opacity 200ms ease; }
 .mbuy__summary--on { grid-template-rows: 1fr; opacity: 1; }
 .mbuy__summary-inner { display: flex; align-items: center; justify-content: center; gap: var(--spacing-lg); min-height: 0; overflow: hidden; transition: margin-bottom 300ms cubic-bezier(0.23, 1, 0.32, 1); }
 .mbuy__summary--on .mbuy__summary-inner { margin-bottom: var(--spacing-md); } /* bar: 16 above the button */
-.mbuy--open .mbuy__summary-inner { justify-content: space-between; margin-bottom: var(--spacing-lg); } /* sheet: spread, 24 above */
-.mbuy__divider { flex: none; width: 1px; height: 16px; background: color-mix(in srgb, var(--grey-1) 40%, transparent); transition: opacity 200ms ease; }
-.mbuy--open .mbuy__divider { opacity: 0; width: 0; margin-inline: calc(-1 * var(--spacing-lg) / 2); }
+.mbuy--open .mbuy__summary { flex: 1; min-width: 0; }
+/* Sheet (decision 29 Oct): total over count on the left, Confirm on the right */
+.mbuy--open .mbuy__summary-inner { flex-direction: column-reverse; align-items: flex-start; justify-content: center; gap: 2px; margin-bottom: 0; }
+.mbuy__divider { flex: none; width: 1px; height: 16px; background: color-mix(in srgb, var(--grey-1) 40%, transparent); }
+.mbuy--open .mbuy__divider { display: none; }
 .mbuy__meta { color: var(--color-text-secondary); font-family: var(--font-family-base); font-size: 14px; line-height: 18px; white-space: nowrap; }
 .mbuy__total { display: inline-block; color: var(--color-text-strong); font-family: var(--font-family-base); font-size: 16px; font-weight: 700; line-height: 24px; white-space: nowrap; }
 .mbuy__meta { display: inline-block; }
-/* In the sheet the summary sits in its footer spot (Figma 14/20, 24/32 bold) */
-.mbuy--open .mbuy__meta { line-height: 20px; }
-.mbuy--open .mbuy__total { font-size: 24px; line-height: 32px; letter-spacing: -0.5px; }
+/* In the sheet: total 18/24 bold over the count 14/18 (as the earlier bar) */
+.mbuy--open .mbuy__total { font-size: 18px; line-height: 24px; }
 .mbuy__action.ui-button { width: 100%; }
+.mbuy--open .mbuy__action.ui-button { flex: none; width: auto; min-width: 148px; }
 
 @media (prefers-reduced-motion: reduce) {
   .mbuy__top, .mbuy--open .mbuy__top, .mbuy__summary, .mbuy__summary-inner, .mbuy__meta, .mbuy__total, .mbuy__panel, .mbuy--open .mbuy__panel { transition: none; }

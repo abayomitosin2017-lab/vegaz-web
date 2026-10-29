@@ -6,7 +6,7 @@
  * Phones: bottom sheet (UiModal), 12 / 16 / 32 padding, 20 apart:
  *   56 app icon + 32 close X; title 24/32 bold Grey_1; line 16/24 Grey_2;
  *   Steps card (1px Grey_5, radius 16, 16 padding, 12 apart): "How to add it
- *   on iPhone (Safari)" 12/18 semibold Grey_3, then 3 steps: 24 round number
+ *   on iPhone" (decision 29 Oct: "(Safari)" removed) 12/18 semibold Grey_3, then 3 steps: 24 round number
  *   (12/18 semibold Primary on a Primary tint), title 14/20 semibold, line
  *   12/18 Grey_2, and a 148 x 76 picture of what to tap (screenshots from
  *   Figma);
@@ -36,7 +36,7 @@ const steps = [
         <p class="pwa-sheet__line">Open Vegaz in one tap, full screen, like any other app. No app store download needed.</p>
       </div>
       <div class="pwa-sheet__steps">
-        <p class="pwa-sheet__label">How to add it on iPhone (Safari)</p>
+        <p class="pwa-sheet__label">How to add it on iPhone</p>
         <ol class="pwa-sheet__list">
           <li v-for="(s, i) in steps" :key="s.title" class="pwa-step">
             <span class="pwa-step__num" aria-hidden="true">{{ i + 1 }}</span>

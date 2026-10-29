@@ -899,3 +899,20 @@ All of these use one look, `UiStateMessage`: a 64 round Grey_6 circle with a 32 
   - With picks, the bar's summary is centred 16 above the button: "2 tickets · 2 tiers" (14/18 Grey_2), a 1 x 16 line (Grey_1 40%) and the total (16/24 bold), 24 apart.
   - Opening the sheet: as it grows out, the summary text and total travel from the centre of the bar to their places in the footer (left / right) and grow to size (total 16 → 24/32), 300ms; closing reverses it.
 - **Update 28 Oct:** the ticket sheet title "Buy Ticket" uses the same title style as the other sheets and pop-ups (22/26 semibold, `text-app-h2-bold`), instead of Figma's 24/32 bold.
+
+## 29 Oct: Phone ticket sheet, client update
+- **Wording:** the title is "Confirm Ticket" (was "Buy Ticket"); the sheet button is "Confirm" (was "Proceed"). The closed bar still says "Buy Ticket".
+- **Close icon:** 20 (the standard icon size, like the back arrow), in a 36 tap area (was 16).
+- **Footer in the sheet** (like the earlier bar):
+  - Left: total (18/24 bold) over "2 tickets · 2 tiers" (14/18 Grey_2). Empty: "₦0" over "No tickets yet", with Confirm inactive.
+  - Right: Confirm, 48 tall, at least 148 wide.
+  - As the sheet opens, the bar's centred count and total move to the left and grow, and the full-width button slides right and narrows. The reverse happens on closing.
+- **Opened after picking on the page (flow 2):**
+  - Picked tiers come first, then a small "Other Tiers" label (12/18 semibold Grey_3, 8 above), then the rest.
+  - A tier picked from Other Tiers glides up into the picked group. It stays there, even if brought back to 0, until the sheet closes.
+- **Opened with nothing picked (flow 1):** the tiers keep their normal order.
+- **Both flows:** when cards are hidden below, the footer gets a soft top shadow (0 −6 16, 8%), so it reads as sitting over the cards. It goes away at the bottom of the list.
+- The Figma frames (Vegaz web bugs, 80:2) still show the 28 Oct version.
+
+## 29 Oct: PWA sheet label
+- The iPhone install sheet's label reads "How to add it on iPhone" ("(Safari)" removed), in the app and in Figma.
