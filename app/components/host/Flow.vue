@@ -155,8 +155,27 @@ async function next() {
     nextTick(() => frame.value?.scrollTop())
   } else await publish()
 }
+// Back on the first step returns to the "Create event" choice (decision 30 Oct).
+// Phones: the choice is a sheet over the page they came from, so go back to
+// that page and reopen the sheet once the flow has closed (never via the
+// /host page, which phones don't use: it flashed for a moment).
+// Desktop: the /host choice page.
+const router = useRouter()
+const { sheetOpen: choiceSheet } = useHostEntry()
+let reopenChoice = false
 function back() {
-  if (index.value === 0) return navigateTo('/host')
+  if (index.value === 0) {
+    const prev = window.history.state?.back as string | undefined
+    if (isPhone.value) {
+      reopenChoice = true
+      if (prev && !prev.startsWith('/host')) router.back()
+      else navigateTo('/', { replace: true })
+      return
+    }
+    if (prev === '/host') router.back()
+    else navigateTo('/host')
+    return
+  }
   index.value -= 1
   nextTick(() => frame.value?.scrollTop())
 }
@@ -215,6 +234,7 @@ function confirmLeave() {
 function onBeforeUnload(e: BeforeUnloadEvent) { if (started.value && !leaving) { e.preventDefault(); e.returnValue = '' } }
 onMounted(() => window.addEventListener('beforeunload', onBeforeUnload))
 onBeforeUnmount(() => window.removeEventListener('beforeunload', onBeforeUnload))
+onUnmounted(() => { if (reopenChoice) choiceSheet.value = true })
 
 // ---- tickets ----
 function addTicket(t: DraftTicket) { tickets.value = [...tickets.value, t] }
@@ -456,7 +476,7 @@ const mobileTitles = computed(() => ({
     @confirm="confirmDelete"
   />
   <UiToast :message="saveError" :duration="5000" @done="saveError = ''" />
-  <HostLeaveDialog :open="leaveOpen" :title="title" :edition="mode === 'edition'" @stay="leaveOpen = false" @leave="confirmLeave" />
+  <HostLeaveDialog :open="leaveOpen" :title="title" :edition="mode === 'edition'" @stay="leaveOpen = false; reopenChoice = false" @leave="confirmLeave" />
 </template>
 
 <style scoped>

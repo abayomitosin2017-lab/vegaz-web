@@ -44,7 +44,7 @@
 import type { TicketType } from '~/types/ticket'
 import { formatNaira } from '~/utils/money'
 
-const props = defineProps<{ tickets: TicketType[]; total: number; count: number; tiers: number; free?: boolean }>()
+const props = defineProps<{ tickets: TicketType[]; total: number; count: number; tiers: number; free?: boolean; ended?: boolean }>()
 const quantities = defineModel<Record<string, number>>('quantities', { required: true })
 const emit = defineEmits<{ proceed: [] }>()
 
@@ -135,7 +135,8 @@ const titleId = useId()
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`
 const summary = computed(() => (props.count > 0 ? `${plural(props.count, 'ticket')} · ${plural(props.tiers, 'tier')}` : 'No tickets yet'))
 const totalLabel = computed(() => (props.count === 0 ? '₦0' : props.total === 0 ? 'Free' : formatNaira(props.total)))
-const action = computed(() => (btnOpen.value ? 'Confirm' : props.free ? 'RSVP' : 'Buy Ticket'))
+// Past events: the bar stays but its button is disabled and the sheet never opens (decision 30 Oct)
+const action = computed(() => (props.ended ? 'Event ended' : btnOpen.value ? 'Confirm' : props.free ? 'RSVP' : 'Buy Ticket'))
 const inactive = computed(() => btnOpen.value && props.count === 0)
 
 /** Sheet height: its content, but never above the page header */
@@ -182,6 +183,7 @@ function close() {
   nextTick(() => panel.value?.querySelector<HTMLElement>('.mbuy__action')?.focus({ preventScroll: true }))
 }
 function onAction() {
+  if (props.ended) return
   if (!open.value) { openSheet(); return }
   if (!btnOpen.value || inactive.value) return // still turning into Confirm, or nothing picked
   close()
@@ -270,7 +272,8 @@ onBeforeUnmount(() => {
           text-style="web"
           :color="inactive ? 'secondary' : 'primary'"
           :aria-disabled="inactive ? 'true' : undefined"
-          :aria-haspopup="open ? undefined : 'dialog'"
+          :disabled="ended"
+          :aria-haspopup="open || ended ? undefined : 'dialog'"
           @click="onAction"
         >{{ action }}</UiButton>
       </div>

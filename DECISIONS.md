@@ -925,3 +925,27 @@ All of these use one look, `UiStateMessage`: a 64 round Grey_6 circle with a 32 
   - Closing: everything moves back at once.
 - **Tappable summary:** on the closed phone bar, tapping the summary ("1 ticket · 1 tier | ₦70,000") also opens the sheet. It works with the keyboard too.
 - **Update 29 Oct:** the button delay is 0.17 seconds (tried 0.5, 0.2 and 0.15).
+
+## 30 Oct — Install nudge hidden; past events can't be bought
+
+- **"Add to home screen" nudge switched off.** One switch, `pwaInstallNudge` in `app/config/app.ts`, is `false`: Home no longer shows the banner, the iPhone how-to sheet never mounts, and the browser's own install prompt is left alone. All the code (composable, banner, sheet, manifest, icons) stays; set the switch to `true` to bring it back.
+- **Ended events** (the event's start time has passed):
+  - Ticket prices and descriptions still show; the quantity steppers are hidden, so no tier can be picked.
+  - Desktop: the panel button reads **"Event ended"** and is disabled.
+  - Phones: the bottom bar stays, its button reads "Event ended", disabled; tapping does nothing and the sheet never opens.
+  - Tablets: no ticket bar (nothing can be picked).
+  - Chat "Buy Ticket" for a past event opens the event page (showing "Event ended") instead of checkout. ASSUMPTION — confirm with design.
+  - Joining the community is still allowed. ASSUMPTION.
+  - Engineering: "ended" is worked out in the browser from `startsAt`; the real API may want to send this (and stop sales) itself.
+- **Demo data:** most mock events moved to Nov 2026 – Feb 2027. Three stay in the past to show the ended state: Marathon Movie Night 5.0, Lalale Friday (10 Apr), Paintball and Chill.
+
+## 30 Oct — Back arrows
+
+- **Host flow, back on the first step (bug fix).** Phones went back through the desktop "Create event" page, which showed for a moment before sending them Home. Now:
+  - Phones: back returns to the page they opened the "Create event" sheet from (Home, an event page…) and the sheet opens again. Never via the /host page.
+  - Desktop: back returns to the /host choice page, as before.
+  - If they've started filling in the event, the "leave?" question still comes first; "Stay" keeps them in the flow.
+- The /host page is never painted on phones (they're sent to Home with the sheet), and that redirect replaces the history entry so the browser's back doesn't bounce them there again.
+- /host "Cancel" goes back to the page they came from, or Home.
+- Edit Profile back: steps back inside the site; arriving from an outside link goes Home (it used to leave the site).
+- Checked (all go to the right place): event page back (previous page, or Home from a link), All Events back (Home), chat conversation back (chat list), host flow steps, checkout steps, login steps, Activities back.

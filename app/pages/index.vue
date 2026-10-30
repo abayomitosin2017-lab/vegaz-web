@@ -7,6 +7,7 @@
  *                  growing at 1312px and stays centred on wider screens
  */
 import { getHomeEvents } from '~/services/events'
+import { pwaInstallNudge } from '~/config/app'
 
 // Lazy: the page shows at once with card placeholders until the events arrive (decision 27 Oct)
 const { data: events, status, refresh } = useLazyAsyncData('home-events', getHomeEvents)
@@ -24,7 +25,8 @@ const empty = computed(() => !!events.value && Object.values(rows.value).every(l
 const { startHosting } = useHostEntry()
 // Phones: "Install Vegaz" banner every time they land on Home (decision 27 Oct)
 const pwa = usePwaInstall()
-onMounted(() => pwa.nudge())
+// Install nudge switched off for now (decision 30 Oct, config/app.ts)
+onMounted(() => { if (pwaInstallNudge) pwa.nudge() })
 const { open: openAuth } = useAuthModal()
 const { user } = useSession()
 </script>

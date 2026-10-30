@@ -4,6 +4,7 @@
 // when signed in, the header shows the user and the profile menu.
 // Pages can hide the footer with definePageMeta({ footer: false }) (chat),
 // or only on phones with footer: 'desktop' (Edit Profile).
+import { pwaInstallNudge } from '~/config/app'
 const { open: openAuth } = useAuthModal()
 const { user, logout } = useSession()
 const route = useRoute()
@@ -69,7 +70,7 @@ const showBottomNav = computed(() => isPhone.value
     <ProfileBirthdayPrompt :open="prompts.prompt.value === 'birthday'" :busy="prompts.busy.value" @close="prompts.close" @save="prompts.onBirthday" />
     <ClientOnly><ChatDock v-if="user && route.path !== '/chat'" /></ClientOnly>
     <!-- PWA install nudge, phones (decision 27 Oct) -->
-    <ClientOnly><PwaBanner :bottom="showBottomNav ? 65 : chatDock.bottomOffset.value" /><PwaSheet /></ClientOnly>
+    <ClientOnly v-if="pwaInstallNudge"><PwaBanner :bottom="showBottomNav ? 65 : chatDock.bottomOffset.value" /><PwaSheet /></ClientOnly>
     <ProfileGenderPrompt :open="prompts.prompt.value === 'gender'" :busy="prompts.busy.value" :initial="user?.gender" @close="prompts.close" @save="prompts.onGender" />
   </div>
 </template>

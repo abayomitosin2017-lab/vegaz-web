@@ -164,6 +164,8 @@ async function buyTicket() {
   if (!eventId) return
   const [event, tickets] = await Promise.all([getEvent(eventId), getTicketTypes(eventId)])
   if (!event) return
+  // Past event (decision 30 Oct): no buying; its page shows "Event ended" instead
+  if (new Date(event.startsAt).getTime() < Date.now()) { await navigateTo(`/events/${eventId}`); return }
   Object.assign(checkout, { event, tickets, quantities: Object.fromEntries(tickets.map(t => [t.id, 0])), open: true })
 }
 

@@ -87,7 +87,8 @@ async function save() {
   } finally { busy.value = false }
 }
 function back() {
-  if (window.history.length > 1) router.back()
+  // Only step back inside the site; arriving from a link goes Home (decision 30 Oct)
+  if (window.history.state?.back) router.back()
   else navigateTo('/')
 }
 </script>

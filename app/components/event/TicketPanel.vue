@@ -19,32 +19,34 @@
  * Host's own event (decision 26 Oct, PROPOSED look): the cards show without
  * steppers, "Open Chat" replaces Buy Ticket (on every screen size) and
  * Share Event sits under it.
+ * Ended event (decision 30 Oct): prices stay, the steppers go and the
+ * button reads "Event ended", disabled.
  */
 import type { TicketType } from '~/types/ticket'
 import { formatNaira } from '~/utils/money'
 import { isFreeOnly, RSVP_LABEL } from '~/utils/ticketCta'
 
-const props = defineProps<{ tickets: TicketType[]; total: number; count: number; holding?: boolean; host?: boolean; busy?: boolean }>()
+const props = defineProps<{ tickets: TicketType[]; total: number; count: number; holding?: boolean; host?: boolean; busy?: boolean; ended?: boolean }>()
 const quantities = defineModel<Record<string, number>>('quantities', { required: true })
 const emit = defineEmits<{ buy: []; share: []; chat: [] }>()
 
 // Free-only selection (or an event with only free tickets): RSVP (decision 26 Oct)
 const free = computed(() => isFreeOnly(props.tickets, quantities.value))
-const buyLabel = computed(() => (free.value ? RSVP_LABEL : props.count ? `Buy Ticket (${formatNaira(props.total)})` : 'Buy Ticket'))
+const buyLabel = computed(() => (props.ended ? 'Event ended' : free.value ? RSVP_LABEL : props.count ? `Buy Ticket (${formatNaira(props.total)})` : 'Buy Ticket'))
 </script>
 
 <template>
   <section class="ticket-panel" aria-label="Tickets">
     <ul class="ticket-panel__list">
       <li v-for="t in tickets" :key="t.id">
-        <TicketOption v-model:quantity="quantities[t.id]" :ticket="t" :preview="host" />
+        <TicketOption v-model:quantity="quantities[t.id]" :ticket="t" :preview="host || ended" />
       </li>
     </ul>
     <UiButton v-if="host" class="ticket-panel__buy ticket-panel__chat" text-style="web" :aria-busy="busy ? 'true' : undefined" @click="!busy && emit('chat')">
       <template #icon><img src="/images/host/icon-chat-light-24.svg" alt="" width="24" height="24" /></template>
       Open Chat
     </UiButton>
-    <UiButton v-else class="ticket-panel__buy" text-style="web" :disabled="!count" @click="emit('buy')">{{ buyLabel }}</UiButton>
+    <UiButton v-else class="ticket-panel__buy" text-style="web" :disabled="ended || !count" @click="emit('buy')">{{ buyLabel }}</UiButton>
     <UiButton v-if="holding || host" color="secondary" class="ticket-panel__share" @click="emit('share')">
       <template #icon><img src="/images/chat/icon-share-24.svg" alt="" width="24" height="24" /></template>
       Share Event

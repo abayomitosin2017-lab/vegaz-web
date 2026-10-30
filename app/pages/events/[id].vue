@@ -113,6 +113,8 @@ const holding = ref(0)
 // The signed-in user hosts this event (they created it): their main action is
 // to open its chat, not to join or buy (decision 26 Oct)
 const isHost = computed(() => !!user.value && !!event.value && event.value.host.username === user.value.username)
+// The event date has passed: prices stay, but tickets can't be picked or bought (decision 30 Oct)
+const ended = computed(() => !!event.value && new Date(event.value.startsAt).getTime() < Date.now())
 const inChat = ref(false)
 async function refreshStatus() {
   holding.value = ticketsHeld(user.value?.email, id.value)
@@ -126,6 +128,7 @@ function showTickets() {
   window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - header - 16, behavior: 'smooth' })
 }
 function buy() {
+  if (ended.value) return
   if (count.value > 0) checkoutOpen.value = true
 }
 
@@ -295,7 +298,7 @@ const appPromptOpen = computed(() => isHost.value && !createdOpen.value && !appP
       </div>
 
       <div class="event-page__tickets">
-        <EventTicketPanel v-model:quantities="quantities" :tickets="tickets ?? []" :total="total" :count="count" :holding="holding > 0" :host="isHost" :busy="joining" @buy="buy" @share="invite" @chat="join" />
+        <EventTicketPanel v-model:quantities="quantities" :tickets="tickets ?? []" :total="total" :count="count" :holding="holding > 0" :host="isHost" :ended="ended" :busy="joining" @buy="buy" @share="invite" @chat="join" />
         <!-- Desktop: a cue that joining is free (decision 27 Oct; hidden for the host and members) -->
         <p v-if="!inChat && !isHost" class="event-page__join-note text-small-regular">
           You can <button type="button" class="event-page__join-link text-small-semibold" :disabled="joining" @click="join">join community</button> without buying ticket
@@ -328,11 +331,12 @@ const appPromptOpen = computed(() => isHost.value && !createdOpen.value && !appP
         :count="count"
         :tiers="picked.length"
         :free="isFreeOnly(tickets ?? [], quantities)"
+        :ended="ended"
         @proceed="buy"
       />
     </ClientOnly>
     <!-- Tablets: the bar once a ticket is picked -->
-    <EventTicketBar v-if="!phone && count > 0 && !isHost" class="event-page__bar" :total="total" :count="count" :tiers="picked.length" :free="isFreeOnly(tickets ?? [], quantities)" @buy="buy" @show="showTickets" />
+    <EventTicketBar v-if="!phone && count > 0 && !isHost && !ended" class="event-page__bar" :total="total" :count="count" :tiers="picked.length" :free="isFreeOnly(tickets ?? [], quantities)" @buy="buy" @show="showTickets" />
 
     <UiPhotoViewer
       :open="viewerIndex !== null"
